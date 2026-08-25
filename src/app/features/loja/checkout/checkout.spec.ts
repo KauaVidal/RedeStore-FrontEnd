@@ -97,4 +97,15 @@ describe('Checkout', () => {
 
     expect(orderServiceFalso.criar).not.toHaveBeenCalled();
   });
+
+  it('mostra erro geral e reseta enviando quando a criação do pedido falha', async () => {
+    orderServiceFalso.criar.and.rejectWith(new Error('FALHA'));
+
+    fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance['erroGeral']()).toContain('Não deu pra finalizar o pedido');
+    expect(fixture.componentInstance['enviando']()).toBeFalse();
+  });
 });

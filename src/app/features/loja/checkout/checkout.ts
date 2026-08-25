@@ -34,6 +34,7 @@ export class Checkout {
   });
 
   protected readonly enviando = signal(false);
+  protected readonly erroGeral = signal<string | null>(null);
 
   protected get ehEntrega(): boolean {
     return this.form.controls.formaEntrega.value === 'entrega';
@@ -77,6 +78,7 @@ export class Checkout {
       return;
     }
     this.enviando.set(true);
+    this.erroGeral.set(null);
     try {
       const dados = this.form.getRawValue();
       const usuario = this.auth.usuarioAtual();
@@ -97,6 +99,8 @@ export class Checkout {
       });
       this.carrinho.limpar();
       this.router.navigateByUrl('/loja/checkout/confirmacao');
+    } catch {
+      this.erroGeral.set('Não deu pra finalizar o pedido agora. Tenta de novo em instantes.');
     } finally {
       this.enviando.set(false);
     }

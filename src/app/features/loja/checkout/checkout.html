@@ -26,6 +26,10 @@
       <span class="titulo-2">Total: R$ {{ subtotal().toFixed(2) }}</span>
     </div>
 
+    @if (erroGeral()) {
+      <p class="checkout__erro">{{ erroGeral() }}</p>
+    }
+
     <app-button tipo="submit" [carregando]="enviando()">Pagar com Mercado Pago</app-button>
   </form>
 </div>

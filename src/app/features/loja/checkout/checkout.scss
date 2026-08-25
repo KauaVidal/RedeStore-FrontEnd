@@ -31,3 +31,9 @@
   border-top: 1px solid rgba(246, 244, 236, 0.08);
   padding-top: var(--espaco-4);
 }
+
+.checkout__erro {
+  color: var(--status-cancel);
+  font-size: 0.875rem;
+  margin: 0;
+}
