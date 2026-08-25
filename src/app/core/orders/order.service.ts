@@ -32,6 +32,10 @@ export class OrderService {
     return pedido;
   }
 
+  limparUltimoPedido(): void {
+    this._ultimoPedido.set(null);
+  }
+
   async listarPorUsuario(usuarioId: string): Promise<Pedido[]> {
     await mockLatency(undefined);
     return PEDIDOS_MOCK.filter((p) => p.usuarioId === usuarioId).sort(

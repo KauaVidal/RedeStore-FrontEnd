@@ -1,12 +1,17 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { mockLatency } from '../mock/mock-latency';
 import { USUARIOS_MOCK, UsuarioMock } from './auth-mock-store';
 import { Usuario } from './usuario.model';
+import { CartService } from '../cart/cart.service';
+import { OrderService } from '../orders/order.service';
 
 const CHAVE_SESSAO = 'rede_sessao_usuario';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private readonly carrinho = inject(CartService);
+  private readonly pedidos = inject(OrderService);
+
   private readonly _usuarioAtual = signal<Usuario | null>(this.carregarSessao());
 
   readonly usuarioAtual = this._usuarioAtual.asReadonly();
@@ -58,6 +63,8 @@ export class AuthService {
 
   logout(): void {
     this.definirSessao(null);
+    this.carrinho.limpar();
+    this.pedidos.limparUltimoPedido();
   }
 
   private paraUsuario(usuarioMock: UsuarioMock): Usuario {

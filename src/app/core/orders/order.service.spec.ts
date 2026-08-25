@@ -40,6 +40,16 @@ describe('OrderService', () => {
     expect(service.ultimoPedido()?.usuarioId).toBe('u1');
   }));
 
+  it('limparUltimoPedido() volta ultimoPedido() para null', fakeAsync(() => {
+    service.criar({ usuarioId: 'u1', itens: [ITEM], formaEntrega: 'retirada' });
+    tick(400);
+    expect(service.ultimoPedido()).not.toBeNull();
+
+    service.limparUltimoPedido();
+
+    expect(service.ultimoPedido()).toBeNull();
+  }));
+
   it('listarPorUsuario() retorna só os pedidos do usuário, mais recentes primeiro', fakeAsync(() => {
     spyOn(Date.prototype, 'toISOString').and.returnValues(
       '2024-01-01T00:00:00.000Z',

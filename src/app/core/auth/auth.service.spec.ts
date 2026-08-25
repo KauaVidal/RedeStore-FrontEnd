@@ -1,6 +1,8 @@
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { AuthService } from './auth.service';
 import { USUARIOS_MOCK } from './auth-mock-store';
+import { CartService } from '../cart/cart.service';
+import { OrderService } from '../orders/order.service';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -64,6 +66,33 @@ describe('AuthService', () => {
     service.logout();
     expect(service.usuarioAtual()).toBeNull();
     expect(service.estaAutenticado()).toBeFalse();
+  }));
+
+  it('logout limpa o carrinho e o último pedido para não vazar entre usuários', fakeAsync(() => {
+    const carrinho = TestBed.inject(CartService);
+    const pedidos = TestBed.inject(OrderService);
+
+    service.login('jovem@rede.com', 'jovem123');
+    tick(400);
+
+    carrinho.adicionar({
+      produtoId: '1',
+      nome: 'Camiseta REDE Clássica',
+      precoUnitario: 79.9,
+      fotoUrl: 'https://picsum.photos/seed/x/480/480',
+      tamanho: 'M',
+      cor: 'Preto',
+    });
+    pedidos.criar({ usuarioId: '2', itens: carrinho.itens(), formaEntrega: 'retirada' });
+    tick(400);
+
+    expect(carrinho.itens().length).toBeGreaterThan(0);
+    expect(pedidos.ultimoPedido()).not.toBeNull();
+
+    service.logout();
+
+    expect(carrinho.itens()).toEqual([]);
+    expect(pedidos.ultimoPedido()).toBeNull();
   }));
 
   it('persiste a sessão no localStorage e restaura em uma nova instância', fakeAsync(() => {
