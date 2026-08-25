@@ -5,6 +5,14 @@
     "packageManager": "npm"
   },
   "newProjectRoot": "projects",
+  "schematics": {
+    "@schematics/angular:application": {
+      "testRunner": "karma"
+    },
+    "@schematics/angular:library": {
+      "testRunner": "karma"
+    }
+  },
   "projects": {
     "rede-store": {
       "projectType": "application",
@@ -73,9 +81,7 @@
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "stylePreprocessorOptions": {
-              "includePaths": ["src"]
-            }
+            "runner": "karma"
           }
         }
       }
