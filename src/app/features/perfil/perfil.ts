@@ -1,23 +1,27 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
+import { OrderService } from '../../core/orders/order.service';
+import { Pedido } from '../../core/orders/pedido.model';
 import { TextField } from '../../shared/ui/text-field/text-field';
 import { Button } from '../../shared/ui/button/button';
 import { EmptyState } from '../../shared/ui/empty-state/empty-state';
 
 @Component({
   selector: 'app-perfil',
-  imports: [ReactiveFormsModule, TextField, Button, EmptyState],
+  imports: [ReactiveFormsModule, RouterLink, TextField, Button, EmptyState],
   templateUrl: './perfil.html',
   styleUrl: './perfil.scss',
 })
-export class Perfil {
+export class Perfil implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
+  private readonly pedidosService = inject(OrderService);
   private readonly router = inject(Router);
 
   protected readonly usuario = this.auth.usuarioAtual;
+  protected readonly pedidos = signal<Pedido[]>([]);
 
   protected readonly form = this.fb.nonNullable.group({
     nome: [this.usuario()?.nome ?? '', [Validators.required]],
@@ -28,6 +32,12 @@ export class Perfil {
   protected readonly salvando = signal(false);
   protected readonly salvo = signal(false);
   protected readonly erroGeral = signal<string | null>(null);
+
+  async ngOnInit(): Promise<void> {
+    const usuario = this.usuario();
+    if (!usuario) return;
+    this.pedidos.set(await this.pedidosService.listarPorUsuario(usuario.id));
+  }
 
   protected async aoSalvar(): Promise<void> {
     if (this.form.invalid || this.salvando()) {
