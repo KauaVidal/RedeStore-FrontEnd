@@ -27,6 +27,7 @@ export class Perfil {
 
   protected readonly salvando = signal(false);
   protected readonly salvo = signal(false);
+  protected readonly erroGeral = signal<string | null>(null);
 
   protected async aoSalvar(): Promise<void> {
     if (this.form.invalid || this.salvando()) {
@@ -35,9 +36,15 @@ export class Perfil {
     }
     this.salvando.set(true);
     this.salvo.set(false);
-    await this.auth.atualizarPerfil(this.form.getRawValue());
-    this.salvando.set(false);
-    this.salvo.set(true);
+    this.erroGeral.set(null);
+    try {
+      await this.auth.atualizarPerfil(this.form.getRawValue());
+      this.salvo.set(true);
+    } catch {
+      this.erroGeral.set('Não deu pra salvar suas alterações agora. Tenta de novo em instantes.');
+    } finally {
+      this.salvando.set(false);
+    }
   }
 
   protected sair(): void {

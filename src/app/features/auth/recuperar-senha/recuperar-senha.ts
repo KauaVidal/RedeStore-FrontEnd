@@ -36,8 +36,15 @@ export class RecuperarSenha {
       return;
     }
     this.enviando.set(true);
-    await this.auth.recuperarSenha(this.form.getRawValue().email);
-    this.enviando.set(false);
-    this.enviado.set(true);
+    try {
+      await this.auth.recuperarSenha(this.form.getRawValue().email);
+      this.enviado.set(true);
+    } catch {
+      // O mock nunca rejeita hoje (recuperação de senha "sempre funciona" por design),
+      // mas isso protege contra falhas de um backend real no futuro. Sem UI de erro
+      // dedicada: o formulário simplesmente permanece visível para nova tentativa.
+    } finally {
+      this.enviando.set(false);
+    }
   }
 }

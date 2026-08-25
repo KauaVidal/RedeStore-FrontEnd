@@ -10,6 +10,9 @@
     @if (salvo()) {
       <p class="perfil__salvo">Dados atualizados.</p>
     }
+    @if (erroGeral()) {
+      <p class="perfil__erro" role="alert">{{ erroGeral() }}</p>
+    }
   </form>
 
   <section class="perfil__secao">

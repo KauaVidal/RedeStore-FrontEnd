@@ -32,4 +32,16 @@ describe('RecuperarSenha', () => {
     expect(authServiceFalso.recuperarSenha).toHaveBeenCalledWith('jovem@rede.com');
     expect(fixture.nativeElement.textContent).toContain('enviamos um link');
   });
+
+  it('reseta o estado de carregamento mesmo quando recuperarSenha falha', async () => {
+    authServiceFalso.recuperarSenha.and.rejectWith(new Error('ERRO_INESPERADO'));
+    fixture.componentInstance['form'].setValue({ email: 'jovem@rede.com' });
+
+    fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance['enviando']()).toBeFalse();
+    expect(fixture.componentInstance['enviado']()).toBeFalse();
+  });
 });

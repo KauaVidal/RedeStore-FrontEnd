@@ -48,4 +48,16 @@ describe('Perfil', () => {
     expect(authServiceFalso.logout).toHaveBeenCalled();
     expect(router.navigateByUrl).toHaveBeenCalledWith('/login');
   });
+
+  it('reseta o estado de carregamento mesmo quando atualizarPerfil falha', async () => {
+    authServiceFalso.atualizarPerfil.and.rejectWith(new Error('NAO_AUTENTICADO'));
+
+    fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance['salvando']()).toBeFalse();
+    expect(fixture.componentInstance['erroGeral']()).toContain('Não deu pra salvar');
+    expect(fixture.componentInstance['salvo']()).toBeFalse();
+  });
 });
