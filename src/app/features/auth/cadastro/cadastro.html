@@ -1,0 +1,27 @@
+<div class="tela-auth">
+  <form class="cartao-auth" [formGroup]="form" (ngSubmit)="aoEnviar()">
+    <app-logo variante="amarelo-transparente" tamanho="56px" />
+    <h1 class="titulo-1">Criar conta</h1>
+    <p class="texto-corpo">Cria sua conta pra comprar na loja e se inscrever nos eventos da REDE.</p>
+
+    <app-text-field rotulo="Nome" [controle]="form.controls.nome" [erro]="erroNome" />
+    <app-text-field rotulo="E-mail" tipo="email" [controle]="form.controls.email" [erro]="erroEmail" />
+    <app-text-field rotulo="Senha" tipo="password" [controle]="form.controls.senha" [erro]="erroSenha" />
+    <app-text-field
+      rotulo="Confirmar senha"
+      tipo="password"
+      [controle]="form.controls.confirmarSenha"
+      [erro]="erroConfirmarSenha"
+    />
+
+    @if (erroGeral()) {
+      <p class="cartao-auth__erro" role="alert">{{ erroGeral() }}</p>
+    }
+
+    <app-button tipo="submit" [carregando]="enviando()">Criar conta</app-button>
+
+    <div class="cartao-auth__links">
+      <a routerLink="/login">Já tenho conta</a>
+    </div>
+  </form>
+</div>
