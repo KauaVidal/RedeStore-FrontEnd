@@ -1,3 +1,6 @@
+# Claude Code worktree sessions
+/.claude/
+
 # Angular specific
 /dist/
 /out-tsc/
