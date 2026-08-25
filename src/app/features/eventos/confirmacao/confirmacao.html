@@ -1,0 +1,34 @@
+@if (evento(); as e) {
+  @if (inscricao(); as i) {
+    <div class="confirmacao-inscricao">
+      <div class="confirmacao-inscricao__selo" aria-hidden="true"></div>
+      <h1 class="titulo-1">Inscrição confirmada!</h1>
+      <p class="texto-corpo confirmacao-inscricao__subtitulo">Sua vaga está garantida. Nos vemos lá!</p>
+
+      <div class="confirmacao-inscricao__ticket">
+        <div class="confirmacao-inscricao__ticket-corpo">
+          <h2 class="titulo-2">{{ e.titulo }}</h2>
+          <p class="confirmacao-inscricao__ticket-meta texto-utilitario">
+            <span>{{ e.local }}</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>{{ formatarDataHora(e.dataHora) }}</span>
+          </p>
+        </div>
+
+        <div class="confirmacao-inscricao__ticket-picote" aria-hidden="true"></div>
+
+        <div class="confirmacao-inscricao__ticket-valor">
+          <span class="texto-utilitario">Valor pago</span>
+          <span class="confirmacao-inscricao__ticket-preco">R$ {{ i.valorPago | precoBr }}</span>
+        </div>
+      </div>
+
+      <div class="confirmacao-inscricao__acoes">
+        <a class="confirmacao-inscricao__acao-primaria" routerLink="/eventos/minhas-inscricoes">
+          Ver minhas inscrições
+        </a>
+        <a class="confirmacao-inscricao__acao-secundaria" routerLink="/eventos">Voltar para a agenda</a>
+      </div>
+    </div>
+  }
+}
