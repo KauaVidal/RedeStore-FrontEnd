@@ -1,0 +1,54 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+.cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--espaco-3) var(--espaco-4);
+  background: var(--rede-black);
+  border-bottom: 1px solid rgba(246, 244, 236, 0.08);
+}
+
+.cabecalho__marca {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  color: var(--rede-paper);
+  text-decoration: none;
+}
+
+.cabecalho__nome {
+  font-family: var(--fonte-display);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.cabecalho__nav {
+  display: none;
+  gap: var(--espaco-6);
+
+  a {
+    color: var(--rede-paper);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .cabecalho__link--ativo {
+    color: var(--rede-yellow);
+  }
+
+  @include desktop {
+    display: flex;
+  }
+}
+
+.cabecalho__acoes {
+  display: flex;
+  gap: var(--espaco-4);
+}
+
+.cabecalho__icone {
+  font-size: 1.25rem;
+  text-decoration: none;
+}
