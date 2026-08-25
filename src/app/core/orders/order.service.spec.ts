@@ -41,6 +41,12 @@ describe('OrderService', () => {
   }));
 
   it('listarPorUsuario() retorna só os pedidos do usuário, mais recentes primeiro', fakeAsync(() => {
+    spyOn(Date.prototype, 'toISOString').and.returnValues(
+      '2024-01-01T00:00:00.000Z',
+      '2024-01-01T00:00:01.000Z',
+      '2024-01-01T00:00:02.000Z',
+    );
+
     service.criar({ usuarioId: 'u1', itens: [ITEM], formaEntrega: 'retirada' });
     tick(400);
     service.criar({ usuarioId: 'u2', itens: [ITEM], formaEntrega: 'retirada' });
