@@ -23,7 +23,7 @@ const EVENTO_DISTANTE: Evento = {
   id: '6',
   titulo: 'Vigília de Oração',
   descricao: 'Noite inteira de oração.',
-  dataHora: '2026-03-28T22:00:00.000Z',
+  dataHora: '2026-12-13T22:00:00.000Z',
   local: 'Templo sede, Vila Maria',
   preco: 0,
   vagasTotais: 150,
@@ -34,11 +34,22 @@ const EVENTO_PROXIMO: Evento = {
   id: '2',
   titulo: 'Encontro de Jovens',
   descricao: 'Noite de louvor.',
-  dataHora: '2026-02-06T22:00:00.000Z',
+  dataHora: '2026-09-06T22:00:00.000Z',
   local: 'Templo sede, Vila Maria',
   preco: 0,
   vagasTotais: 100,
   foto: 'https://picsum.photos/seed/z/480/480',
+};
+
+const EVENTO_PASSADO: Evento = {
+  id: '1',
+  titulo: 'Retiro de Verão REDE',
+  descricao: 'Um fim de semana de imersão.',
+  dataHora: '2026-01-16T08:00:00.000Z',
+  local: 'Sítio Vida Nova, Ibiúna',
+  preco: 250,
+  vagasTotais: 4,
+  foto: 'https://picsum.photos/seed/x/480/480',
 };
 
 describe('Home', () => {
@@ -51,8 +62,9 @@ describe('Home', () => {
     productServiceFalso.listarDestaques.and.resolveTo([DESTAQUE]);
 
     eventServiceFalso = jasmine.createSpyObj('EventService', ['listar']);
-    // Fora de ordem de propósito, pra provar que a Home ordena por data.
-    eventServiceFalso.listar.and.resolveTo([EVENTO_DISTANTE, EVENTO_PROXIMO]);
+    // Fora de ordem de propósito, pra provar que a Home ordena por data. Inclui
+    // um evento passado pra provar que ele não entra na prévia (I4).
+    eventServiceFalso.listar.and.resolveTo([EVENTO_DISTANTE, EVENTO_PROXIMO, EVENTO_PASSADO]);
 
     await TestBed.configureTestingModule({
       imports: [Home],
@@ -82,6 +94,10 @@ describe('Home', () => {
     expect(cartoes.length).toBe(2);
     expect(cartoes[0].textContent).toContain('Encontro de Jovens');
     expect(cartoes[1].textContent).toContain('Vigília de Oração');
+  });
+
+  it('não mostra eventos que já aconteceram nos próximos eventos', () => {
+    expect(fixture.nativeElement.textContent).not.toContain('Retiro de Verão REDE');
   });
 
   it('cada evento linka para a página de detalhes do evento', () => {

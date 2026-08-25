@@ -18,7 +18,7 @@
         <li>
           <a class="home__evento-cartao" [routerLink]="['/eventos', evento.id]">
             <span class="home__evento-titulo">{{ evento.titulo }}</span>
-            <span class="home__evento-meta texto-utilitario">{{ formatarDataHora(evento.dataHora) }} · {{ evento.local }}</span>
+            <span class="home__evento-meta texto-utilitario">{{ evento.dataHora | dataBr }} · {{ evento.local }}</span>
           </a>
         </li>
       }
