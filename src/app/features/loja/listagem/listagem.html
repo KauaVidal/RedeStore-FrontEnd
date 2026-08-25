@@ -1,0 +1,18 @@
+<div class="listagem">
+  <h1 class="titulo-1">Produtos</h1>
+
+  <form class="listagem__busca" [formGroup]="form" (ngSubmit)="pesquisar()">
+    <input class="listagem__campo-busca" type="text" formControlName="busca" placeholder="Buscar produto" />
+    <button type="submit" class="listagem__botao-busca">Buscar</button>
+  </form>
+
+  @if (resultado().length > 0) {
+    <div class="listagem__grade">
+      @for (produto of resultado(); track produto.id) {
+        <app-product-card [produto]="produto" />
+      }
+    </div>
+  } @else {
+    <app-empty-state mensagem="Nenhum produto encontrado." />
+  }
+</div>
