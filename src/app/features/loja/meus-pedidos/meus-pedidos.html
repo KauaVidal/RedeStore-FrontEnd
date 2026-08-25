@@ -1,0 +1,19 @@
+<div class="meus-pedidos">
+  <h1 class="titulo-1">Meus pedidos</h1>
+
+  @if (lista().length === 0) {
+    <app-empty-state mensagem="Você ainda não fez nenhum pedido." textoAcao="Ver a loja" linkAcao="/loja" />
+  } @else {
+    <ul class="meus-pedidos__lista">
+      @for (pedido of lista(); track pedido.id) {
+        <li class="meus-pedidos__item">
+          <span class="titulo-2">Pedido #{{ pedido.id }}</span>
+          <span class="meus-pedidos__status" [class]="'meus-pedidos__status--' + pedido.status">
+            {{ rotuloStatus[pedido.status] }}
+          </span>
+          <span class="texto-utilitario">R$ {{ pedido.valorTotal.toFixed(2) }}</span>
+        </li>
+      }
+    </ul>
+  }
+</div>
