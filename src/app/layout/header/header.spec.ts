@@ -3,16 +3,23 @@ import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
 import { Header } from './header';
 import { AuthService } from '../../core/auth/auth.service';
+import { CartService } from '../../core/cart/cart.service';
 
 describe('Header', () => {
   let fixture: ComponentFixture<Header>;
   let estaAutenticado: ReturnType<typeof signal<boolean>>;
+  let quantidadeTotal: ReturnType<typeof signal<number>>;
 
   beforeEach(async () => {
     estaAutenticado = signal(false);
+    quantidadeTotal = signal(0);
     await TestBed.configureTestingModule({
       imports: [Header],
-      providers: [provideRouter([]), { provide: AuthService, useValue: { estaAutenticado } }],
+      providers: [
+        provideRouter([]),
+        { provide: AuthService, useValue: { estaAutenticado } },
+        { provide: CartService, useValue: { quantidadeTotal } },
+      ],
     }).compileComponents();
     fixture = TestBed.createComponent(Header);
     fixture.detectChanges();
@@ -24,9 +31,6 @@ describe('Header', () => {
   });
 
   it('link de perfil aponta para /perfil quando autenticado', async () => {
-    // Segundo detectChanges() após mutar um signal já lido no template —
-    // precisa de whenStable() pra garantir que a atualização assente antes
-    // da asserção (achado real da Task 8: ver ledger do SDD).
     estaAutenticado.set(true);
     fixture.detectChanges();
     await fixture.whenStable();
@@ -39,5 +43,18 @@ describe('Header', () => {
     expect(fixture.nativeElement.textContent).toContain('Loja');
     expect(fixture.nativeElement.textContent).toContain('Eventos');
     expect(fixture.nativeElement.textContent).toContain('Sobre');
+  });
+
+  it('link do carrinho aponta para /loja/carrinho e não mostra badge quando vazio', () => {
+    const link: HTMLAnchorElement = fixture.nativeElement.querySelector('[aria-label="Carrinho"]');
+    expect(link.getAttribute('href')).toBe('/loja/carrinho');
+    expect(fixture.nativeElement.querySelector('.cabecalho__badge')).toBeNull();
+  });
+
+  it('mostra a badge com a quantidade de itens no carrinho', async () => {
+    quantidadeTotal.set(3);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('.cabecalho__badge').textContent.trim()).toBe('3');
   });
 });

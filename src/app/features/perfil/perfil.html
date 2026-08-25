@@ -17,11 +17,16 @@
 
   <section class="perfil__secao">
     <h2 class="titulo-2">Meus pedidos</h2>
-    <app-empty-state
-      mensagem="Você ainda não fez nenhum pedido."
-      textoAcao="Ver a loja"
-      linkAcao="/loja"
-    />
+    @if (pedidos().length > 0) {
+      <p class="texto-corpo">Você já fez {{ pedidos().length }} pedido{{ pedidos().length > 1 ? 's' : '' }}.</p>
+      <a routerLink="/loja/meus-pedidos" class="perfil__link-pedidos">Ver meus pedidos</a>
+    } @else {
+      <app-empty-state
+        mensagem="Você ainda não fez nenhum pedido."
+        textoAcao="Ver a loja"
+        linkAcao="/loja"
+      />
+    }
   </section>
 
   <section class="perfil__secao">

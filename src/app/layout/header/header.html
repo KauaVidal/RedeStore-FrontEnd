@@ -11,7 +11,12 @@
   </nav>
 
   <div class="cabecalho__acoes">
-    <a routerLink="/loja" class="cabecalho__icone" aria-label="Carrinho">🛒</a>
+    <a routerLink="/loja/carrinho" class="cabecalho__icone" aria-label="Carrinho">
+      🛒
+      @if (quantidadeCarrinho() > 0) {
+        <span class="cabecalho__badge">{{ quantidadeCarrinho() }}</span>
+      }
+    </a>
     <a
       data-testid="link-perfil"
       [routerLink]="estaAutenticado() ? '/perfil' : '/login'"

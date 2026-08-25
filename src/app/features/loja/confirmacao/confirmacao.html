@@ -1,0 +1,20 @@
+@if (pedido(); as p) {
+  <div class="confirmacao">
+    <h1 class="titulo-1">Pedido confirmado!</h1>
+    <p class="texto-corpo">Pedido #{{ p.id }} — pago com sucesso.</p>
+
+    <ul class="confirmacao__itens">
+      @for (item of p.itens; track item.produtoId + item.tamanho + item.cor) {
+        <li>{{ item.quantidade }}x {{ item.nome }} ({{ item.tamanho }}, {{ item.cor }})</li>
+      }
+    </ul>
+
+    <p class="texto-utilitario">Total: R$ {{ p.valorTotal | precoBr }}</p>
+    <p class="texto-corpo">
+      {{ p.formaEntrega === 'retirada' ? 'Retirada na igreja.' : 'Será entregue no endereço informado.' }}
+    </p>
+
+    <a routerLink="/loja/meus-pedidos">Ver meus pedidos</a>
+    <a routerLink="/loja">Voltar para a loja</a>
+  </div>
+}

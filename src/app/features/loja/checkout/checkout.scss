@@ -1,0 +1,39 @@
+@use 'styles/tokens' as *;
+
+.checkout {
+  padding: var(--espaco-5) var(--espaco-4) var(--espaco-8);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.checkout form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+}
+
+.checkout__entrega {
+  display: flex;
+  gap: var(--espaco-5);
+  border: none;
+  padding: 0;
+  margin: 0;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-2);
+    font-family: var(--fonte-corpo);
+  }
+}
+
+.checkout__resumo {
+  border-top: 1px solid rgba(246, 244, 236, 0.08);
+  padding-top: var(--espaco-4);
+}
+
+.checkout__erro {
+  color: var(--status-cancel);
+  font-size: 0.875rem;
+  margin: 0;
+}

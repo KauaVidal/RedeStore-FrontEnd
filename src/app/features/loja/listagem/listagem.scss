@@ -1,0 +1,44 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+.listagem {
+  padding: var(--espaco-5) var(--espaco-4) var(--espaco-8);
+}
+
+.listagem__busca {
+  display: flex;
+  gap: var(--espaco-2);
+  margin: var(--espaco-4) 0;
+}
+
+.listagem__campo-busca {
+  flex: 1;
+  font-family: var(--fonte-corpo);
+  font-size: 1rem;
+  padding: var(--espaco-3) var(--espaco-4);
+  border-radius: var(--raio-padrao);
+  border: 1px solid rgba(246, 244, 236, 0.24);
+  background: var(--rede-graphite);
+  color: var(--rede-paper);
+}
+
+.listagem__botao-busca {
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  padding: 0 var(--espaco-5);
+  border-radius: var(--raio-pilula);
+  border: none;
+  background: var(--rede-yellow);
+  color: var(--rede-black);
+  cursor: pointer;
+}
+
+.listagem__grade {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--espaco-4);
+
+  @include desktop {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

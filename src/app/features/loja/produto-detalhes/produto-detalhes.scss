@@ -1,0 +1,71 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+.detalhes {
+  padding: var(--espaco-5) var(--espaco-4) var(--espaco-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-5);
+
+  @include desktop {
+    flex-direction: row;
+  }
+}
+
+.detalhes__foto {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--raio-padrao);
+
+  @include desktop {
+    max-width: 400px;
+  }
+}
+
+.detalhes__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+}
+
+.detalhes__preco {
+  color: var(--rede-yellow);
+}
+
+.detalhes__rotulo-opcao {
+  display: block;
+  font-weight: 700;
+  margin-bottom: var(--espaco-1);
+}
+
+.detalhes__lista-opcoes {
+  display: flex;
+  gap: var(--espaco-2);
+  flex-wrap: wrap;
+}
+
+.detalhes__opcao {
+  font-family: var(--fonte-corpo);
+  padding: var(--espaco-2) var(--espaco-4);
+  border-radius: var(--raio-padrao);
+  border: 1px solid rgba(246, 244, 236, 0.24);
+  background: transparent;
+  color: var(--rede-paper);
+  cursor: pointer;
+
+  &--selecionada {
+    border-color: var(--rede-yellow);
+    color: var(--rede-yellow);
+  }
+}
+
+.detalhes__sem-estoque {
+  color: var(--status-cancel);
+  margin: 0;
+}
+
+.detalhes__confirmacao {
+  color: var(--status-confirm);
+  margin: 0;
+}

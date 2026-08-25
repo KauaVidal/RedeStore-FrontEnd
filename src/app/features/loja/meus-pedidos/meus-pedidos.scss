@@ -1,0 +1,44 @@
+@use 'styles/tokens' as *;
+
+.meus-pedidos {
+  padding: var(--espaco-5) var(--espaco-4) var(--espaco-8);
+}
+
+.meus-pedidos__lista {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  margin-top: var(--espaco-4);
+}
+
+.meus-pedidos__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  padding: var(--espaco-4);
+  background: var(--rede-graphite);
+  border-radius: var(--raio-padrao);
+}
+
+.meus-pedidos__status {
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  width: fit-content;
+  padding: 2px var(--espaco-2);
+  border-radius: var(--raio-pilula);
+}
+
+.meus-pedidos__status--pago,
+.meus-pedidos__status--entregue {
+  background: var(--status-confirm);
+  color: var(--rede-black);
+}
+
+.meus-pedidos__status--em_preparo,
+.meus-pedidos__status--retirado {
+  background: var(--rede-yellow);
+  color: var(--rede-black);
+}

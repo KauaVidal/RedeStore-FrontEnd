@@ -1,0 +1,10 @@
+<div class="categorias">
+  <h1 class="titulo-1">Categorias</h1>
+  <div class="categorias__grade">
+    @for (categoria of categorias; track categoria.valor) {
+      <a class="categorias__cartao" [routerLink]="['/loja/produtos']" [queryParams]="{ categoria: categoria.valor }">
+        {{ categoria.rotulo }}
+      </a>
+    }
+  </div>
+</div>

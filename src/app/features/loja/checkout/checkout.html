@@ -1,0 +1,35 @@
+<div class="checkout">
+  <h1 class="titulo-1">Checkout</h1>
+
+  <form [formGroup]="form" (ngSubmit)="pagar()">
+    <fieldset class="checkout__entrega">
+      <label>
+        <input type="radio" formControlName="formaEntrega" value="retirada" />
+        Retirar na igreja
+      </label>
+      <label>
+        <input type="radio" formControlName="formaEntrega" value="entrega" />
+        Entrega
+      </label>
+    </fieldset>
+
+    @if (ehEntrega) {
+      <app-text-field rotulo="Rua" [controle]="form.controls.rua" [erro]="erroRua" />
+      <app-text-field rotulo="Número" [controle]="form.controls.numero" [erro]="erroNumero" />
+      <app-text-field rotulo="Complemento" [controle]="form.controls.complemento" />
+      <app-text-field rotulo="Bairro" [controle]="form.controls.bairro" [erro]="erroBairro" />
+      <app-text-field rotulo="Cidade" [controle]="form.controls.cidade" [erro]="erroCidade" />
+      <app-text-field rotulo="CEP" [controle]="form.controls.cep" [erro]="erroCep" />
+    }
+
+    <div class="checkout__resumo">
+      <span class="titulo-2">Total: R$ {{ subtotal() | precoBr }}</span>
+    </div>
+
+    @if (erroGeral()) {
+      <p class="checkout__erro">{{ erroGeral() }}</p>
+    }
+
+    <app-button tipo="submit" [carregando]="enviando()">Pagar com Mercado Pago</app-button>
+  </form>
+</div>
