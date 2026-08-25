@@ -1,0 +1,39 @@
+// src/app/features/perfil/perfil.scss
+@use 'styles/tokens' as *;
+
+.perfil {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--espaco-6) var(--espaco-4) var(--espaco-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-6);
+}
+
+.perfil__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+}
+
+.perfil__salvo {
+  color: var(--status-confirm);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.perfil__secao {
+  border-top: 1px solid rgba(246, 244, 236, 0.08);
+  padding-top: var(--espaco-4);
+}
+
+.perfil__sair {
+  background: none;
+  border: none;
+  color: var(--status-cancel);
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  cursor: pointer;
+  align-self: flex-start;
+  padding: 0;
+}
