@@ -1,0 +1,99 @@
+@use 'styles/tokens' as *;
+
+.minhas-inscricoes {
+  padding: var(--espaco-5) var(--espaco-4) var(--espaco-8);
+}
+
+.minhas-inscricoes__lista {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+  margin-top: var(--espaco-4);
+}
+
+.minhas-inscricoes__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  padding: var(--espaco-4);
+  background: var(--rede-graphite);
+  border-radius: var(--raio-padrao);
+  border-left: 3px solid transparent;
+  transition: opacity 0.15s ease;
+}
+
+.minhas-inscricoes__item--confirmada {
+  border-left-color: var(--status-confirm);
+}
+
+.minhas-inscricoes__item--cancelada {
+  border-left-color: var(--status-cancel);
+  opacity: 0.6;
+}
+
+.minhas-inscricoes__cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-2);
+}
+
+.minhas-inscricoes__data {
+  color: rgba(246, 244, 236, 0.72);
+}
+
+.minhas-inscricoes__status {
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  width: fit-content;
+  padding: 2px var(--espaco-2);
+  border-radius: var(--raio-pilula);
+}
+
+.minhas-inscricoes__status--confirmada {
+  background: var(--status-confirm);
+  color: var(--rede-black);
+}
+
+.minhas-inscricoes__status--cancelada {
+  background: var(--status-cancel);
+  color: var(--rede-black);
+}
+
+.minhas-inscricoes__cancelar {
+  align-self: flex-start;
+  width: fit-content;
+  margin-top: var(--espaco-1);
+  background: none;
+  border: none;
+  color: var(--status-cancel);
+  font-family: var(--fonte-corpo);
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  opacity: 0.85;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.15s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--rede-yellow);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .minhas-inscricoes__item,
+  .minhas-inscricoes__cancelar {
+    transition: none;
+  }
+}
