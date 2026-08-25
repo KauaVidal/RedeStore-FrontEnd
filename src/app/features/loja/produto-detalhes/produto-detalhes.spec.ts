@@ -1,9 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { ProdutoDetalhes } from './produto-detalhes';
 import { ProductService } from '../../../core/products/product.service';
 import { CartService } from '../../../core/cart/cart.service';
 import { Produto } from '../../../core/products/produto.model';
+import { ItemCarrinho } from '../../../core/cart/item-carrinho.model';
 
 const PRODUTO: Produto = {
   id: '1',
@@ -25,12 +27,16 @@ const PRODUTO: Produto = {
 
 describe('ProdutoDetalhes', () => {
   let fixture: ComponentFixture<ProdutoDetalhes>;
-  let cartServiceFalso: jasmine.SpyObj<Pick<CartService, 'adicionar'>>;
+  let cartServiceFalso: Pick<jasmine.SpyObj<CartService>, 'adicionar'> & Pick<CartService, 'itens'>;
 
-  beforeEach(async () => {
+  async function montar(itensIniciais: ItemCarrinho[] = []): Promise<void> {
+    TestBed.resetTestingModule();
     const productServiceFalso = jasmine.createSpyObj('ProductService', ['buscarPorId']);
     productServiceFalso.buscarPorId.and.resolveTo(PRODUTO);
-    cartServiceFalso = jasmine.createSpyObj('CartService', ['adicionar']);
+    cartServiceFalso = {
+      adicionar: jasmine.createSpy('adicionar'),
+      itens: signal(itensIniciais),
+    };
 
     await TestBed.configureTestingModule({
       imports: [ProdutoDetalhes],
@@ -46,6 +52,10 @@ describe('ProdutoDetalhes', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
+  }
+
+  beforeEach(async () => {
+    await montar();
   });
 
   it('mostra os dados do produto', () => {
@@ -84,7 +94,39 @@ describe('ProdutoDetalhes', () => {
       fotoUrl: 'https://picsum.photos/seed/x/480/480',
       tamanho: 'P',
       cor: 'Preto',
+      estoqueDisponivel: 5,
     });
     expect(fixture.nativeElement.textContent).toContain('Adicionado ao carrinho.');
+  });
+
+  it('mostra mensagem quando o carrinho já tem a quantidade máxima da variação', async () => {
+    await montar([
+      {
+        produtoId: '1',
+        nome: 'Camiseta REDE Clássica',
+        precoUnitario: 79.9,
+        fotoUrl: 'https://picsum.photos/seed/x/480/480',
+        tamanho: 'P',
+        cor: 'Preto',
+        quantidade: 5,
+        estoqueDisponivel: 5,
+      },
+    ]);
+
+    fixture.nativeElement.querySelectorAll('.detalhes__opcao')[0].click(); // P
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.nativeElement.querySelectorAll('.detalhes__opcao')[2].click(); // Preto
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    fixture.nativeElement.querySelector('app-button button').click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(cartServiceFalso.adicionar).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.textContent).toContain(
+      'Você já tem a quantidade máxima em estoque no carrinho.',
+    );
   });
 });

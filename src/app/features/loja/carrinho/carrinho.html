@@ -14,7 +14,11 @@
             <div class="carrinho__quantidade">
               <button type="button" (click)="alterarQuantidade(item.produtoId, item.tamanho, item.cor, item.quantidade - 1)">-</button>
               <span>{{ item.quantidade }}</span>
-              <button type="button" (click)="alterarQuantidade(item.produtoId, item.tamanho, item.cor, item.quantidade + 1)">+</button>
+              <button
+                type="button"
+                [disabled]="item.estoqueDisponivel !== undefined && item.quantidade >= item.estoqueDisponivel"
+                (click)="alterarQuantidade(item.produtoId, item.tamanho, item.cor, item.quantidade + 1)"
+              >+</button>
             </div>
           </div>
           <span class="texto-utilitario">R$ {{ (item.precoUnitario * item.quantidade) | precoBr }}</span>

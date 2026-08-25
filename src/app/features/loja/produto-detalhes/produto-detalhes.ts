@@ -21,6 +21,7 @@ export class ProdutoDetalhes implements OnInit {
   protected readonly tamanhoSelecionado = signal<string | null>(null);
   protected readonly corSelecionada = signal<string | null>(null);
   protected readonly adicionado = signal(false);
+  protected readonly estoqueMaximoAtingido = signal(false);
 
   protected readonly variacaoAtual = computed(() => {
     const produto = this.produto();
@@ -41,18 +42,32 @@ export class ProdutoDetalhes implements OnInit {
   protected selecionarTamanho(tamanho: string): void {
     this.tamanhoSelecionado.set(tamanho);
     this.adicionado.set(false);
+    this.estoqueMaximoAtingido.set(false);
   }
 
   protected selecionarCor(cor: string): void {
     this.corSelecionada.set(cor);
     this.adicionado.set(false);
+    this.estoqueMaximoAtingido.set(false);
   }
 
   protected adicionarAoCarrinho(): void {
     const produto = this.produto();
     const tamanho = this.tamanhoSelecionado();
     const cor = this.corSelecionada();
-    if (!produto || !tamanho || !cor || !this.podeAdicionar()) return;
+    const variacao = this.variacaoAtual();
+    if (!produto || !tamanho || !cor || !variacao || !this.podeAdicionar()) return;
+
+    const quantidadeNoCarrinho =
+      this.carrinho.itens().find((i) => i.produtoId === produto.id && i.tamanho === tamanho && i.cor === cor)
+        ?.quantidade ?? 0;
+
+    if (quantidadeNoCarrinho >= variacao.estoque) {
+      this.estoqueMaximoAtingido.set(true);
+      this.adicionado.set(false);
+      return;
+    }
+
     this.carrinho.adicionar({
       produtoId: produto.id,
       nome: produto.nome,
@@ -60,7 +75,9 @@ export class ProdutoDetalhes implements OnInit {
       fotoUrl: produto.fotos[0],
       tamanho,
       cor,
+      estoqueDisponivel: variacao.estoque,
     });
+    this.estoqueMaximoAtingido.set(false);
     this.adicionado.set(true);
   }
 }

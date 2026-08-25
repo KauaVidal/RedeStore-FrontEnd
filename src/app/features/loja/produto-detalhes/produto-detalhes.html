@@ -50,6 +50,10 @@
       @if (adicionado()) {
         <p class="detalhes__confirmacao">Adicionado ao carrinho.</p>
       }
+
+      @if (estoqueMaximoAtingido()) {
+        <p class="detalhes__sem-estoque">Você já tem a quantidade máxima em estoque no carrinho.</p>
+      }
     </div>
   </div>
 }

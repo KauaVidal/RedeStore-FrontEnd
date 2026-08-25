@@ -91,6 +91,20 @@ describe('CartService', () => {
     expect(service.itens()).toEqual([]);
   });
 
+  it('adicionar() respeita o limite de estoqueDisponivel ao somar quantidade', () => {
+    const itemComLimite = { ...ITEM_A, estoqueDisponivel: 3 };
+    service.adicionar(itemComLimite, 2);
+    service.adicionar(itemComLimite, 2);
+    expect(service.itens()[0].quantidade).toBe(3);
+  });
+
+  it('atualizarQuantidade() respeita o limite de estoqueDisponivel', () => {
+    const itemComLimite = { ...ITEM_A, estoqueDisponivel: 3 };
+    service.adicionar(itemComLimite, 1);
+    service.atualizarQuantidade(ITEM_A.produtoId, ITEM_A.tamanho, ITEM_A.cor, 10);
+    expect(service.itens()[0].quantidade).toBe(3);
+  });
+
   it('persiste no localStorage e restaura numa nova instância', () => {
     service.adicionar(ITEM_A, 2);
 

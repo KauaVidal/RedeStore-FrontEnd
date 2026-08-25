@@ -71,6 +71,13 @@ describe('Carrinho', () => {
     expect(cartServiceFalso.removerItem).toHaveBeenCalledWith('1', 'M', 'Preto');
   });
 
+  it('desabilita o botão "+" quando a quantidade atingiu o estoqueDisponivel', () => {
+    cartServiceFalso.itens.set([{ ...ITEM, estoqueDisponivel: 2, quantidade: 2 }]);
+    fixture.detectChanges();
+    const botoes: HTMLButtonElement[] = fixture.nativeElement.querySelectorAll('.carrinho__quantidade button');
+    expect(botoes[1].disabled).toBe(true);
+  });
+
   it('navega para o checkout ao clicar em continuar', () => {
     cartServiceFalso.itens.set([ITEM]);
     fixture.detectChanges();

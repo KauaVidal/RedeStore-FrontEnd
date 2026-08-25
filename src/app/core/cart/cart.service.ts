@@ -18,17 +18,24 @@ export class CartService {
     const indice = itens.findIndex(
       (i) => i.produtoId === item.produtoId && i.tamanho === item.tamanho && i.cor === item.cor,
     );
+    const limite = item.estoqueDisponivel ?? Infinity;
     if (indice >= 0) {
-      itens[indice] = { ...itens[indice], quantidade: itens[indice].quantidade + quantidade };
+      itens[indice] = { ...itens[indice], quantidade: Math.min(itens[indice].quantidade + quantidade, limite) };
     } else {
-      itens.push({ ...item, quantidade });
+      itens.push({ ...item, quantidade: Math.min(quantidade, limite) });
     }
     this.salvar(itens);
   }
 
   atualizarQuantidade(produtoId: string, tamanho: string, cor: string, quantidade: number): void {
     const itens = this._itens()
-      .map((i) => (i.produtoId === produtoId && i.tamanho === tamanho && i.cor === cor ? { ...i, quantidade } : i))
+      .map((i) => {
+        if (i.produtoId === produtoId && i.tamanho === tamanho && i.cor === cor) {
+          const limite = i.estoqueDisponivel ?? Infinity;
+          return { ...i, quantidade: Math.min(quantidade, limite) };
+        }
+        return i;
+      })
       .filter((i) => i.quantidade > 0);
     this.salvar(itens);
   }

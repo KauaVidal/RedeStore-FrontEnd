@@ -6,4 +6,5 @@ export interface ItemCarrinho {
   tamanho: string;
   cor: string;
   quantidade: number;
+  estoqueDisponivel?: number;
 }
