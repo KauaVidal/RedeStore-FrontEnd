@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -12,4 +12,14 @@ export class TextField {
   readonly tipo = input<'text' | 'email' | 'password' | 'tel'>('text');
   readonly controle = input.required<FormControl>();
   readonly erro = input<string | null>(null);
+
+  protected readonly mostrarSenha = signal(false);
+
+  protected readonly tipoEfetivo = computed(() =>
+    this.tipo() === 'password' ? (this.mostrarSenha() ? 'text' : 'password') : this.tipo(),
+  );
+
+  protected alternarMostrarSenha(): void {
+    this.mostrarSenha.update((valor) => !valor);
+  }
 }

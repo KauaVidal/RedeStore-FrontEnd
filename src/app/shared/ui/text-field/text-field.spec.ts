@@ -49,4 +49,53 @@ describe('TextField', () => {
     input.dispatchEvent(new Event('input'));
     expect(fixture.componentInstance.controle.value).toBe('jovem@rede.com');
   });
+
+  it('não mostra o botão de alternar senha quando tipo é "email"', () => {
+    expect(fixture.nativeElement.querySelector('.campo__alternar-senha')).toBeNull();
+  });
+
+  it('não mostra o botão de alternar senha quando tipo é "text"', () => {
+    const comp = TestBed.createComponent(TextField);
+    comp.componentRef.setInput('rotulo', 'Nome');
+    comp.componentRef.setInput('controle', new FormControl(''));
+    comp.componentRef.setInput('tipo', 'text');
+    comp.detectChanges();
+    expect(comp.nativeElement.querySelector('.campo__alternar-senha')).toBeNull();
+  });
+
+  it('mostra o botão de alternar senha quando tipo é "password"', () => {
+    const comp = TestBed.createComponent(TextField);
+    comp.componentRef.setInput('rotulo', 'Senha');
+    comp.componentRef.setInput('controle', new FormControl(''));
+    comp.componentRef.setInput('tipo', 'password');
+    comp.detectChanges();
+    expect(comp.nativeElement.querySelector('.campo__alternar-senha')).not.toBeNull();
+  });
+
+  it('alterna o type do input entre "password" e "text" ao clicar no botão', async () => {
+    const comp = TestBed.createComponent(TextField);
+    comp.componentRef.setInput('rotulo', 'Senha');
+    comp.componentRef.setInput('controle', new FormControl(''));
+    comp.componentRef.setInput('tipo', 'password');
+    comp.detectChanges();
+
+    const input: HTMLInputElement = comp.nativeElement.querySelector('input');
+    const botao: HTMLButtonElement = comp.nativeElement.querySelector('.campo__alternar-senha');
+    expect(input.type).toBe('password');
+    expect(botao.getAttribute('aria-pressed')).toBe('false');
+    expect(botao.getAttribute('aria-label')).toBe('Mostrar senha');
+
+    botao.click();
+    comp.detectChanges();
+    await comp.whenStable();
+    expect(input.type).toBe('text');
+    expect(botao.getAttribute('aria-pressed')).toBe('true');
+    expect(botao.getAttribute('aria-label')).toBe('Ocultar senha');
+
+    botao.click();
+    comp.detectChanges();
+    await comp.whenStable();
+    expect(input.type).toBe('password');
+    expect(botao.getAttribute('aria-pressed')).toBe('false');
+  });
 });
