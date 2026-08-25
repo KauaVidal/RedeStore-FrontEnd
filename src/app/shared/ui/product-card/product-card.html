@@ -1,0 +1,5 @@
+<a class="cartao-produto" [routerLink]="['/loja/produtos', produto().id]">
+  <img class="cartao-produto__foto" [src]="produto().fotos[0]" [alt]="produto().nome" />
+  <span class="cartao-produto__nome">{{ produto().nome }}</span>
+  <span class="cartao-produto__preco texto-utilitario">R$ {{ produto().preco.toFixed(2) }}</span>
+</a>

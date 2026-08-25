@@ -1,0 +1,27 @@
+@use 'styles/tokens' as *;
+
+.cartao-produto {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  text-decoration: none;
+  color: var(--rede-paper);
+}
+
+.cartao-produto__foto {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--raio-padrao);
+  background: var(--rede-graphite);
+}
+
+.cartao-produto__nome {
+  font-family: var(--fonte-corpo);
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.cartao-produto__preco {
+  color: var(--rede-yellow);
+}
