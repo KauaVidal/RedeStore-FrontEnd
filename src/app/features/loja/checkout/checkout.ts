@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CartService } from '../../../core/cart/cart.service';
@@ -13,7 +13,7 @@ import { Button } from '../../../shared/ui/button/button';
   templateUrl: './checkout.html',
   styleUrl: './checkout.scss',
 })
-export class Checkout {
+export class Checkout implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly carrinho = inject(CartService);
   private readonly pedidos = inject(OrderService);
@@ -35,6 +35,12 @@ export class Checkout {
 
   protected readonly enviando = signal(false);
   protected readonly erroGeral = signal<string | null>(null);
+
+  ngOnInit(): void {
+    if (this.itens().length === 0) {
+      this.router.navigateByUrl('/loja/carrinho');
+    }
+  }
 
   protected get ehEntrega(): boolean {
     return this.form.controls.formaEntrega.value === 'entrega';
@@ -73,6 +79,7 @@ export class Checkout {
   }
 
   protected async pagar(): Promise<void> {
+    if (this.itens().length === 0) return;
     if (this.form.invalid || this.enviando() || !this.enderecoValido()) {
       this.form.markAllAsTouched();
       return;

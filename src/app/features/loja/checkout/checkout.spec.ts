@@ -108,4 +108,14 @@ describe('Checkout', () => {
     expect(fixture.componentInstance['erroGeral']()).toContain('Não deu pra finalizar o pedido');
     expect(fixture.componentInstance['enviando']()).toBeFalse();
   });
+
+  it('redireciona para /loja/carrinho quando o carrinho está vazio ao montar', async () => {
+    cartServiceFalso.itens.set([]);
+    const fixtureVazio = TestBed.createComponent(Checkout);
+    fixtureVazio.detectChanges();
+    await fixtureVazio.whenStable();
+
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/loja/carrinho');
+    expect(orderServiceFalso.criar).not.toHaveBeenCalled();
+  });
 });
