@@ -452,20 +452,39 @@ describe('Button', () => {
     expect(fixture.componentInstance.cliques).toBe(1);
   });
 
-  it('não emite clicado quando desabilitado', () => {
-    fixture.componentInstance.desabilitado = true;
-    fixture.detectChanges();
-    fixture.nativeElement.querySelector('button').click();
-    expect(fixture.componentInstance.cliques).toBe(0);
+  // As duas próximas testam atualização dinâmica de input signal — feita via
+  // componentRef.setInput() num componente criado direto, não via mutação de
+  // propriedade do host + detectChanges() (esse segundo padrão não propaga de
+  // forma confiável nesta versão do Angular; achado real ao rodar esta task —
+  // ver ledger do SDD).
+
+  it('não emite clicado quando desabilitado', async () => {
+    const comp = TestBed.createComponent(Button);
+    comp.componentRef.setInput('desabilitado', true);
+    comp.detectChanges();
+    await comp.whenStable();
+
+    let clicado = false;
+    comp.componentInstance.clicado.subscribe(() => (clicado = true));
+    comp.nativeElement.querySelector('button').click();
+
+    expect(clicado).toBe(false);
   });
 
-  it('mostra "Enviando…" e não emite clicado quando carregando', () => {
-    fixture.componentInstance.carregando = true;
-    fixture.detectChanges();
-    const botao = fixture.nativeElement.querySelector('button');
+  it('mostra "Enviando…" e não emite clicado quando carregando', async () => {
+    const comp = TestBed.createComponent(Button);
+    comp.componentRef.setInput('carregando', true);
+    comp.detectChanges();
+    await comp.whenStable();
+
+    const botao = comp.nativeElement.querySelector('button');
     expect(botao.textContent).toContain('Enviando');
+
+    let clicado = false;
+    comp.componentInstance.clicado.subscribe(() => (clicado = true));
     botao.click();
-    expect(fixture.componentInstance.cliques).toBe(0);
+
+    expect(clicado).toBe(false);
   });
 });
 ```
@@ -632,10 +651,18 @@ describe('TextField', () => {
     expect(fixture.nativeElement.querySelector('.campo__erro')).toBeNull();
   });
 
-  it('mostra a mensagem de erro quando informada', () => {
-    fixture.componentInstance.erro = 'Informe um e-mail válido.';
-    fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('.campo__erro').textContent).toContain('Informe um e-mail válido.');
+  it('mostra a mensagem de erro quando informada', async () => {
+    // Atualização dinâmica de um input signal testada via componentRef.setInput()
+    // diretamente no componente, não via mutação de propriedade do host + detectChanges()
+    // — esse segundo padrão não propaga de forma confiável nesta versão do Angular
+    // (achado real da Task 4: ver ledger do SDD).
+    const comp = TestBed.createComponent(TextField);
+    comp.componentRef.setInput('rotulo', 'E-mail');
+    comp.componentRef.setInput('controle', new FormControl(''));
+    comp.componentRef.setInput('erro', 'Informe um e-mail válido.');
+    comp.detectChanges();
+    await comp.whenStable();
+    expect(comp.nativeElement.querySelector('.campo__erro').textContent).toContain('Informe um e-mail válido.');
   });
 
   it('propaga digitação para o FormControl', () => {
@@ -1468,14 +1495,16 @@ Expected: PASS (1 teste)
 
 ```typescript
 // src/app/app.config.ts
-import { ApplicationConfig } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideRouter(routes, withComponentInputBinding())],
+  providers: [provideBrowserGlobalErrorListeners(), provideRouter(routes, withComponentInputBinding())],
 };
 ```
+
+Nota: `provideBrowserGlobalErrorListeners()` já vem do scaffold da Task 1 — mantenha essa linha, só adicione `provideRouter(...)` com `withComponentInputBinding()`.
 
 - [ ] **Step 6: Definir as rotas em `app.routes.ts`**
 
@@ -1553,9 +1582,13 @@ describe('Header', () => {
     expect(link.getAttribute('href')).toBe('/login');
   });
 
-  it('link de perfil aponta para /perfil quando autenticado', () => {
+  it('link de perfil aponta para /perfil quando autenticado', async () => {
+    // Segundo detectChanges() após mutar um signal já lido no template —
+    // precisa de whenStable() pra garantir que a atualização assente antes
+    // da asserção (achado real da Task 8: ver ledger do SDD).
     estaAutenticado.set(true);
     fixture.detectChanges();
+    await fixture.whenStable();
     const link: HTMLAnchorElement = fixture.nativeElement.querySelector('[data-testid="link-perfil"]');
     expect(link.getAttribute('href')).toBe('/perfil');
   });
