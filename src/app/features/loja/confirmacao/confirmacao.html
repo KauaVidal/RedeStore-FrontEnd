@@ -9,7 +9,7 @@
       }
     </ul>
 
-    <p class="texto-utilitario">Total: R$ {{ p.valorTotal.toFixed(2) }}</p>
+    <p class="texto-utilitario">Total: R$ {{ p.valorTotal | precoBr }}</p>
     <p class="texto-corpo">
       {{ p.formaEntrega === 'retirada' ? 'Retirada na igreja.' : 'Será entregue no endereço informado.' }}
     </p>

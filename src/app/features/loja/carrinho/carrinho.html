@@ -17,7 +17,7 @@
               <button type="button" (click)="alterarQuantidade(item.produtoId, item.tamanho, item.cor, item.quantidade + 1)">+</button>
             </div>
           </div>
-          <span class="texto-utilitario">R$ {{ (item.precoUnitario * item.quantidade).toFixed(2) }}</span>
+          <span class="texto-utilitario">R$ {{ (item.precoUnitario * item.quantidade) | precoBr }}</span>
           <button type="button" class="carrinho__remover" (click)="remover(item.produtoId, item.tamanho, item.cor)">
             Remover
           </button>
@@ -26,7 +26,7 @@
     </ul>
 
     <div class="carrinho__resumo">
-      <span class="titulo-2">Subtotal: R$ {{ carrinho.subtotal().toFixed(2) }}</span>
+      <span class="titulo-2">Subtotal: R$ {{ carrinho.subtotal() | precoBr }}</span>
       <app-button (clicado)="irParaCheckout()">Continuar para o checkout</app-button>
     </div>
   }

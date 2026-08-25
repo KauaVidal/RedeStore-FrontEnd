@@ -1,10 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { OrderService } from '../../../core/orders/order.service';
+import { PrecoBrPipe } from '../../../shared/pipes/preco-br.pipe';
 
 @Component({
   selector: 'app-confirmacao',
-  imports: [RouterLink],
+  imports: [RouterLink, PrecoBrPipe],
   templateUrl: './confirmacao.html',
   styleUrl: './confirmacao.scss',
 })

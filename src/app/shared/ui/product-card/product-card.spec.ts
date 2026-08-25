@@ -31,7 +31,7 @@ describe('ProductCard', () => {
 
   it('mostra o nome e o preço do produto', () => {
     expect(fixture.nativeElement.textContent).toContain('Camiseta REDE Clássica');
-    expect(fixture.nativeElement.textContent).toContain('79.90');
+    expect(fixture.nativeElement.textContent).toContain('79,90');
   });
 
   it('linka para a página de detalhes do produto', () => {

@@ -45,7 +45,7 @@ describe('Confirmacao', () => {
     const texto = fixture.nativeElement.textContent;
     expect(texto).toContain('Pedido confirmado!');
     expect(texto).toContain('Camiseta REDE Clássica');
-    expect(texto).toContain('159.80');
+    expect(texto).toContain('159,80');
   });
 
   it('redireciona para meus pedidos quando não há pedido recente', async () => {

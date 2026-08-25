@@ -51,7 +51,7 @@ describe('ProdutoDetalhes', () => {
   it('mostra os dados do produto', () => {
     const texto = fixture.nativeElement.textContent;
     expect(texto).toContain('Camiseta REDE Clássica');
-    expect(texto).toContain('79.90');
+    expect(texto).toContain('79,90');
   });
 
   it('mostra "Sem estoque" para uma combinação sem estoque', async () => {

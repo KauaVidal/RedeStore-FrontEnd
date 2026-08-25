@@ -4,10 +4,11 @@ import { ProductService } from '../../../core/products/product.service';
 import { CartService } from '../../../core/cart/cart.service';
 import { Produto } from '../../../core/products/produto.model';
 import { Button } from '../../../shared/ui/button/button';
+import { PrecoBrPipe } from '../../../shared/pipes/preco-br.pipe';
 
 @Component({
   selector: 'app-produto-detalhes',
-  imports: [Button],
+  imports: [Button, PrecoBrPipe],
   templateUrl: './produto-detalhes.html',
   styleUrl: './produto-detalhes.scss',
 })

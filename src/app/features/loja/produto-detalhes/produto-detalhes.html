@@ -4,7 +4,7 @@
 
     <div class="detalhes__info">
       <h1 class="titulo-1">{{ p.nome }}</h1>
-      <p class="detalhes__preco texto-utilitario">R$ {{ p.preco.toFixed(2) }}</p>
+      <p class="detalhes__preco texto-utilitario">R$ {{ p.preco | precoBr }}</p>
       <p class="texto-corpo">{{ p.descricao }}</p>
 
       <div class="detalhes__opcoes">

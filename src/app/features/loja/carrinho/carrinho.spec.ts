@@ -53,7 +53,7 @@ describe('Carrinho', () => {
     fixture.detectChanges();
     const texto = fixture.nativeElement.textContent;
     expect(texto).toContain('Camiseta REDE Clássica');
-    expect(texto).toContain('159.80');
+    expect(texto).toContain('159,80');
   });
 
   it('chama atualizarQuantidade ao clicar em "+"', () => {

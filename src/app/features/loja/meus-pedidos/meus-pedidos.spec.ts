@@ -52,6 +52,6 @@ describe('MeusPedidos', () => {
     const texto = fixture.nativeElement.textContent;
     expect(texto).toContain('Pedido #1');
     expect(texto).toContain('Em preparo');
-    expect(texto).toContain('159.80');
+    expect(texto).toContain('159,80');
   });
 });

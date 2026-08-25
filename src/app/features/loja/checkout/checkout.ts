@@ -6,10 +6,11 @@ import { OrderService } from '../../../core/orders/order.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { TextField } from '../../../shared/ui/text-field/text-field';
 import { Button } from '../../../shared/ui/button/button';
+import { PrecoBrPipe } from '../../../shared/pipes/preco-br.pipe';
 
 @Component({
   selector: 'app-checkout',
-  imports: [ReactiveFormsModule, TextField, Button],
+  imports: [ReactiveFormsModule, TextField, Button, PrecoBrPipe],
   templateUrl: './checkout.html',
   styleUrl: './checkout.scss',
 })

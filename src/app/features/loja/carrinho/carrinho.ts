@@ -3,10 +3,11 @@ import { Router } from '@angular/router';
 import { CartService } from '../../../core/cart/cart.service';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { Button } from '../../../shared/ui/button/button';
+import { PrecoBrPipe } from '../../../shared/pipes/preco-br.pipe';
 
 @Component({
   selector: 'app-carrinho',
-  imports: [EmptyState, Button],
+  imports: [EmptyState, Button, PrecoBrPipe],
   templateUrl: './carrinho.html',
   styleUrl: './carrinho.scss',
 })

@@ -11,7 +11,7 @@
           <span class="meus-pedidos__status" [class]="'meus-pedidos__status--' + pedido.status">
             {{ rotuloStatus[pedido.status] }}
           </span>
-          <span class="texto-utilitario">R$ {{ pedido.valorTotal.toFixed(2) }}</span>
+          <span class="texto-utilitario">R$ {{ pedido.valorTotal | precoBr }}</span>
         </li>
       }
     </ul>

@@ -23,7 +23,7 @@
     }
 
     <div class="checkout__resumo">
-      <span class="titulo-2">Total: R$ {{ subtotal().toFixed(2) }}</span>
+      <span class="titulo-2">Total: R$ {{ subtotal() | precoBr }}</span>
     </div>
 
     @if (erroGeral()) {
