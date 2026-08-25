@@ -6,7 +6,7 @@ import { FiltroProdutos, Produto } from './produto.model';
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   async listar(filtro?: FiltroProdutos): Promise<Produto[]> {
-    let resultado = PRODUTOS_MOCK;
+    let resultado = [...PRODUTOS_MOCK];
     if (filtro?.categoria) {
       resultado = resultado.filter((p) => p.categoria === filtro.categoria);
     }
