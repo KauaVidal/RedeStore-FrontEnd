@@ -1,0 +1,33 @@
+<div class="carrinho">
+  <h1 class="titulo-1">Carrinho</h1>
+
+  @if (carrinho.itens().length === 0) {
+    <app-empty-state mensagem="Seu carrinho está vazio." textoAcao="Ver a loja" linkAcao="/loja" />
+  } @else {
+    <ul class="carrinho__lista">
+      @for (item of carrinho.itens(); track item.produtoId + item.tamanho + item.cor) {
+        <li class="carrinho__item">
+          <img class="carrinho__foto" [src]="item.fotoUrl" [alt]="item.nome" />
+          <div class="carrinho__detalhes">
+            <span class="carrinho__nome">{{ item.nome }}</span>
+            <span class="texto-utilitario">{{ item.tamanho }} · {{ item.cor }}</span>
+            <div class="carrinho__quantidade">
+              <button type="button" (click)="alterarQuantidade(item.produtoId, item.tamanho, item.cor, item.quantidade - 1)">-</button>
+              <span>{{ item.quantidade }}</span>
+              <button type="button" (click)="alterarQuantidade(item.produtoId, item.tamanho, item.cor, item.quantidade + 1)">+</button>
+            </div>
+          </div>
+          <span class="texto-utilitario">R$ {{ (item.precoUnitario * item.quantidade).toFixed(2) }}</span>
+          <button type="button" class="carrinho__remover" (click)="remover(item.produtoId, item.tamanho, item.cor)">
+            Remover
+          </button>
+        </li>
+      }
+    </ul>
+
+    <div class="carrinho__resumo">
+      <span class="titulo-2">Subtotal: R$ {{ carrinho.subtotal().toFixed(2) }}</span>
+      <app-button (clicado)="irParaCheckout()">Continuar para o checkout</app-button>
+    </div>
+  }
+</div>
