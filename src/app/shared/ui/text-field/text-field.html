@@ -1,0 +1,7 @@
+<label class="campo">
+  <span class="campo__rotulo">{{ rotulo() }}</span>
+  <input class="campo__input" [class.campo__input--erro]="erro()" [type]="tipo()" [formControl]="controle()" />
+  @if (erro()) {
+    <span class="campo__erro" role="alert">{{ erro() }}</span>
+  }
+</label>
