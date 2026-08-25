@@ -20,7 +20,7 @@ describe('Button', () => {
   let fixture: ComponentFixture<HospedeTeste>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({ imports: [HospedeTeste] }).compileComponents();
+    await TestBed.configureTestingModule({ imports: [HospedeTeste, Button] }).compileComponents();
     fixture = TestBed.createComponent(HospedeTeste);
     fixture.detectChanges();
   });
@@ -34,19 +34,32 @@ describe('Button', () => {
     expect(fixture.componentInstance.cliques).toBe(1);
   });
 
-  it('não emite clicado quando desabilitado', () => {
-    fixture.componentInstance.desabilitado = true;
-    fixture.detectChanges();
-    fixture.nativeElement.querySelector('button').click();
-    expect(fixture.componentInstance.cliques).toBe(0);
+  it('não emite clicado quando desabilitado', async () => {
+    const comp = TestBed.createComponent(Button);
+    comp.componentRef.setInput('desabilitado', true);
+    comp.detectChanges();
+    await comp.whenStable();
+
+    let clicked = false;
+    comp.componentInstance.clicado.subscribe(() => { clicked = true; });
+    comp.nativeElement.querySelector('button').click();
+
+    expect(clicked).toBe(false);
   });
 
-  it('mostra "Enviando…" e não emite clicado quando carregando', () => {
-    fixture.componentInstance.carregando = true;
-    fixture.detectChanges();
-    const botao = fixture.nativeElement.querySelector('button');
+  it('mostra "Enviando…" e não emite clicado quando carregando', async () => {
+    const comp = TestBed.createComponent(Button);
+    comp.componentRef.setInput('carregando', true);
+    comp.detectChanges();
+    await comp.whenStable();
+
+    const botao = comp.nativeElement.querySelector('button');
     expect(botao.textContent).toContain('Enviando');
+
+    let clicked = false;
+    comp.componentInstance.clicado.subscribe(() => { clicked = true; });
     botao.click();
-    expect(fixture.componentInstance.cliques).toBe(0);
+
+    expect(clicked).toBe(false);
   });
 });
