@@ -1,0 +1,23 @@
+@use 'styles/tokens' as *;
+
+.categorias {
+  padding: var(--espaco-5) var(--espaco-4) var(--espaco-8);
+}
+
+.categorias__grade {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  margin-top: var(--espaco-4);
+}
+
+.categorias__cartao {
+  display: block;
+  padding: var(--espaco-5);
+  background: var(--rede-graphite);
+  border-radius: var(--raio-padrao);
+  color: var(--rede-paper);
+  text-decoration: none;
+  font-family: var(--fonte-display);
+  font-weight: 700;
+}
