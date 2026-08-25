@@ -10,6 +10,7 @@
 /node_modules
 npm-debug.log
 yarn-error.log
+*.tsbuildinfo
 
 # IDEs and editors
 .idea/
@@ -30,7 +31,7 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
-/.angular/cache
+/.angular/
 .sass-cache/
 /connect.lock
 /coverage
@@ -38,6 +39,12 @@ yarn-error.log
 testem.log
 /typings
 __screenshots__/
+
+# Claude Code worktree sessions
+/.claude/
+
+# Environment files
+/.env
 
 # System files
 .DS_Store
