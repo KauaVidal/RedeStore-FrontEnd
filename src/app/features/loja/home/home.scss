@@ -1,0 +1,31 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+.home {
+  padding: var(--espaco-5) var(--espaco-4) var(--espaco-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-8);
+}
+
+.home__grade {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--espaco-4);
+  margin-top: var(--espaco-4);
+
+  @include desktop {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.home__eventos {
+  border-top: 1px solid rgba(246, 244, 236, 0.08);
+  padding-top: var(--espaco-6);
+}
+
+.home__link-eventos {
+  color: var(--rede-yellow);
+  font-weight: 700;
+  text-decoration: none;
+}

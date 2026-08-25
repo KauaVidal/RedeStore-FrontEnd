@@ -1,0 +1,16 @@
+<div class="home">
+  <section class="home__destaques">
+    <h1 class="titulo-1">Destaques</h1>
+    <div class="home__grade">
+      @for (produto of destaques(); track produto.id) {
+        <app-product-card [produto]="produto" />
+      }
+    </div>
+  </section>
+
+  <section class="home__eventos">
+    <h2 class="titulo-2">Próximos eventos</h2>
+    <p class="texto-corpo">Retiros, encontros e muito mais — em breve por aqui.</p>
+    <a routerLink="/eventos" class="home__link-eventos">Ver eventos</a>
+  </section>
+</div>
