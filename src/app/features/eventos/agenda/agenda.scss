@@ -76,8 +76,17 @@
   -webkit-box-orient: vertical;
 }
 
+.agenda__data {
+  color: rgba(246, 244, 236, 0.72);
+}
+
 .agenda__local {
   color: rgba(246, 244, 236, 0.72);
+}
+
+.agenda__vagas {
+  margin-top: var(--espaco-1);
+  color: var(--rede-yellow);
 }
 
 .agenda__preco {
