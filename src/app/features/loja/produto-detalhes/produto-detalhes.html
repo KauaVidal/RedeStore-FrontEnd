@@ -1,0 +1,55 @@
+@if (produto(); as p) {
+  <div class="detalhes">
+    <img class="detalhes__foto" [src]="p.fotos[0]" [alt]="p.nome" />
+
+    <div class="detalhes__info">
+      <h1 class="titulo-1">{{ p.nome }}</h1>
+      <p class="detalhes__preco texto-utilitario">R$ {{ p.preco.toFixed(2) }}</p>
+      <p class="texto-corpo">{{ p.descricao }}</p>
+
+      <div class="detalhes__opcoes">
+        <span class="detalhes__rotulo-opcao">Tamanho</span>
+        <div class="detalhes__lista-opcoes">
+          @for (tamanho of p.tamanhos; track tamanho) {
+            <button
+              type="button"
+              class="detalhes__opcao"
+              [class.detalhes__opcao--selecionada]="tamanhoSelecionado() === tamanho"
+              (click)="selecionarTamanho(tamanho)"
+            >
+              {{ tamanho }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="detalhes__opcoes">
+        <span class="detalhes__rotulo-opcao">Cor</span>
+        <div class="detalhes__lista-opcoes">
+          @for (cor of p.cores; track cor) {
+            <button
+              type="button"
+              class="detalhes__opcao"
+              [class.detalhes__opcao--selecionada]="corSelecionada() === cor"
+              (click)="selecionarCor(cor)"
+            >
+              {{ cor }}
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (semEstoque()) {
+        <p class="detalhes__sem-estoque">Sem estoque nessa combinação.</p>
+      }
+
+      <app-button [desabilitado]="!podeAdicionar()" (clicado)="adicionarAoCarrinho()">
+        Adicionar ao carrinho
+      </app-button>
+
+      @if (adicionado()) {
+        <p class="detalhes__confirmacao">Adicionado ao carrinho.</p>
+      }
+    </div>
+  </div>
+}
