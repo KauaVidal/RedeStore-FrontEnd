@@ -3,7 +3,7 @@ import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angul
 import { signal } from '@angular/core';
 import { Confirmacao } from './confirmacao';
 import { EventService } from '../../../core/events/event.service';
-import { RegistrationService } from '../../../core/registrations/registration.service';
+import { RegistrationService, ResultadoInscricao } from '../../../core/registrations/registration.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { Evento } from '../../../core/events/evento.model';
 import { Inscricao } from '../../../core/registrations/inscricao.model';
@@ -34,11 +34,11 @@ describe('Confirmacao', () => {
   let registrationServiceFalso: jasmine.SpyObj<Pick<RegistrationService, 'inscrever'>>;
   let router: Router;
 
-  async function montar(evento: Evento | undefined): Promise<void> {
+  async function montar(evento: Evento | undefined, resultado: ResultadoInscricao = { resultado: 'criada', inscricao: INSCRICAO }): Promise<void> {
     eventServiceFalso = jasmine.createSpyObj('EventService', ['buscarPorId']);
     eventServiceFalso.buscarPorId.and.resolveTo(evento);
     registrationServiceFalso = jasmine.createSpyObj('RegistrationService', ['inscrever']);
-    registrationServiceFalso.inscrever.and.resolveTo(INSCRICAO);
+    registrationServiceFalso.inscrever.and.resolveTo(resultado);
 
     await TestBed.configureTestingModule({
       imports: [Confirmacao],
@@ -68,6 +68,7 @@ describe('Confirmacao', () => {
       eventoId: '1',
       usuarioId: 'u1',
       valorPago: 250,
+      vagasTotais: 4,
     });
   });
 
@@ -83,5 +84,19 @@ describe('Confirmacao', () => {
     await montar(undefined);
     expect(router.navigateByUrl).toHaveBeenCalledWith('/eventos');
     expect(registrationServiceFalso.inscrever).not.toHaveBeenCalled();
+  });
+
+  it('mostra "Você já está inscrito" em vez do ticket quando a inscrição já existia', async () => {
+    await montar(EVENTO, { resultado: 'ja_inscrito', inscricao: INSCRICAO });
+    const texto = fixture.nativeElement.textContent;
+    expect(texto).toContain('Você já está inscrito');
+    expect(texto).not.toContain('Inscrição confirmada!');
+  });
+
+  it('mostra "Esgotado" em vez do ticket quando não havia mais vagas', async () => {
+    await montar(EVENTO, { resultado: 'esgotado' });
+    const texto = fixture.nativeElement.textContent;
+    expect(texto).toContain('Esgotado');
+    expect(texto).not.toContain('Inscrição confirmada!');
   });
 });

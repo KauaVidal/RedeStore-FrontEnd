@@ -1,5 +1,26 @@
 @if (evento(); as e) {
-  @if (inscricao(); as i) {
+  @if (resultado() === 'esgotado') {
+    <div class="confirmacao-inscricao">
+      <p class="confirmacao-inscricao__status confirmacao-inscricao__status--esgotado">Esgotado</p>
+      <p class="texto-corpo confirmacao-inscricao__subtitulo">
+        As vagas para {{ e.titulo }} se esgotaram antes da sua inscrição ser confirmada.
+      </p>
+      <div class="confirmacao-inscricao__acoes">
+        <a class="confirmacao-inscricao__acao-secundaria" routerLink="/eventos">Voltar para a agenda</a>
+      </div>
+    </div>
+  } @else if (resultado() === 'ja_inscrito') {
+    <div class="confirmacao-inscricao">
+      <p class="confirmacao-inscricao__status confirmacao-inscricao__status--confirmado">Você já está inscrito</p>
+      <p class="texto-corpo confirmacao-inscricao__subtitulo">Sua vaga em {{ e.titulo }} já estava garantida.</p>
+      <div class="confirmacao-inscricao__acoes">
+        <a class="confirmacao-inscricao__acao-primaria" routerLink="/eventos/minhas-inscricoes">
+          Ver minhas inscrições
+        </a>
+        <a class="confirmacao-inscricao__acao-secundaria" routerLink="/eventos">Voltar para a agenda</a>
+      </div>
+    </div>
+  } @else if (inscricao(); as i) {
     <div class="confirmacao-inscricao">
       <div class="confirmacao-inscricao__selo" aria-hidden="true"></div>
       <h1 class="titulo-1">Inscrição confirmada!</h1>
@@ -11,7 +32,7 @@
           <p class="confirmacao-inscricao__ticket-meta texto-utilitario">
             <span>{{ e.local }}</span>
             <span aria-hidden="true">&middot;</span>
-            <span>{{ formatarDataHora(e.dataHora) }}</span>
+            <span>{{ e.dataHora | dataBr }}</span>
           </p>
         </div>
 

@@ -8,7 +8,7 @@
       <div class="detalhes-evento__meta texto-utilitario">
         <span>{{ e.local }}</span>
         <span class="detalhes-evento__separador" aria-hidden="true">&middot;</span>
-        <span>{{ formatarDataHora(e.dataHora) }}</span>
+        <span>{{ e.dataHora | dataBr }}</span>
       </div>
 
       <p class="detalhes-evento__preco texto-utilitario">
@@ -18,15 +18,17 @@
       <p class="texto-corpo">{{ e.descricao }}</p>
 
       <div class="detalhes-evento__cta">
-        @if (jaInscrito()) {
-          <p class="detalhes-evento__status detalhes-evento__status--confirmado">Você já está inscrito</p>
-        } @else if (esgotado()) {
-          <p class="detalhes-evento__status detalhes-evento__status--esgotado">Esgotado</p>
-        } @else {
-          @if (vagasRestantes(); as vagas) {
-            <span class="detalhes-evento__vagas texto-utilitario">{{ rotuloVagas(vagas) }}</span>
+        @if (carregado()) {
+          @if (jaInscrito()) {
+            <p class="detalhes-evento__status detalhes-evento__status--confirmado">Você já está inscrito</p>
+          } @else if (esgotado()) {
+            <p class="detalhes-evento__status detalhes-evento__status--esgotado">Esgotado</p>
+          } @else {
+            @if (vagasRestantes(); as vagas) {
+              <span class="detalhes-evento__vagas texto-utilitario">{{ rotuloVagas(vagas) }}</span>
+            }
+            <a class="detalhes-evento__acao" [routerLink]="['/eventos', e.id, 'confirmacao']">Inscrever-se</a>
           }
-          <a class="detalhes-evento__acao" [routerLink]="['/eventos', e.id, 'confirmacao']">Inscrever-se</a>
         }
       </div>
     </div>

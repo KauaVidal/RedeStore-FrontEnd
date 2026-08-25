@@ -6,10 +6,13 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { Evento } from '../../../core/events/evento.model';
 import { Inscricao } from '../../../core/registrations/inscricao.model';
 import { PrecoBrPipe } from '../../../shared/pipes/preco-br.pipe';
+import { DataBrPipe } from '../../../shared/pipes/data-br.pipe';
+
+type ResultadoTela = 'criada' | 'ja_inscrito' | 'esgotado';
 
 @Component({
   selector: 'app-confirmacao',
-  imports: [RouterLink, PrecoBrPipe],
+  imports: [RouterLink, PrecoBrPipe, DataBrPipe],
   templateUrl: './confirmacao.html',
   styleUrl: './confirmacao.scss',
 })
@@ -22,6 +25,7 @@ export class Confirmacao implements OnInit {
 
   protected readonly evento = signal<Evento | null>(null);
   protected readonly inscricao = signal<Inscricao | null>(null);
+  protected readonly resultado = signal<ResultadoTela | null>(null);
 
   async ngOnInit(): Promise<void> {
     const id = this.rota.snapshot.paramMap.get('id')!;
@@ -33,22 +37,16 @@ export class Confirmacao implements OnInit {
     this.evento.set(evento);
 
     const usuario = this.auth.usuarioAtual()!;
-    const inscricao = await this.registrations.inscrever({
+    const resposta = await this.registrations.inscrever({
       eventoId: evento.id,
       usuarioId: usuario.id,
       valorPago: evento.preco,
+      vagasTotais: evento.vagasTotais,
     });
-    this.inscricao.set(inscricao);
-  }
 
-  protected formatarDataHora(iso: string): string {
-    const data = new Date(iso);
-    const dataFormatada = data.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-    });
-    const horaFormatada = data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    return `${dataFormatada} às ${horaFormatada}`;
+    this.resultado.set(resposta.resultado);
+    if (resposta.resultado !== 'esgotado') {
+      this.inscricao.set(resposta.inscricao);
+    }
   }
 }

@@ -86,4 +86,54 @@ describe('EventoDetalhes', () => {
     expect(fixture.nativeElement.textContent).toContain('Você já está inscrito');
     expect(fixture.nativeElement.querySelector('a.detalhes-evento__acao')).toBeNull();
   });
+
+  it('não mostra nenhum estado de CTA (nem "Esgotado" nem "Inscrever-se") antes de vagas e inscrição carregarem', async () => {
+    let resolverVagas!: (vagas: number) => void;
+    let resolverInscricoes!: (inscricoes: Inscricao[]) => void;
+    const vagasPromise = new Promise<number>((resolve) => (resolverVagas = resolve));
+    const inscricoesPromise = new Promise<Inscricao[]>((resolve) => (resolverInscricoes = resolve));
+
+    const eventServiceFalso = jasmine.createSpyObj('EventService', ['buscarPorId']);
+    eventServiceFalso.buscarPorId.and.resolveTo(EVENTO);
+    const registrationServiceFalso = jasmine.createSpyObj('RegistrationService', [
+      'vagasRestantes',
+      'listarPorUsuario',
+    ]);
+    registrationServiceFalso.vagasRestantes.and.returnValue(vagasPromise);
+    registrationServiceFalso.listarPorUsuario.and.returnValue(inscricoesPromise);
+
+    await TestBed.configureTestingModule({
+      imports: [EventoDetalhes],
+      providers: [
+        provideRouter([]),
+        { provide: EventService, useValue: eventServiceFalso },
+        { provide: RegistrationService, useValue: registrationServiceFalso },
+        {
+          provide: AuthService,
+          useValue: { usuarioAtual: signal({ id: 'u1', nome: 'Jovem', email: 'jovem@rede.com', papel: 'jovem' }) },
+        },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: '1' }) } } },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(EventoDetalhes);
+    fixture.detectChanges();
+    // Deixa o microtask de buscarPorId resolver (evento carregado), sem resolver
+    // ainda vagasRestantes/listarPorUsuario — reproduz a janela descrita em I1.
+    await Promise.resolve();
+    await Promise.resolve();
+    fixture.detectChanges();
+
+    const textoAntes = fixture.nativeElement.textContent;
+    expect(textoAntes).not.toContain('Esgotado');
+    expect(textoAntes).not.toContain('Você já está inscrito');
+    expect(fixture.nativeElement.querySelector('a.detalhes-evento__acao')).toBeNull();
+
+    resolverVagas(0);
+    resolverInscricoes([]);
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Esgotado');
+  });
 });

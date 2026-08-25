@@ -36,6 +36,21 @@
   color: rgba(246, 244, 236, 0.72);
 }
 
+.confirmacao-inscricao__status {
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.confirmacao-inscricao__status--esgotado {
+  color: var(--status-cancel);
+}
+
+.confirmacao-inscricao__status--confirmado {
+  color: var(--status-confirm);
+}
+
 .confirmacao-inscricao__ticket {
   position: relative;
   width: 100%;
