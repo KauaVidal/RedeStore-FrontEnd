@@ -34,7 +34,7 @@ describe('Rotas do app (integração)', () => {
     const harness = await RouterTestingHarness.create('/loja/carrinho');
     await harness.fixture.whenStable();
 
-    expect(harness.routeNativeElement?.textContent).not.toContain('Entrar na REDE');
+    expect(harness.routeNativeElement?.textContent).toContain('Seu carrinho está vazio.');
   });
 
   it('"/eventos" continua mostrando o placeholder "em breve"', async () => {
