@@ -15,7 +15,7 @@
           </div>
 
           @if (item.evento; as evento) {
-            <span class="minhas-inscricoes__data texto-utilitario">{{ formatarDataHora(evento.dataHora) }}</span>
+            <span class="minhas-inscricoes__data texto-utilitario">{{ evento.dataHora | dataBr }}</span>
           }
 
           @if (item.inscricao.status === 'confirmada') {

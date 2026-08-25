@@ -5,6 +5,7 @@ import { EventService } from '../../../core/events/event.service';
 import { Inscricao, StatusInscricao } from '../../../core/registrations/inscricao.model';
 import { Evento } from '../../../core/events/evento.model';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
+import { DataBrPipe } from '../../../shared/pipes/data-br.pipe';
 
 interface InscricaoExibicao {
   inscricao: Inscricao;
@@ -18,7 +19,7 @@ const ROTULO_STATUS: Record<StatusInscricao, string> = {
 
 @Component({
   selector: 'app-minhas-inscricoes',
-  imports: [EmptyState],
+  imports: [EmptyState, DataBrPipe],
   templateUrl: './minhas-inscricoes.html',
   styleUrl: './minhas-inscricoes.scss',
 })
@@ -53,16 +54,5 @@ export class MinhasInscricoes implements OnInit {
           : item,
       ),
     );
-  }
-
-  protected formatarDataHora(iso: string): string {
-    const data = new Date(iso);
-    const dataFormatada = data.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-    });
-    const horaFormatada = data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    return `${dataFormatada} às ${horaFormatada}`;
   }
 }
