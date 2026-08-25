@@ -9,8 +9,19 @@
   </section>
 
   <section class="home__eventos">
-    <h2 class="titulo-2">Próximos eventos</h2>
-    <p class="texto-corpo">Retiros, encontros e muito mais — em breve por aqui.</p>
-    <a routerLink="/eventos" class="home__link-eventos">Ver eventos</a>
+    <div class="home__eventos-cabecalho">
+      <h2 class="titulo-2">Próximos eventos</h2>
+      <a routerLink="/eventos" class="home__link-eventos">Ver agenda completa</a>
+    </div>
+    <ul class="home__lista-eventos">
+      @for (evento of proximosEventos(); track evento.id) {
+        <li>
+          <a class="home__evento-cartao" [routerLink]="['/eventos', evento.id]">
+            <span class="home__evento-titulo">{{ evento.titulo }}</span>
+            <span class="home__evento-meta texto-utilitario">{{ formatarDataHora(evento.dataHora) }} · {{ evento.local }}</span>
+          </a>
+        </li>
+      }
+    </ul>
   </section>
 </div>
