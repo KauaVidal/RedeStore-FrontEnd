@@ -1,0 +1,14 @@
+<button
+  class="botao"
+  [class.botao--secundario]="variante() === 'secundario'"
+  [type]="tipo()"
+  [disabled]="desabilitado() || carregando()"
+  (click)="aoClicar()"
+>
+  @if (carregando()) {
+    <span class="botao__spinner" aria-hidden="true"></span>
+    <span>Enviando…</span>
+  } @else {
+    <ng-content />
+  }
+</button>

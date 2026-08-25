@@ -1,0 +1,24 @@
+<header class="cabecalho">
+  <a routerLink="/" class="cabecalho__marca">
+    <app-logo variante="amarelo-transparente" tamanho="32px" />
+    <span class="cabecalho__nome">REDE</span>
+  </a>
+
+  <nav class="cabecalho__nav">
+    <a routerLink="/loja" routerLinkActive="cabecalho__link--ativo">Loja</a>
+    <a routerLink="/eventos" routerLinkActive="cabecalho__link--ativo">Eventos</a>
+    <a routerLink="/sobre" routerLinkActive="cabecalho__link--ativo">Sobre</a>
+  </nav>
+
+  <div class="cabecalho__acoes">
+    <a routerLink="/loja" class="cabecalho__icone" aria-label="Carrinho">🛒</a>
+    <a
+      data-testid="link-perfil"
+      [routerLink]="estaAutenticado() ? '/perfil' : '/login'"
+      class="cabecalho__icone"
+      aria-label="Perfil"
+    >
+      👤
+    </a>
+  </div>
+</header>

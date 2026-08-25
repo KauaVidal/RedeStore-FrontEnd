@@ -1,0 +1,21 @@
+<div class="tela-auth">
+  <div class="cartao-auth">
+    <app-logo variante="amarelo-transparente" tamanho="56px" />
+
+    @if (!enviado()) {
+      <form [formGroup]="form" (ngSubmit)="aoEnviar()" class="cartao-auth">
+        <h1 class="titulo-1">Recuperar senha</h1>
+        <p class="texto-corpo">Informa seu e-mail e a gente te ajuda a voltar pra conta.</p>
+        <app-text-field rotulo="E-mail" tipo="email" [controle]="form.controls.email" [erro]="erroEmail" />
+        <app-button tipo="submit" [carregando]="enviando()">Enviar link</app-button>
+      </form>
+    } @else {
+      <h1 class="titulo-1">Confira seu e-mail</h1>
+      <p class="texto-corpo">Se esse e-mail existir na nossa base, enviamos um link de recuperação. Confira sua caixa de entrada.</p>
+    }
+
+    <div class="cartao-auth__links">
+      <a routerLink="/login">Voltar pro login</a>
+    </div>
+  </div>
+</div>

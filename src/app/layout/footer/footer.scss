@@ -1,0 +1,17 @@
+@use 'styles/tokens' as *;
+
+.rodape {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-3);
+  padding: var(--espaco-8) var(--espaco-4) calc(var(--espaco-8) + 56px);
+  text-align: center;
+  color: rgba(246, 244, 236, 0.6);
+  font-size: 0.875rem;
+}
+
+.rodape__links a {
+  color: var(--rede-paper);
+  text-decoration: none;
+}

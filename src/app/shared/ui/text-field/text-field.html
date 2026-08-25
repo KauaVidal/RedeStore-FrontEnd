@@ -1,0 +1,26 @@
+<label class="campo">
+  <span class="campo__rotulo">{{ rotulo() }}</span>
+  <span class="campo__input-wrapper">
+    <input
+      class="campo__input"
+      [class.campo__input--erro]="erro()"
+      [class.campo__input--com-alternar]="tipo() === 'password'"
+      [type]="tipoEfetivo()"
+      [formControl]="controle()"
+    />
+    @if (tipo() === 'password') {
+      <button
+        type="button"
+        class="campo__alternar-senha"
+        [attr.aria-label]="mostrarSenha() ? 'Ocultar senha' : 'Mostrar senha'"
+        [attr.aria-pressed]="mostrarSenha()"
+        (click)="alternarMostrarSenha()"
+      >
+        {{ mostrarSenha() ? 'Ocultar' : 'Mostrar' }}
+      </button>
+    }
+  </span>
+  @if (erro()) {
+    <span class="campo__erro" role="alert">{{ erro() }}</span>
+  }
+</label>

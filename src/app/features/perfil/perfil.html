@@ -1,0 +1,37 @@
+<!-- src/app/features/perfil/perfil.html -->
+<div class="perfil">
+  <h1 class="titulo-1">Meu perfil</h1>
+
+  <form class="perfil__form" [formGroup]="form" (ngSubmit)="aoSalvar()">
+    <app-text-field rotulo="Nome" [controle]="form.controls.nome" />
+    <app-text-field rotulo="E-mail" tipo="email" [controle]="form.controls.email" />
+    <app-text-field rotulo="Telefone" tipo="tel" [controle]="form.controls.telefone" />
+    <app-button tipo="submit" [carregando]="salvando()">Salvar alterações</app-button>
+    @if (salvo()) {
+      <p class="perfil__salvo">Dados atualizados.</p>
+    }
+    @if (erroGeral()) {
+      <p class="perfil__erro" role="alert">{{ erroGeral() }}</p>
+    }
+  </form>
+
+  <section class="perfil__secao">
+    <h2 class="titulo-2">Meus pedidos</h2>
+    <app-empty-state
+      mensagem="Você ainda não fez nenhum pedido."
+      textoAcao="Ver a loja"
+      linkAcao="/loja"
+    />
+  </section>
+
+  <section class="perfil__secao">
+    <h2 class="titulo-2">Meus eventos</h2>
+    <app-empty-state
+      mensagem="Você ainda não se inscreveu em nenhum evento."
+      textoAcao="Ver eventos"
+      linkAcao="/eventos"
+    />
+  </section>
+
+  <button type="button" data-testid="botao-sair" class="perfil__sair" (click)="sair()">Sair da conta</button>
+</div>

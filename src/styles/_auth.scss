@@ -1,0 +1,39 @@
+.tela-auth {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--espaco-5);
+}
+
+.cartao-auth {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-4);
+  text-align: center;
+
+  app-text-field {
+    width: 100%;
+    text-align: left;
+  }
+}
+
+.cartao-auth__erro {
+  color: var(--status-cancel);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.cartao-auth__links {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 0.875rem;
+
+  a {
+    color: var(--rede-paper);
+  }
+}

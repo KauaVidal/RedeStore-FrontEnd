@@ -1,0 +1,72 @@
+@use 'styles/tokens' as *;
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  font-family: var(--fonte-corpo);
+}
+
+.campo__rotulo {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--rede-paper);
+}
+
+.campo__input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.campo__input {
+  width: 100%;
+  font-family: var(--fonte-corpo);
+  font-size: 1rem;
+  padding: var(--espaco-3) var(--espaco-4);
+  border-radius: var(--raio-padrao);
+  border: 1px solid rgba(246, 244, 236, 0.24);
+  background: var(--rede-graphite);
+  color: var(--rede-paper);
+
+  &:focus {
+    outline: none;
+    border-color: var(--rede-yellow);
+  }
+
+  &--erro {
+    border-color: var(--status-cancel);
+  }
+
+  &--com-alternar {
+    padding-right: var(--espaco-8);
+  }
+}
+
+.campo__alternar-senha {
+  position: absolute;
+  right: var(--espaco-2);
+  background: none;
+  border: none;
+  color: var(--rede-yellow);
+  font-family: var(--fonte-corpo);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: var(--espaco-1) var(--espaco-2);
+  border-radius: var(--raio-padrao);
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--rede-yellow);
+    outline-offset: 2px;
+  }
+}
+
+.campo__erro {
+  font-size: 0.8125rem;
+  color: var(--status-cancel);
+}

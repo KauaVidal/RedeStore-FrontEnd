@@ -1,0 +1,26 @@
+@use 'styles/tokens' as *;
+
+.vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-3);
+  padding: var(--espaco-6) 0;
+}
+
+.vazio__mensagem {
+  font-family: var(--fonte-corpo);
+  color: rgba(246, 244, 236, 0.72);
+  margin: 0;
+}
+
+.vazio__acao {
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  color: var(--rede-yellow);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

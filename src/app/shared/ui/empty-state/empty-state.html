@@ -1,0 +1,6 @@
+<div class="vazio">
+  <p class="vazio__mensagem">{{ mensagem() }}</p>
+  @if (textoAcao() && linkAcao()) {
+    <a class="vazio__acao" [routerLink]="linkAcao()">{{ textoAcao() }}</a>
+  }
+</div>

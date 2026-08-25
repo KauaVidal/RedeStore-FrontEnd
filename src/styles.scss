@@ -1,0 +1,31 @@
+@use 'styles/tokens';
+@use 'styles/typography';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: var(--rede-black);
+  color: var(--rede-paper);
+  font-family: var(--fonte-corpo);
+}
+
+:focus-visible {
+  outline: 2px solid var(--rede-yellow);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
