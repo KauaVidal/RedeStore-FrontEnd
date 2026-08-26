@@ -1,0 +1,44 @@
+<div class="admin-tela">
+  <div class="admin-tela__cabecalho">
+    <h1>Produtos</h1>
+    <app-button (clicado)="abrirNovo()">Novo produto</app-button>
+  </div>
+
+  @if (lista().length === 0) {
+    <app-empty-state mensagem="Nenhum produto cadastrado ainda."></app-empty-state>
+  } @else {
+    <app-table [cabecalhos]="['Foto', 'Nome', 'Categoria', 'Preço', 'Estoque', 'Ações']">
+      @for (produto of lista(); track produto.id) {
+        <tr>
+          <td><img class="admin-tela__miniatura" [src]="produto.fotos[0]" [alt]="produto.nome" /></td>
+          <td>{{ produto.nome }}</td>
+          <td>{{ rotuloCategoria[produto.categoria] }}</td>
+          <td>R$ {{ produto.preco | precoBr }}</td>
+          <td>{{ estoqueTotal(produto) }}</td>
+          <td>
+            <button type="button" (click)="abrirEdicao(produto)">Editar</button>
+            <button type="button" (click)="pedirRemocao(produto)">Remover</button>
+          </td>
+        </tr>
+      }
+    </app-table>
+  }
+</div>
+
+<app-modal
+  [titulo]="produtoEditando() ? 'Editar produto' : 'Novo produto'"
+  [aberto]="modalAberto()"
+  (fechar)="fecharModal()"
+>
+  <app-produto-form [produto]="produtoEditando()" (salvar)="salvar($event)" (cancelar)="fecharModal()"></app-produto-form>
+</app-modal>
+
+<app-modal titulo="Remover produto" [aberto]="produtoParaRemover() !== null" (fechar)="cancelarRemocao()">
+  @if (produtoParaRemover(); as produto) {
+    <p>Tem certeza que deseja remover "{{ produto.nome }}"? Essa ação não pode ser desfeita.</p>
+    <div class="admin-tela__confirmar-acoes">
+      <app-button variante="secundario" (clicado)="cancelarRemocao()">Cancelar</app-button>
+      <app-button (clicado)="confirmarRemocao()">Remover</app-button>
+    </div>
+  }
+</app-modal>
