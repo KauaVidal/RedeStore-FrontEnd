@@ -8,6 +8,9 @@
     <a routerLink="/loja" routerLinkActive="cabecalho__link--ativo">Loja</a>
     <a routerLink="/eventos" routerLinkActive="cabecalho__link--ativo">Eventos</a>
     <a routerLink="/sobre" routerLinkActive="cabecalho__link--ativo">Sobre</a>
+    @if (isAdmin()) {
+      <a routerLink="/admin" routerLinkActive="cabecalho__link--ativo">Admin</a>
+    }
   </nav>
 
   <div class="cabecalho__acoes">
