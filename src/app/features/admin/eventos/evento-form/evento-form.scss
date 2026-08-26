@@ -1,0 +1,13 @@
+@use 'styles/tokens' as *;
+
+.evento-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+}
+
+.evento-form__acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espaco-3);
+}

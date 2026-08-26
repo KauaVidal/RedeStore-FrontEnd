@@ -1,0 +1,29 @@
+<form class="evento-form" [formGroup]="form" (ngSubmit)="aoEnviar()">
+  <app-text-field rotulo="Título" [controle]="form.controls.titulo" [erro]="erroTitulo"></app-text-field>
+  <app-textarea rotulo="Descrição" [controle]="form.controls.descricao" [erro]="erroDescricao"></app-textarea>
+  <app-text-field
+    rotulo="Data e hora"
+    tipo="datetime-local"
+    [controle]="form.controls.dataHora"
+    [erro]="erroDataHora"
+  ></app-text-field>
+  <app-text-field rotulo="Local" [controle]="form.controls.local" [erro]="erroLocal"></app-text-field>
+  <app-text-field
+    rotulo="Preço (0 para gratuito)"
+    tipo="number"
+    [controle]="form.controls.preco"
+    [erro]="erroPreco"
+  ></app-text-field>
+  <app-text-field
+    rotulo="Vagas totais"
+    tipo="number"
+    [controle]="form.controls.vagasTotais"
+    [erro]="erroVagasTotais"
+  ></app-text-field>
+  <app-text-field rotulo="Foto (URL)" [controle]="form.controls.foto" [erro]="erroFoto"></app-text-field>
+
+  <div class="evento-form__acoes">
+    <app-button variante="secundario" (clicado)="cancelar.emit()">Cancelar</app-button>
+    <app-button tipo="submit">Salvar</app-button>
+  </div>
+</form>
