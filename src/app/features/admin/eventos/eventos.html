@@ -1,7 +1,10 @@
 <div class="admin-tela">
   <div class="admin-tela__cabecalho">
-    <h1>Eventos</h1>
-    <app-button (clicado)="abrirNovo()">Novo evento</app-button>
+    <h1 class="titulo-1">Eventos</h1>
+    <app-button (clicado)="abrirNovo()">
+      <span class="admin-tela__botao-icone" aria-hidden="true">+</span>
+      Novo evento
+    </app-button>
   </div>
 
   @if (lista().length === 0) {
@@ -9,17 +12,31 @@
   } @else {
     <app-table [cabecalhos]="['Foto', 'Título', 'Data', 'Local', 'Preço', 'Vagas', 'Ações']">
       @for (evento of lista(); track evento.id) {
+        @let vagasOcupadas = ocupadas(evento);
         <tr>
-          <td><img class="admin-tela__miniatura" [src]="evento.foto" [alt]="evento.titulo" /></td>
+          <td>
+            <div class="admin-tela__miniatura-moldura">
+              <img class="admin-tela__miniatura" [src]="evento.foto" [alt]="evento.titulo" />
+            </div>
+          </td>
           <td>{{ evento.titulo }}</td>
           <td>{{ evento.dataHora | dataBr }}</td>
           <td>{{ evento.local }}</td>
           <td>{{ evento.preco === 0 ? 'Gratuito' : 'R$ ' + evento.preco }}</td>
-          <td>{{ ocupadas(evento) }}/{{ evento.vagasTotais }}</td>
           <td>
-            <a [routerLink]="['/admin/eventos', evento.id, 'inscricoes']">Inscrições</a>
-            <button type="button" (click)="abrirEdicao(evento)">Editar</button>
-            <button type="button" (click)="pedirRemocao(evento)">Remover</button>
+            <span
+              class="admin-tela__vagas"
+              [class.admin-tela__vagas--esgotado]="vagasOcupadas >= evento.vagasTotais"
+              [class.admin-tela__vagas--baixo]="vagasOcupadas < evento.vagasTotais && vagasOcupadas / evento.vagasTotais >= 0.75"
+              [class.admin-tela__vagas--ok]="vagasOcupadas / evento.vagasTotais < 0.75"
+            >{{ vagasOcupadas }}/{{ evento.vagasTotais }}</span>
+          </td>
+          <td class="admin-tela__acoes">
+            <a class="admin-tela__acao" [routerLink]="['/admin/eventos', evento.id, 'inscricoes']">Inscrições</a>
+            <button type="button" class="admin-tela__acao" (click)="abrirEdicao(evento)">Editar</button>
+            <button type="button" class="admin-tela__acao admin-tela__acao--perigo" (click)="pedirRemocao(evento)">
+              Remover
+            </button>
           </td>
         </tr>
       }
@@ -37,7 +54,18 @@
 
 <app-modal titulo="Remover evento" [aberto]="eventoParaRemover() !== null" (fechar)="cancelarRemocao()">
   @if (eventoParaRemover(); as evento) {
-    <p>Tem certeza que deseja remover "{{ evento.titulo }}"? Essa ação não pode ser desfeita.</p>
+    <div class="admin-tela__confirmar">
+      <span class="admin-tela__confirmar-icone" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 2.2 18.4 17H1.6L10 2.2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+          <path d="M10 7.8v3.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          <circle cx="10" cy="13.8" r="0.9" fill="currentColor" />
+        </svg>
+      </span>
+      <p class="admin-tela__confirmar-texto">
+        Tem certeza que deseja remover <strong>"{{ evento.titulo }}"</strong>? Essa ação não pode ser desfeita.
+      </p>
+    </div>
     <div class="admin-tela__confirmar-acoes">
       <app-button variante="secundario" (clicado)="cancelarRemocao()">Cancelar</app-button>
       <app-button (clicado)="confirmarRemocao()">Remover</app-button>
