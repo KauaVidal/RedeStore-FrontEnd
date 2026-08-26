@@ -1,13 +1,17 @@
 <!-- src/app/features/admin/produtos/produto-form/produto-form.html -->
 <form class="produto-form" [formGroup]="form" (ngSubmit)="aoEnviar()">
   <app-text-field rotulo="Nome" [controle]="form.controls.nome" [erro]="erroNome"></app-text-field>
-  <app-select rotulo="Categoria" [opcoes]="categorias" [controle]="form.controls.categoria"></app-select>
-  <app-text-field
-    rotulo="Preço"
-    tipo="number"
-    [controle]="form.controls.preco"
-    [erro]="erroPreco"
-  ></app-text-field>
+
+  <div class="produto-form__linha">
+    <app-select rotulo="Categoria" [opcoes]="categorias" [controle]="form.controls.categoria"></app-select>
+    <app-text-field
+      rotulo="Preço"
+      tipo="number"
+      [controle]="form.controls.preco"
+      [erro]="erroPreco"
+    ></app-text-field>
+  </div>
+
   <app-textarea rotulo="Descrição" [controle]="form.controls.descricao" [erro]="erroDescricao"></app-textarea>
   <app-text-field
     rotulo="Fotos (URLs separadas por vírgula)"
@@ -17,30 +21,56 @@
 
   <div class="produto-form__variacoes">
     <div class="produto-form__variacoes-cabecalho">
-      <span>Variações (tamanho, cor, estoque)</span>
-      <button type="button" (click)="adicionarVariacao()">+ Adicionar</button>
+      <span class="produto-form__variacoes-titulo">
+        Variações
+        <span class="produto-form__variacoes-contagem">{{ variacoes().length }}</span>
+      </span>
     </div>
-    @for (variacao of variacoes(); track $index) {
-      <div class="produto-form__variacao-linha">
-        <input
-          placeholder="Tamanho"
-          [value]="variacao.tamanho"
-          (input)="atualizarVariacao($index, 'tamanho', $any($event.target).value)"
-        />
-        <input
-          placeholder="Cor"
-          [value]="variacao.cor"
-          (input)="atualizarVariacao($index, 'cor', $any($event.target).value)"
-        />
-        <input
-          type="number"
-          placeholder="Estoque"
-          [value]="variacao.estoque"
-          (input)="atualizarVariacao($index, 'estoque', $any($event.target).value)"
-        />
-        <button type="button" aria-label="Remover variação" (click)="removerVariacao($index)">✕</button>
+
+    @if (variacoes().length > 0) {
+      <div class="produto-form__variacoes-painel">
+        @for (variacao of variacoes(); track $index) {
+          <div class="produto-form__variacao-linha">
+            <span class="produto-form__variacao-indice">{{ $index + 1 }}</span>
+            <input
+              class="produto-form__variacao-input"
+              aria-label="Tamanho"
+              placeholder="Tamanho"
+              [value]="variacao.tamanho"
+              (input)="atualizarVariacao($index, 'tamanho', $any($event.target).value)"
+            />
+            <input
+              class="produto-form__variacao-input"
+              aria-label="Cor"
+              placeholder="Cor"
+              [value]="variacao.cor"
+              (input)="atualizarVariacao($index, 'cor', $any($event.target).value)"
+            />
+            <input
+              class="produto-form__variacao-input produto-form__variacao-input--estoque"
+              aria-label="Estoque"
+              type="number"
+              placeholder="Estoque"
+              [value]="variacao.estoque"
+              (input)="atualizarVariacao($index, 'estoque', $any($event.target).value)"
+            />
+            <button
+              type="button"
+              class="produto-form__variacao-remover"
+              aria-label="Remover variação"
+              (click)="removerVariacao($index)"
+            >
+              ✕
+            </button>
+          </div>
+        }
       </div>
     }
+
+    <button type="button" class="produto-form__variacao-adicionar" (click)="adicionarVariacao()">
+      + Adicionar variação
+    </button>
+
     @if (erroVariacoes()) {
       <span class="campo__erro" role="alert">{{ erroVariacoes() }}</span>
     }
@@ -48,6 +78,6 @@
 
   <div class="produto-form__acoes">
     <app-button variante="secundario" (clicado)="cancelar.emit()">Cancelar</app-button>
-    <app-button tipo="submit">Salvar</app-button>
+    <app-button tipo="submit">Salvar produto</app-button>
   </div>
 </form>
