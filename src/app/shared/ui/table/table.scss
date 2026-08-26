@@ -2,10 +2,16 @@
 
 .tabela__wrapper {
   overflow-x: auto;
+  border-radius: var(--raio-padrao);
+  border: 1px solid rgba(246, 244, 236, 0.12);
+  background: var(--rede-graphite);
+  scrollbar-color: rgba(246, 244, 236, 0.24) transparent;
+  scrollbar-width: thin;
 }
 
 .tabela {
   width: 100%;
+  min-width: 640px;
   border-collapse: collapse;
   font-family: var(--fonte-corpo);
   color: var(--rede-paper);
@@ -18,10 +24,32 @@
     white-space: nowrap;
   }
 
+  td {
+    font-variant-numeric: tabular-nums;
+  }
+
   th {
     font-size: 0.8125rem;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: rgba(246, 244, 236, 0.64);
+    border-bottom-color: rgba(246, 244, 236, 0.24);
+  }
+
+  tbody tr {
+    transition: background-color 0.15s ease;
+
+    &:nth-child(even) {
+      background: rgba(246, 244, 236, 0.03);
+    }
+
+    &:hover {
+      background: rgba(244, 198, 23, 0.08);
+    }
+
+    &:last-child td {
+      border-bottom: none;
+    }
   }
 }
