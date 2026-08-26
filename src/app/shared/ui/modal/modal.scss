@@ -1,0 +1,38 @@
+@use 'styles/tokens' as *;
+
+.modal__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 13, 13, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: var(--espaco-4);
+}
+
+.modal__caixa {
+  background: var(--rede-graphite);
+  color: var(--rede-paper);
+  border-radius: var(--raio-padrao);
+  max-width: 640px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: var(--espaco-5);
+}
+
+.modal__cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--espaco-4);
+}
+
+.modal__fechar {
+  background: none;
+  border: none;
+  color: var(--rede-paper);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
