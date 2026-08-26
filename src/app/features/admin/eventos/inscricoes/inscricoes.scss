@@ -1,0 +1,5 @@
+@use 'styles/tokens' as *;
+
+h1 {
+  margin: var(--espaco-3) 0 var(--espaco-5);
+}

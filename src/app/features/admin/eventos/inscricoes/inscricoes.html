@@ -1,0 +1,26 @@
+<div class="admin-tela">
+  <a routerLink="/admin/eventos">← Voltar para Eventos</a>
+  <h1>{{ evento()?.titulo }}</h1>
+
+  @if (lista().length === 0) {
+    <app-empty-state mensagem="Ninguém se inscreveu neste evento ainda."></app-empty-state>
+  } @else {
+    <app-table [cabecalhos]="['Nome', 'Email', 'Status', 'Data', 'Ações']">
+      @for (inscricao of lista(); track inscricao.id) {
+        <tr>
+          <td>{{ nomeInscrito(inscricao.usuarioId) }}</td>
+          <td>{{ emailInscrito(inscricao.usuarioId) }}</td>
+          <td>{{ inscricao.status }}</td>
+          <td>{{ inscricao.criadoEm | dataBr }}</td>
+          <td>
+            @if (inscricao.status === 'confirmada') {
+              <button type="button" data-testid="botao-cancelar" (click)="cancelar(inscricao)">
+                Cancelar inscrição
+              </button>
+            }
+          </td>
+        </tr>
+      }
+    </app-table>
+  }
+</div>
