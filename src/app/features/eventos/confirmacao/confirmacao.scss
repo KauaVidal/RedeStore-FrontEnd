@@ -1,0 +1,169 @@
+@use 'styles/tokens' as *;
+
+.confirmacao-inscricao {
+  padding: var(--espaco-6) var(--espaco-4) var(--espaco-8);
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--espaco-2);
+}
+
+.confirmacao-inscricao__selo {
+  width: 64px;
+  height: 64px;
+  margin-bottom: var(--espaco-2);
+  border-radius: 50%;
+  background: var(--status-confirm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &::after {
+    content: '';
+    width: 22px;
+    height: 12px;
+    margin-top: -3px;
+    border-left: 3px solid var(--rede-black);
+    border-bottom: 3px solid var(--rede-black);
+    transform: rotate(-45deg);
+  }
+}
+
+.confirmacao-inscricao__subtitulo {
+  color: rgba(246, 244, 236, 0.72);
+}
+
+.confirmacao-inscricao__status {
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.confirmacao-inscricao__status--esgotado {
+  color: var(--status-cancel);
+}
+
+.confirmacao-inscricao__status--confirmado {
+  color: var(--status-confirm);
+}
+
+.confirmacao-inscricao__ticket {
+  position: relative;
+  width: 100%;
+  margin-top: var(--espaco-3);
+  background: var(--rede-graphite);
+  border-radius: var(--raio-padrao);
+  overflow: hidden;
+  text-align: left;
+}
+
+.confirmacao-inscricao__ticket-corpo {
+  padding: var(--espaco-4) var(--espaco-4) var(--espaco-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+}
+
+.confirmacao-inscricao__ticket-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-1);
+  color: rgba(246, 244, 236, 0.72);
+}
+
+.confirmacao-inscricao__ticket-picote {
+  position: relative;
+  border-top: 2px dashed rgba(246, 244, 236, 0.24);
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--rede-black);
+  }
+
+  &::before {
+    left: -10px;
+  }
+
+  &::after {
+    right: -10px;
+  }
+}
+
+.confirmacao-inscricao__ticket-valor {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--espaco-3) var(--espaco-4) var(--espaco-4);
+}
+
+.confirmacao-inscricao__ticket-preco {
+  font-family: var(--fonte-utilitaria);
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: var(--rede-yellow);
+}
+
+.confirmacao-inscricao__acoes {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+  margin-top: var(--espaco-5);
+}
+
+.confirmacao-inscricao__acao-primaria {
+  display: inline-block;
+  padding: var(--espaco-3) var(--espaco-6);
+  border-radius: var(--raio-pilula);
+  background: var(--rede-yellow);
+  color: var(--rede-black);
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: var(--rede-yellow-deep);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--rede-yellow);
+    outline-offset: 2px;
+  }
+}
+
+.confirmacao-inscricao__acao-secundaria {
+  color: var(--rede-paper);
+  opacity: 0.72;
+  font-family: var(--fonte-corpo);
+  font-weight: 600;
+  text-decoration: underline;
+  transition: opacity 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    opacity: 1;
+    color: var(--rede-yellow);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--rede-yellow);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confirmacao-inscricao__acao-primaria,
+  .confirmacao-inscricao__acao-secundaria {
+    transition: none;
+  }
+}

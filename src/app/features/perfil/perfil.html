@@ -31,11 +31,19 @@
 
   <section class="perfil__secao">
     <h2 class="titulo-2">Meus eventos</h2>
-    <app-empty-state
-      mensagem="Você ainda não se inscreveu em nenhum evento."
-      textoAcao="Ver eventos"
-      linkAcao="/eventos"
-    />
+    @if (inscricoesConfirmadas().length > 0) {
+      <p class="texto-corpo">
+        Você está inscrito em {{ inscricoesConfirmadas().length }}
+        evento{{ inscricoesConfirmadas().length > 1 ? 's' : '' }}.
+      </p>
+      <a routerLink="/eventos/minhas-inscricoes" class="perfil__link-eventos">Ver minhas inscrições</a>
+    } @else {
+      <app-empty-state
+        mensagem="Você ainda não se inscreveu em nenhum evento."
+        textoAcao="Ver a agenda"
+        linkAcao="/eventos"
+      />
+    }
   </section>
 
   <button type="button" data-testid="botao-sair" class="perfil__sair" (click)="sair()">Sair da conta</button>

@@ -3,7 +3,9 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { OrderService } from '../../core/orders/order.service';
+import { RegistrationService } from '../../core/registrations/registration.service';
 import { Pedido } from '../../core/orders/pedido.model';
+import { Inscricao } from '../../core/registrations/inscricao.model';
 import { TextField } from '../../shared/ui/text-field/text-field';
 import { Button } from '../../shared/ui/button/button';
 import { EmptyState } from '../../shared/ui/empty-state/empty-state';
@@ -18,10 +20,12 @@ export class Perfil implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly pedidosService = inject(OrderService);
+  private readonly registrations = inject(RegistrationService);
   private readonly router = inject(Router);
 
   protected readonly usuario = this.auth.usuarioAtual;
   protected readonly pedidos = signal<Pedido[]>([]);
+  protected readonly inscricoesConfirmadas = signal<Inscricao[]>([]);
 
   protected readonly form = this.fb.nonNullable.group({
     nome: [this.usuario()?.nome ?? '', [Validators.required]],
@@ -36,7 +40,12 @@ export class Perfil implements OnInit {
   async ngOnInit(): Promise<void> {
     const usuario = this.usuario();
     if (!usuario) return;
-    this.pedidos.set(await this.pedidosService.listarPorUsuario(usuario.id));
+    const [pedidos, inscricoes] = await Promise.all([
+      this.pedidosService.listarPorUsuario(usuario.id),
+      this.registrations.listarPorUsuario(usuario.id),
+    ]);
+    this.pedidos.set(pedidos);
+    this.inscricoesConfirmadas.set(inscricoes.filter((i) => i.status === 'confirmada'));
   }
 
   protected async aoSalvar(): Promise<void> {

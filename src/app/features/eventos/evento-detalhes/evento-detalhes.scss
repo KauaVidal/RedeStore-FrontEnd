@@ -1,0 +1,103 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+.detalhes-evento {
+  padding: var(--espaco-5) var(--espaco-4) var(--espaco-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-5);
+
+  @include desktop {
+    flex-direction: row;
+  }
+}
+
+.detalhes-evento__foto {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--raio-padrao);
+
+  @include desktop {
+    max-width: 400px;
+  }
+}
+
+.detalhes-evento__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+}
+
+.detalhes-evento__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--espaco-1);
+  color: rgba(246, 244, 236, 0.72);
+  margin-top: calc(var(--espaco-1) * -1);
+}
+
+.detalhes-evento__separador {
+  opacity: 0.6;
+}
+
+.detalhes-evento__preco {
+  color: var(--rede-yellow);
+  font-weight: 700;
+}
+
+.detalhes-evento__cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-2);
+  margin-top: var(--espaco-2);
+}
+
+.detalhes-evento__vagas {
+  padding: var(--espaco-1) var(--espaco-3);
+  border: 1px solid var(--rede-yellow);
+  border-radius: var(--raio-pilula);
+  color: var(--rede-yellow);
+}
+
+.detalhes-evento__status {
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  margin: 0;
+}
+
+.detalhes-evento__status--esgotado {
+  color: var(--status-cancel);
+}
+
+.detalhes-evento__status--confirmado {
+  color: var(--status-confirm);
+}
+
+.detalhes-evento__acao {
+  display: inline-block;
+  width: fit-content;
+  padding: var(--espaco-3) var(--espaco-6);
+  border-radius: var(--raio-pilula);
+  background: var(--rede-yellow);
+  color: var(--rede-black);
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    background: var(--rede-yellow-deep);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--rede-yellow);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}

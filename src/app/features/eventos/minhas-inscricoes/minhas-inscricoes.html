@@ -1,0 +1,30 @@
+<div class="minhas-inscricoes">
+  <h1 class="titulo-1">Minhas inscrições</h1>
+
+  @if (lista().length === 0) {
+    <app-empty-state mensagem="Você ainda não se inscreveu em nenhum evento." textoAcao="Ver a agenda" linkAcao="/eventos" />
+  } @else {
+    <ul class="minhas-inscricoes__lista">
+      @for (item of lista(); track item.inscricao.id) {
+        <li class="minhas-inscricoes__item" [class]="'minhas-inscricoes__item--' + item.inscricao.status">
+          <div class="minhas-inscricoes__cabecalho">
+            <span class="titulo-2">{{ item.evento?.titulo ?? 'Evento removido' }}</span>
+            <span class="minhas-inscricoes__status" [class]="'minhas-inscricoes__status--' + item.inscricao.status">
+              {{ rotuloStatus[item.inscricao.status] }}
+            </span>
+          </div>
+
+          @if (item.evento; as evento) {
+            <span class="minhas-inscricoes__data texto-utilitario">{{ evento.dataHora | dataBr }}</span>
+          }
+
+          @if (item.inscricao.status === 'confirmada') {
+            <button type="button" class="minhas-inscricoes__cancelar" (click)="cancelar(item.inscricao.id)">
+              Cancelar inscrição
+            </button>
+          }
+        </li>
+      }
+    </ul>
+  }
+</div>

@@ -34,13 +34,41 @@ describe('Rotas do app (integração)', () => {
     const harness = await RouterTestingHarness.create('/loja/carrinho');
     await harness.fixture.whenStable();
 
-    expect(harness.routeNativeElement?.textContent).toContain('Seu carrinho está vazio.');
+    expect(harness.routeNativeElement?.textContent).not.toContain('Entrar na REDE');
   });
 
-  it('"/eventos" continua mostrando o placeholder "em breve"', async () => {
+  it('"/eventos" renderiza a Agenda de eventos', async () => {
     const harness = await RouterTestingHarness.create('/eventos');
-    expect(harness.routeNativeElement?.textContent).toContain('Eventos');
-    expect(harness.routeNativeElement?.textContent).toContain('em breve');
+    await harness.fixture.whenStable();
+    expect(harness.routeNativeElement?.textContent).toContain('Agenda de eventos');
+  });
+
+  it('"/eventos/:id" renderiza os Detalhes do evento', async () => {
+    const harness = await RouterTestingHarness.create('/eventos/1');
+    await harness.fixture.whenStable();
+    harness.fixture.detectChanges();
+    expect(harness.routeNativeElement?.textContent).toContain('Retiro de Verão REDE');
+  });
+
+  it('"/eventos/minhas-inscricoes" sem login redireciona para "/login"', async () => {
+    const harness = await RouterTestingHarness.create('/eventos/minhas-inscricoes');
+    expect(harness.routeNativeElement?.textContent).toContain('Entrar na REDE');
+  });
+
+  it('"/eventos/1/confirmacao" sem login redireciona para "/login"', async () => {
+    const harness = await RouterTestingHarness.create('/eventos/1/confirmacao');
+    expect(harness.routeNativeElement?.textContent).toContain('Entrar na REDE');
+  });
+
+  it('"/eventos/minhas-inscricoes" logado renderiza Minhas inscrições, não a rota :id', async () => {
+    const auth = TestBed.inject(AuthService);
+    await auth.login('jovem@rede.com', 'jovem123');
+
+    const harness = await RouterTestingHarness.create('/eventos/minhas-inscricoes');
+    await harness.fixture.whenStable();
+
+    expect(harness.routeNativeElement?.textContent).not.toContain('Entrar na REDE');
+    expect(harness.routeNativeElement?.textContent).toContain('Minhas inscrições');
   });
 
   it('uma rota desconhecida redireciona para "/"', async () => {

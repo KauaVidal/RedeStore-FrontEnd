@@ -1,0 +1,30 @@
+<div class="agenda">
+  <h1 class="titulo-1">Agenda de eventos</h1>
+
+  @if (lista().length > 0) {
+    <ul class="agenda__lista">
+      @for (evento of lista(); track evento.id) {
+        <li>
+          <a class="agenda__cartao" [routerLink]="['/eventos', evento.id]">
+            <img class="agenda__foto" [src]="evento.foto" [alt]="evento.titulo" />
+            <div class="agenda__info">
+              <span class="titulo-2 agenda__titulo">{{ evento.titulo }}</span>
+              <span class="texto-utilitario agenda__data">{{ evento.dataHora | dataBr }}</span>
+              <span class="texto-utilitario agenda__local">{{ evento.local }}</span>
+              @if (evento.preco === 0) {
+                <span class="agenda__etiqueta agenda__etiqueta--gratuito">Gratuito</span>
+              } @else {
+                <span class="agenda__preco texto-utilitario">R$ {{ evento.preco | precoBr }}</span>
+              }
+              @if (vagasPorEvento()[evento.id] !== undefined) {
+                <span class="texto-utilitario agenda__vagas">{{ rotuloVagas(vagasPorEvento()[evento.id]) }}</span>
+              }
+            </div>
+          </a>
+        </li>
+      }
+    </ul>
+  } @else {
+    <app-empty-state mensagem="Nenhum evento programado no momento." />
+  }
+</div>

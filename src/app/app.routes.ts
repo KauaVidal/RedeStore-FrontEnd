@@ -8,7 +8,7 @@ export const routes: Routes = [
     children: [
       { path: '', loadComponent: () => import('./features/loja/home/home').then((m) => m.Home) },
       { path: 'loja', loadChildren: () => import('./features/loja/loja.routes').then((m) => m.LOJA_ROUTES) },
-      { path: 'eventos', loadComponent: () => import('./shared/em-breve/em-breve').then((m) => m.EmBreve), data: { titulo: 'Eventos' } },
+      { path: 'eventos', loadChildren: () => import('./features/eventos/eventos.routes').then((m) => m.EVENTOS_ROUTES) },
       { path: 'sobre', loadComponent: () => import('./features/institucional/sobre/sobre').then((m) => m.Sobre) },
       { path: 'perfil', canActivate: [authGuard], loadComponent: () => import('./features/perfil/perfil').then((m) => m.Perfil) },
     ],
