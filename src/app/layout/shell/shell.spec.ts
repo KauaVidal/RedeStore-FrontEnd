@@ -12,7 +12,7 @@ describe('Shell', () => {
       imports: [Shell],
       providers: [
         provideRouter([]),
-        { provide: AuthService, useValue: { estaAutenticado: signal(false) } },
+        { provide: AuthService, useValue: { estaAutenticado: signal(false), isAdmin: signal(false) } },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(Shell);
