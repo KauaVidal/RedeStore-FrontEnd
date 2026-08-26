@@ -1,0 +1,37 @@
+// src/app/features/admin/produtos/produto-form/produto-form.scss
+@use 'styles/tokens' as *;
+
+.produto-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+}
+
+.produto-form__variacoes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+}
+
+.produto-form__variacoes-cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.produto-form__variacao-linha {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: var(--espaco-2);
+}
+
+.produto-form__acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espaco-3);
+}
+
+.campo__erro {
+  font-size: 0.8125rem;
+  color: var(--status-cancel);
+}
