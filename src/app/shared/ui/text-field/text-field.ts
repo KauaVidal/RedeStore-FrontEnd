@@ -9,7 +9,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 })
 export class TextField {
   readonly rotulo = input.required<string>();
-  readonly tipo = input<'text' | 'email' | 'password' | 'tel'>('text');
+  readonly tipo = input<'text' | 'email' | 'password' | 'tel' | 'number' | 'datetime-local'>('text');
   readonly controle = input.required<FormControl>();
   readonly erro = input<string | null>(null);
 

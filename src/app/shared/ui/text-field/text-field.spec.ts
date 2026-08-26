@@ -98,4 +98,24 @@ describe('TextField', () => {
     expect(input.type).toBe('password');
     expect(botao.getAttribute('aria-pressed')).toBe('false');
   });
+
+  it('usa type="number" quando tipo é "number"', () => {
+    const comp = TestBed.createComponent(TextField);
+    comp.componentRef.setInput('rotulo', 'Preço');
+    comp.componentRef.setInput('controle', new FormControl(0));
+    comp.componentRef.setInput('tipo', 'number');
+    comp.detectChanges();
+    const input: HTMLInputElement = comp.nativeElement.querySelector('input');
+    expect(input.type).toBe('number');
+  });
+
+  it('usa type="datetime-local" quando tipo é "datetime-local"', () => {
+    const comp = TestBed.createComponent(TextField);
+    comp.componentRef.setInput('rotulo', 'Data e hora');
+    comp.componentRef.setInput('controle', new FormControl(''));
+    comp.componentRef.setInput('tipo', 'datetime-local');
+    comp.detectChanges();
+    const input: HTMLInputElement = comp.nativeElement.querySelector('input');
+    expect(input.type).toBe('datetime-local');
+  });
 });
