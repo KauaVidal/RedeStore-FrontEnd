@@ -1802,7 +1802,7 @@ export class ProdutoForm implements OnChanges {
 
 ```html
 <!-- src/app/features/admin/produtos/produto-form/produto-form.html -->
-<form class="produto-form" (ngSubmit)="aoEnviar()">
+<form class="produto-form" [formGroup]="form" (ngSubmit)="aoEnviar()">
   <app-text-field rotulo="Nome" [controle]="form.controls.nome" [erro]="erroNome"></app-text-field>
   <app-select rotulo="Categoria" [opcoes]="categorias" [controle]="form.controls.categoria"></app-select>
   <app-text-field
@@ -2415,7 +2415,7 @@ export class EventoForm implements OnChanges {
 
 ```html
 <!-- src/app/features/admin/eventos/evento-form/evento-form.html -->
-<form class="evento-form" (ngSubmit)="aoEnviar()">
+<form class="evento-form" [formGroup]="form" (ngSubmit)="aoEnviar()">
   <app-text-field rotulo="Título" [controle]="form.controls.titulo" [erro]="erroTitulo"></app-text-field>
   <app-textarea rotulo="Descrição" [controle]="form.controls.descricao" [erro]="erroDescricao"></app-textarea>
   <app-text-field
