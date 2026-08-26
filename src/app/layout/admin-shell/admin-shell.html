@@ -1,0 +1,19 @@
+<div class="admin-shell">
+  <aside class="admin-shell__barra">
+    <span class="admin-shell__marca">REDE Admin</span>
+    <nav class="admin-shell__nav">
+      <a routerLink="/admin/produtos" routerLinkActive="admin-shell__link--ativo">Produtos</a>
+      <a routerLink="/admin/pedidos" routerLinkActive="admin-shell__link--ativo">Pedidos</a>
+      <a routerLink="/admin/eventos" routerLinkActive="admin-shell__link--ativo">Eventos</a>
+    </nav>
+    <div class="admin-shell__rodape">
+      @if (usuario(); as usuarioLogado) {
+        <span class="admin-shell__usuario">{{ usuarioLogado.nome }}</span>
+      }
+      <button type="button" data-testid="botao-sair" (click)="sair()">Sair</button>
+    </div>
+  </aside>
+  <main class="admin-shell__conteudo">
+    <router-outlet />
+  </main>
+</div>
