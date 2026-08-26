@@ -1,6 +1,11 @@
 <div class="admin-tela">
-  <a routerLink="/admin/eventos">← Voltar para Eventos</a>
-  <h1>{{ evento()?.titulo }}</h1>
+  <div class="admin-tela__cabecalho admin-tela__cabecalho--empilhado">
+    <a class="admin-tela__voltar" routerLink="/admin/eventos">
+      <span aria-hidden="true">←</span>
+      Voltar para Eventos
+    </a>
+    <h1 class="titulo-1">{{ evento()?.titulo }}</h1>
+  </div>
 
   @if (lista().length === 0) {
     <app-empty-state mensagem="Ninguém se inscreveu neste evento ainda."></app-empty-state>
@@ -10,11 +15,22 @@
         <tr>
           <td>{{ nomeInscrito(inscricao.usuarioId) }}</td>
           <td>{{ emailInscrito(inscricao.usuarioId) }}</td>
-          <td>{{ inscricao.status }}</td>
-          <td>{{ inscricao.criadoEm | dataBr }}</td>
           <td>
+            <span
+              class="admin-tela__status"
+              [class.admin-tela__status--confirmada]="inscricao.status === 'confirmada'"
+              [class.admin-tela__status--cancelada]="inscricao.status === 'cancelada'"
+            >{{ inscricao.status }}</span>
+          </td>
+          <td>{{ inscricao.criadoEm | dataBr }}</td>
+          <td class="admin-tela__acoes">
             @if (inscricao.status === 'confirmada') {
-              <button type="button" data-testid="botao-cancelar" (click)="cancelar(inscricao)">
+              <button
+                type="button"
+                class="admin-tela__acao admin-tela__acao--perigo"
+                data-testid="botao-cancelar"
+                (click)="cancelar(inscricao)"
+              >
                 Cancelar inscrição
               </button>
             }
