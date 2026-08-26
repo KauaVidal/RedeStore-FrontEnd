@@ -68,6 +68,13 @@ export class RegistrationService {
     );
   }
 
+  async listarPorEvento(eventoId: string): Promise<Inscricao[]> {
+    await mockLatency(undefined);
+    return INSCRICOES_MOCK.filter((i) => i.eventoId === eventoId).sort(
+      (a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime(),
+    );
+  }
+
   async vagasRestantes(eventoId: string, vagasTotais: number): Promise<number> {
     await mockLatency(undefined);
     const confirmadas = INSCRICOES_MOCK.filter(

@@ -108,6 +108,26 @@ describe('RegistrationService', () => {
     expect(lista[0].eventoId).toBe('3');
   }));
 
+  it('listarPorEvento() retorna só as inscrições daquele evento, mais recentes primeiro', fakeAsync(() => {
+    spyOn(Date.prototype, 'toISOString').and.returnValues(
+      '2024-01-01T00:00:00.000Z',
+      '2024-01-01T00:00:01.000Z',
+      '2024-01-01T00:00:02.000Z',
+    );
+    service.inscrever({ eventoId: '1', usuarioId: 'u1', valorPago: 250, vagasTotais: 4 });
+    tick(400);
+    service.inscrever({ eventoId: '2', usuarioId: 'u2', valorPago: 0, vagasTotais: 4 });
+    tick(400);
+    service.inscrever({ eventoId: '1', usuarioId: 'u3', valorPago: 250, vagasTotais: 4 });
+    tick(400);
+
+    let lista: Inscricao[] = [];
+    service.listarPorEvento('1').then((i) => (lista = i));
+    tick(400);
+    expect(lista.length).toBe(2);
+    expect(lista[0].usuarioId).toBe('u3');
+  }));
+
   it('vagasRestantes() desconta apenas inscrições confirmadas', fakeAsync(() => {
     let b: Awaited<ReturnType<typeof service.inscrever>> | undefined;
     service.inscrever({ eventoId: '1', usuarioId: 'u1', valorPago: 250, vagasTotais: 4 });
