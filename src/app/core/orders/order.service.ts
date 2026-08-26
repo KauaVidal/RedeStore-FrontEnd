@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { mockLatency } from '../mock/mock-latency';
 import { ItemCarrinho } from '../cart/item-carrinho.model';
 import { PEDIDOS_MOCK } from './order-mock-store';
-import { Endereco, FormaEntrega, Pedido } from './pedido.model';
+import { Endereco, FormaEntrega, Pedido, StatusPedido } from './pedido.model';
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
@@ -41,5 +41,18 @@ export class OrderService {
     return PEDIDOS_MOCK.filter((p) => p.usuarioId === usuarioId).sort(
       (a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime(),
     );
+  }
+
+  async listarTodos(): Promise<Pedido[]> {
+    await mockLatency(undefined);
+    return [...PEDIDOS_MOCK].sort((a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime());
+  }
+
+  async atualizarStatus(id: string, novoStatus: StatusPedido): Promise<Pedido> {
+    await mockLatency(undefined);
+    const indice = PEDIDOS_MOCK.findIndex((p) => p.id === id);
+    if (indice < 0) throw new Error('PEDIDO_NAO_ENCONTRADO');
+    PEDIDOS_MOCK[indice] = { ...PEDIDOS_MOCK[indice], status: novoStatus };
+    return PEDIDOS_MOCK[indice];
   }
 }

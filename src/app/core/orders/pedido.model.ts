@@ -22,3 +22,9 @@ export interface Pedido {
   status: StatusPedido;
   criadoEm: string;
 }
+
+export function proximoStatus(pedido: Pick<Pedido, 'status' | 'formaEntrega'>): StatusPedido | null {
+  if (pedido.status === 'pago') return 'em_preparo';
+  if (pedido.status === 'em_preparo') return pedido.formaEntrega === 'retirada' ? 'retirado' : 'entregue';
+  return null;
+}
