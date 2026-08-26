@@ -115,6 +115,26 @@ describe('AuthService', () => {
     expect(service.usuarioAtual()?.telefone).toBe('11999999999');
   }));
 
+  it('buscarPorId() retorna o usuário correspondente sem o campo senha', fakeAsync(() => {
+    let usuario: { id: string; email: string; senha?: string } | undefined;
+    service.buscarPorId('2').then((u) => (usuario = u));
+    tick(400);
+    expect(usuario?.email).toBe('jovem@rede.com');
+    expect(usuario?.senha).toBeUndefined();
+  }));
+
+  it('buscarPorId() retorna undefined para um id inexistente', fakeAsync(() => {
+    let usuario: unknown;
+    let chamou = false;
+    service.buscarPorId('inexistente').then((u) => {
+      usuario = u;
+      chamou = true;
+    });
+    tick(400);
+    expect(chamou).toBeTrue();
+    expect(usuario).toBeUndefined();
+  }));
+
   afterEach(() => {
     USUARIOS_MOCK.splice(2);
   });
