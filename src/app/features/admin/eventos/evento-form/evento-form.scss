@@ -6,8 +6,20 @@
   gap: var(--espaco-4);
 }
 
+.evento-form__linha {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--espaco-4);
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
 .evento-form__acoes {
   display: flex;
   justify-content: flex-end;
   gap: var(--espaco-3);
+  padding-top: var(--espaco-4);
+  border-top: 1px solid rgba(246, 244, 236, 0.08);
 }
