@@ -1,0 +1,22 @@
+@use 'styles/tokens' as *;
+
+.admin-tela__cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--espaco-5);
+}
+
+.admin-tela__miniatura {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: var(--raio-padrao);
+}
+
+.admin-tela__confirmar-acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espaco-3);
+  margin-top: var(--espaco-4);
+}

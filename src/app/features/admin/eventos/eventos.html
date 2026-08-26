@@ -1,0 +1,46 @@
+<div class="admin-tela">
+  <div class="admin-tela__cabecalho">
+    <h1>Eventos</h1>
+    <app-button (clicado)="abrirNovo()">Novo evento</app-button>
+  </div>
+
+  @if (lista().length === 0) {
+    <app-empty-state mensagem="Nenhum evento cadastrado ainda."></app-empty-state>
+  } @else {
+    <app-table [cabecalhos]="['Foto', 'Título', 'Data', 'Local', 'Preço', 'Vagas', 'Ações']">
+      @for (evento of lista(); track evento.id) {
+        <tr>
+          <td><img class="admin-tela__miniatura" [src]="evento.foto" [alt]="evento.titulo" /></td>
+          <td>{{ evento.titulo }}</td>
+          <td>{{ evento.dataHora | dataBr }}</td>
+          <td>{{ evento.local }}</td>
+          <td>{{ evento.preco === 0 ? 'Gratuito' : 'R$ ' + evento.preco }}</td>
+          <td>{{ ocupadas(evento) }}/{{ evento.vagasTotais }}</td>
+          <td>
+            <a [routerLink]="['/admin/eventos', evento.id, 'inscricoes']">Inscrições</a>
+            <button type="button" (click)="abrirEdicao(evento)">Editar</button>
+            <button type="button" (click)="pedirRemocao(evento)">Remover</button>
+          </td>
+        </tr>
+      }
+    </app-table>
+  }
+</div>
+
+<app-modal
+  [titulo]="eventoEditando() ? 'Editar evento' : 'Novo evento'"
+  [aberto]="modalAberto()"
+  (fechar)="fecharModal()"
+>
+  <app-evento-form [evento]="eventoEditando()" (salvar)="salvar($event)" (cancelar)="fecharModal()"></app-evento-form>
+</app-modal>
+
+<app-modal titulo="Remover evento" [aberto]="eventoParaRemover() !== null" (fechar)="cancelarRemocao()">
+  @if (eventoParaRemover(); as evento) {
+    <p>Tem certeza que deseja remover "{{ evento.titulo }}"? Essa ação não pode ser desfeita.</p>
+    <div class="admin-tela__confirmar-acoes">
+      <app-button variante="secundario" (clicado)="cancelarRemocao()">Cancelar</app-button>
+      <app-button (clicado)="confirmarRemocao()">Remover</app-button>
+    </div>
+  }
+</app-modal>
