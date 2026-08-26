@@ -1,0 +1,27 @@
+@use 'styles/tokens' as *;
+
+.tabela__wrapper {
+  overflow-x: auto;
+}
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--fonte-corpo);
+  color: var(--rede-paper);
+
+  th,
+  td {
+    text-align: left;
+    padding: var(--espaco-3) var(--espaco-4);
+    border-bottom: 1px solid rgba(246, 244, 236, 0.12);
+    white-space: nowrap;
+  }
+
+  th {
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: rgba(246, 244, 236, 0.64);
+  }
+}

@@ -1,0 +1,14 @@
+<div class="tabela__wrapper">
+  <table class="tabela">
+    <thead>
+      <tr>
+        @for (cabecalho of cabecalhos(); track cabecalho) {
+          <th>{{ cabecalho }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      <ng-content />
+    </tbody>
+  </table>
+</div>
