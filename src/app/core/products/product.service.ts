@@ -24,4 +24,25 @@ export class ProductService {
   async buscarPorId(id: string): Promise<Produto | undefined> {
     return mockLatency(PRODUTOS_MOCK.find((p) => p.id === id));
   }
+
+  async criar(dados: Omit<Produto, 'id'>): Promise<Produto> {
+    await mockLatency(undefined);
+    const produto: Produto = { ...dados, id: String(PRODUTOS_MOCK.length + 1) };
+    PRODUTOS_MOCK.push(produto);
+    return produto;
+  }
+
+  async atualizar(id: string, dados: Partial<Omit<Produto, 'id'>>): Promise<Produto> {
+    await mockLatency(undefined);
+    const indice = PRODUTOS_MOCK.findIndex((p) => p.id === id);
+    if (indice < 0) throw new Error('PRODUTO_NAO_ENCONTRADO');
+    PRODUTOS_MOCK[indice] = { ...PRODUTOS_MOCK[indice], ...dados };
+    return PRODUTOS_MOCK[indice];
+  }
+
+  async remover(id: string): Promise<void> {
+    await mockLatency(undefined);
+    const indice = PRODUTOS_MOCK.findIndex((p) => p.id === id);
+    if (indice >= 0) PRODUTOS_MOCK.splice(indice, 1);
+  }
 }

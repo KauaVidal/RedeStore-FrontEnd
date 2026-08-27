@@ -71,6 +71,41 @@ describe('Rotas do app (integração)', () => {
     expect(harness.routeNativeElement?.textContent).toContain('Minhas inscrições');
   });
 
+  it('"/admin" sem login redireciona para "/"', async () => {
+    const harness = await RouterTestingHarness.create('/admin');
+    expect(harness.routeNativeElement?.textContent).toContain('Destaques');
+  });
+
+  it('"/admin" logado como jovem redireciona para "/"', async () => {
+    const auth = TestBed.inject(AuthService);
+    await auth.login('jovem@rede.com', 'jovem123');
+
+    const harness = await RouterTestingHarness.create('/admin');
+    expect(harness.routeNativeElement?.textContent).toContain('Destaques');
+  });
+
+  it('"/admin" logado como admin renderiza a tela de Produtos', async () => {
+    const auth = TestBed.inject(AuthService);
+    await auth.login('admin@rede.com', 'admin123');
+
+    const harness = await RouterTestingHarness.create('/admin');
+    await harness.fixture.whenStable();
+    harness.fixture.detectChanges();
+
+    expect(harness.routeNativeElement?.textContent).toContain('Produtos');
+  });
+
+  it('"/admin/pedidos" logado como admin renderiza a tela de Pedidos', async () => {
+    const auth = TestBed.inject(AuthService);
+    await auth.login('admin@rede.com', 'admin123');
+
+    const harness = await RouterTestingHarness.create('/admin/pedidos');
+    await harness.fixture.whenStable();
+    harness.fixture.detectChanges();
+
+    expect(harness.routeNativeElement?.textContent).toContain('Pedidos');
+  });
+
   it('uma rota desconhecida redireciona para "/"', async () => {
     const harness = await RouterTestingHarness.create('/rota-que-nao-existe');
     expect(harness.routeNativeElement?.textContent).toContain('Destaques');

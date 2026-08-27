@@ -1,0 +1,13 @@
+@if (aberto()) {
+  <div class="modal__overlay" (click)="fechar.emit()">
+    <div class="modal__caixa" (click)="$event.stopPropagation()">
+      <header class="modal__cabecalho">
+        <h2>{{ titulo() }}</h2>
+        <button type="button" class="modal__fechar" aria-label="Fechar" (click)="fechar.emit()">✕</button>
+      </header>
+      <div class="modal__conteudo">
+        <ng-content />
+      </div>
+    </div>
+  </div>
+}

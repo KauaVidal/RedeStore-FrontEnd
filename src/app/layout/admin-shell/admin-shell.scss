@@ -1,0 +1,190 @@
+@use 'styles/tokens' as *;
+
+.admin-shell {
+  display: flex;
+  min-height: 100vh;
+  font-family: var(--fonte-corpo);
+  background: var(--rede-black);
+  color: var(--rede-paper);
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+  }
+}
+
+.admin-shell__barra {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-6);
+  padding: var(--espaco-5);
+  background: var(--rede-graphite);
+  border-right: 1px solid rgba(246, 244, 236, 0.08);
+
+  @media (max-width: 767px) {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--espaco-4);
+    padding: var(--espaco-3) var(--espaco-4);
+    border-right: none;
+    border-bottom: 1px solid rgba(246, 244, 236, 0.08);
+  }
+}
+
+.admin-shell__marca {
+  display: flex;
+  align-items: baseline;
+  gap: var(--espaco-2);
+}
+
+.admin-shell__marca-nome {
+  font-family: var(--fonte-display);
+  font-weight: 800;
+  font-size: 1.125rem;
+  letter-spacing: 0.04em;
+  color: var(--rede-paper);
+}
+
+.admin-shell__marca-tag {
+  font-family: var(--fonte-utilitaria);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rede-yellow);
+  opacity: 0.85;
+}
+
+.admin-shell__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+
+  @media (max-width: 767px) {
+    flex-direction: row;
+    flex: 1;
+    gap: var(--espaco-2);
+    overflow-x: auto;
+  }
+}
+
+.admin-shell__link {
+  color: rgba(246, 244, 236, 0.72);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  padding: var(--espaco-2) var(--espaco-3);
+  border-radius: var(--raio-padrao);
+  transition: background-color 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(246, 244, 236, 0.06);
+    color: var(--rede-paper);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--rede-yellow);
+    outline-offset: 2px;
+  }
+}
+
+.admin-shell__link--ativo {
+  background: rgba(244, 198, 23, 0.14);
+  color: var(--rede-yellow);
+  font-weight: 700;
+  box-shadow: inset 3px 0 0 var(--rede-yellow);
+
+  &:hover {
+    background: rgba(244, 198, 23, 0.18);
+    color: var(--rede-yellow);
+  }
+
+  @media (max-width: 767px) {
+    box-shadow: inset 0 -3px 0 var(--rede-yellow);
+  }
+}
+
+.admin-shell__rodape {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-3);
+  padding-top: var(--espaco-4);
+  border-top: 1px solid rgba(246, 244, 236, 0.08);
+
+  @media (max-width: 767px) {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+    gap: var(--espaco-3);
+  }
+}
+
+.admin-shell__conta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.admin-shell__usuario {
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--rede-paper);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-shell__papel {
+  font-family: var(--fonte-utilitaria);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(246, 244, 236, 0.5);
+}
+
+.admin-shell__sair {
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  font-size: 0.875rem;
+  border: 1px solid rgba(246, 244, 236, 0.24);
+  border-radius: var(--raio-padrao);
+  background: transparent;
+  color: var(--rede-paper);
+  padding: var(--espaco-2) var(--espaco-4);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--rede-yellow);
+    color: var(--rede-yellow);
+    background: rgba(244, 198, 23, 0.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--rede-yellow);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 767px) {
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+}
+
+.admin-shell__conteudo {
+  flex: 1;
+  padding: var(--espaco-6);
+  overflow-x: auto;
+
+  @media (max-width: 767px) {
+    padding: var(--espaco-4);
+  }
+}

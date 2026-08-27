@@ -1,0 +1,88 @@
+@use 'styles/tokens' as *;
+
+.admin-tela {
+  padding: var(--espaco-5) var(--espaco-4) var(--espaco-8);
+}
+
+.admin-tela__cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espaco-3);
+  margin-bottom: var(--espaco-5);
+}
+
+.admin-tela__pedido-id {
+  font-family: var(--fonte-utilitaria);
+  color: rgba(246, 244, 236, 0.6);
+}
+
+.admin-tela__itens {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-tela__status {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--espaco-2);
+  border-radius: var(--raio-pilula);
+  font-family: var(--fonte-utilitaria);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: rgba(246, 244, 236, 0.08);
+  color: rgba(246, 244, 236, 0.72);
+
+  &--pago,
+  &--entregue {
+    background: var(--status-confirm);
+    color: var(--rede-black);
+  }
+
+  &--em_preparo,
+  &--retirado {
+    background: var(--rede-yellow);
+    color: var(--rede-black);
+  }
+}
+
+.admin-tela__acoes {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+}
+
+.admin-tela__avancar {
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  padding: var(--espaco-1) var(--espaco-3);
+  border: none;
+  border-radius: var(--raio-pilula);
+  background: var(--rede-yellow);
+  color: var(--rede-black);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background: var(--rede-yellow-deep);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--rede-yellow);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-tela__avancar {
+    transition: none;
+  }
+}

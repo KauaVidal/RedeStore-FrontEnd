@@ -1,0 +1,189 @@
+// src/app/features/admin/produtos/produto-form/produto-form.scss
+@use 'styles/tokens' as *;
+
+.produto-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-4);
+}
+
+.produto-form__linha {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--espaco-4);
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.produto-form__variacoes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-2);
+}
+
+.produto-form__variacoes-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.produto-form__variacoes-titulo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  font-family: var(--fonte-utilitaria);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(246, 244, 236, 0.6);
+}
+
+.produto-form__variacoes-contagem {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 var(--espaco-1);
+  border-radius: var(--raio-pilula);
+  background: rgba(244, 198, 23, 0.16);
+  color: var(--rede-yellow);
+  font-family: var(--fonte-utilitaria);
+  font-size: 0.625rem;
+  font-weight: 700;
+}
+
+.produto-form__variacoes-painel {
+  border: 1px solid rgba(246, 244, 236, 0.12);
+  border-radius: var(--raio-padrao);
+  overflow-x: auto;
+}
+
+.produto-form__variacao-linha {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(4.5rem, 1fr) minmax(4.5rem, 1fr) minmax(4.5rem, 5rem) auto;
+  align-items: center;
+  gap: var(--espaco-2);
+  padding: var(--espaco-2) var(--espaco-3);
+
+  & + & {
+    border-top: 1px solid rgba(246, 244, 236, 0.08);
+  }
+}
+
+.produto-form__variacao-indice {
+  font-family: var(--fonte-utilitaria);
+  font-size: 0.6875rem;
+  color: rgba(246, 244, 236, 0.4);
+  text-align: center;
+}
+
+.produto-form__variacao-input {
+  width: 100%;
+  font-family: var(--fonte-corpo);
+  font-size: 0.875rem;
+  padding: var(--espaco-2) var(--espaco-3);
+  border-radius: var(--raio-padrao);
+  border: 1px solid rgba(246, 244, 236, 0.16);
+  background: var(--rede-black);
+  color: var(--rede-paper);
+  transition: border-color 0.15s ease;
+
+  &::placeholder {
+    color: rgba(246, 244, 236, 0.35);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--rede-yellow);
+  }
+
+  &--estoque {
+    text-align: center;
+  }
+}
+
+.produto-form__variacao-remover {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--raio-pilula);
+  background: transparent;
+  color: rgba(246, 244, 236, 0.45);
+  font-size: 0.8125rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background: rgba(217, 87, 59, 0.14);
+    color: var(--status-cancel);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--rede-yellow);
+    outline-offset: 2px;
+  }
+}
+
+.produto-form__variacao-adicionar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-2);
+  width: 100%;
+  padding: var(--espaco-2);
+  border: 1px dashed rgba(246, 244, 236, 0.24);
+  border-radius: var(--raio-padrao);
+  background: transparent;
+  color: rgba(246, 244, 236, 0.72);
+  font-family: var(--fonte-corpo);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease,
+    background-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--rede-yellow);
+    color: var(--rede-yellow);
+    background: rgba(244, 198, 23, 0.06);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--rede-yellow);
+    outline-offset: 2px;
+  }
+}
+
+.produto-form__acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espaco-3);
+  padding-top: var(--espaco-4);
+  border-top: 1px solid rgba(246, 244, 236, 0.08);
+}
+
+.campo__erro {
+  font-size: 0.8125rem;
+  color: var(--status-cancel);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .produto-form__variacao-remover,
+  .produto-form__variacao-adicionar,
+  .produto-form__variacao-input {
+    transition: none;
+  }
+}

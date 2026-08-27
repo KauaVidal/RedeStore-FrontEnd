@@ -71,4 +71,39 @@ describe('OrderService', () => {
     expect(pedidosU1.length).toBe(2);
     expect(pedidosU1[0].formaEntrega).toBe('entrega');
   }));
+
+  it('listarTodos() retorna todos os pedidos, mais recentes primeiro', fakeAsync(() => {
+    spyOn(Date.prototype, 'toISOString').and.returnValues(
+      '2024-01-01T00:00:00.000Z',
+      '2024-01-01T00:00:01.000Z',
+    );
+    service.criar({ usuarioId: 'u1', itens: [ITEM], formaEntrega: 'retirada' });
+    tick(400);
+    service.criar({ usuarioId: 'u2', itens: [ITEM], formaEntrega: 'entrega' });
+    tick(400);
+
+    let todos: Pedido[] = [];
+    service.listarTodos().then((p) => (todos = p));
+    tick(400);
+    expect(todos.length).toBe(2);
+    expect(todos[0].usuarioId).toBe('u2');
+  }));
+
+  it('atualizarStatus() muda o status do pedido', fakeAsync(() => {
+    let pedido: Pedido | undefined;
+    service.criar({ usuarioId: 'u1', itens: [ITEM], formaEntrega: 'retirada' }).then((p) => (pedido = p));
+    tick(400);
+
+    let atualizado: Pedido | undefined;
+    service.atualizarStatus(pedido!.id, 'em_preparo').then((p) => (atualizado = p));
+    tick(400);
+    expect(atualizado?.status).toBe('em_preparo');
+  }));
+
+  it('atualizarStatus() rejeita quando o id não existe', fakeAsync(() => {
+    let erro: Error | undefined;
+    service.atualizarStatus('inexistente', 'em_preparo').catch((e) => (erro = e));
+    tick(400);
+    expect(erro?.message).toBe('PEDIDO_NAO_ENCONTRADO');
+  }));
 });

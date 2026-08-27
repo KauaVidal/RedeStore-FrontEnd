@@ -46,6 +46,12 @@ export class AuthService {
     return usuario;
   }
 
+  async buscarPorId(id: string): Promise<Usuario | undefined> {
+    await mockLatency(undefined);
+    const encontrado = USUARIOS_MOCK.find((u) => u.id === id);
+    return encontrado ? this.paraUsuario(encontrado) : undefined;
+  }
+
   async recuperarSenha(_email: string): Promise<void> {
     await mockLatency(undefined);
   }

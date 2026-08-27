@@ -9,15 +9,17 @@ describe('Header', () => {
   let fixture: ComponentFixture<Header>;
   let estaAutenticado: ReturnType<typeof signal<boolean>>;
   let quantidadeTotal: ReturnType<typeof signal<number>>;
+  let isAdmin: ReturnType<typeof signal<boolean>>;
 
   beforeEach(async () => {
     estaAutenticado = signal(false);
     quantidadeTotal = signal(0);
+    isAdmin = signal(false);
     await TestBed.configureTestingModule({
       imports: [Header],
       providers: [
         provideRouter([]),
-        { provide: AuthService, useValue: { estaAutenticado } },
+        { provide: AuthService, useValue: { estaAutenticado, isAdmin } },
         { provide: CartService, useValue: { quantidadeTotal } },
       ],
     }).compileComponents();
@@ -56,5 +58,16 @@ describe('Header', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(fixture.nativeElement.querySelector('.cabecalho__badge').textContent.trim()).toBe('3');
+  });
+
+  it('não mostra o link Admin quando isAdmin é false', () => {
+    expect(fixture.nativeElement.textContent).not.toContain('Admin');
+  });
+
+  it('mostra o link Admin quando isAdmin é true', async () => {
+    isAdmin.set(true);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.nativeElement.textContent).toContain('Admin');
   });
 });

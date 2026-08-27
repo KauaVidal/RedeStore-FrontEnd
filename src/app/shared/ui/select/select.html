@@ -1,0 +1,11 @@
+<label class="campo">
+  <span class="campo__rotulo">{{ rotulo() }}</span>
+  <select class="campo__input" [class.campo__input--erro]="erro()" [formControl]="controle()">
+    @for (opcao of opcoes(); track opcao.valor) {
+      <option [value]="opcao.valor">{{ opcao.rotulo }}</option>
+    }
+  </select>
+  @if (erro()) {
+    <span class="campo__erro" role="alert">{{ erro() }}</span>
+  }
+</label>

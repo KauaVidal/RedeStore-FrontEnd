@@ -1,0 +1,33 @@
+<div class="admin-tela">
+  <div class="admin-tela__cabecalho">
+    <h1 class="titulo-1">Pedidos</h1>
+  </div>
+
+  @if (lista().length === 0) {
+    <app-empty-state mensagem="Nenhum pedido registrado ainda."></app-empty-state>
+  } @else {
+    <app-table [cabecalhos]="['Pedido', 'Cliente', 'Itens', 'Total', 'Status', 'Data', 'Ações']">
+      @for (pedido of lista(); track pedido.id) {
+        <tr>
+          <td class="admin-tela__pedido-id">#{{ pedido.id }}</td>
+          <td>{{ nomeCliente(pedido.usuarioId) }}</td>
+          <td class="admin-tela__itens">{{ resumoItens(pedido) }}</td>
+          <td>R$ {{ pedido.valorTotal | precoBr }}</td>
+          <td>
+            <span class="admin-tela__status" [class]="'admin-tela__status--' + pedido.status">{{
+              rotuloStatus[pedido.status]
+            }}</span>
+          </td>
+          <td>{{ pedido.criadoEm | dataBr }}</td>
+          <td class="admin-tela__acoes">
+            @if (rotuloProximo(pedido)) {
+              <button type="button" class="admin-tela__avancar" (click)="avancar(pedido)">
+                {{ rotuloProximo(pedido) }}
+              </button>
+            }
+          </td>
+        </tr>
+      }
+    </app-table>
+  }
+</div>

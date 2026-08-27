@@ -1,0 +1,114 @@
+@use 'styles/tokens' as *;
+
+.admin-tela {
+  padding: var(--espaco-5) var(--espaco-4) var(--espaco-8);
+}
+
+.admin-tela__cabecalho--empilhado {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espaco-2);
+  margin-bottom: var(--espaco-5);
+
+  h1 {
+    margin: 0;
+  }
+}
+
+.admin-tela__voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-1);
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  color: rgba(246, 244, 236, 0.64);
+  text-decoration: none;
+  padding: var(--espaco-1) var(--espaco-2);
+  margin-left: calc(var(--espaco-2) * -1);
+  border-radius: var(--raio-padrao);
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+
+  &:hover {
+    color: var(--rede-yellow);
+    background: rgba(244, 198, 23, 0.12);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--rede-yellow);
+    outline-offset: 2px;
+  }
+}
+
+.admin-tela__status {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--espaco-2);
+  border-radius: var(--raio-pilula);
+  font-family: var(--fonte-utilitaria);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(246, 244, 236, 0.08);
+  color: rgba(246, 244, 236, 0.72);
+
+  &--confirmada {
+    background: var(--status-confirm);
+    color: var(--rede-black);
+  }
+
+  &--cancelada {
+    background: var(--status-cancel);
+    color: var(--rede-paper);
+  }
+}
+
+.admin-tela__acoes {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+}
+
+.admin-tela__acao {
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  padding: var(--espaco-1) var(--espaco-2);
+  border: none;
+  border-radius: var(--raio-padrao);
+  background: transparent;
+  color: var(--rede-yellow);
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background: rgba(244, 198, 23, 0.12);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--rede-yellow);
+    outline-offset: 2px;
+  }
+
+  &--perigo {
+    color: var(--status-cancel);
+
+    &:hover {
+      background: rgba(217, 87, 59, 0.14);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-tela__voltar,
+  .admin-tela__acao {
+    transition: none;
+  }
+}

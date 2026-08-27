@@ -1,0 +1,148 @@
+@use 'styles/tokens' as *;
+
+.admin-tela {
+  padding: var(--espaco-5) var(--espaco-4) var(--espaco-8);
+}
+
+.admin-tela__cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espaco-3);
+  margin-bottom: var(--espaco-5);
+}
+
+.admin-tela__botao-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  line-height: 1;
+  margin-top: -1px;
+}
+
+.admin-tela__miniatura-moldura {
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  border-radius: var(--raio-padrao);
+  background: var(--rede-black);
+  border: 1px solid rgba(246, 244, 236, 0.16);
+}
+
+.admin-tela__miniatura {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.admin-tela__vagas {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  padding: 2px var(--espaco-2);
+  border-radius: var(--raio-pilula);
+  font-family: var(--fonte-utilitaria);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  background: rgba(246, 244, 236, 0.08);
+  color: rgba(246, 244, 236, 0.72);
+
+  &--ok {
+    background: var(--status-confirm);
+    color: var(--rede-black);
+  }
+
+  &--baixo {
+    background: var(--rede-yellow);
+    color: var(--rede-black);
+  }
+
+  &--esgotado {
+    background: var(--status-cancel);
+    color: var(--rede-paper);
+  }
+}
+
+.admin-tela__acoes {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+}
+
+.admin-tela__acao {
+  font-family: var(--fonte-corpo);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  padding: var(--espaco-1) var(--espaco-2);
+  border: none;
+  border-radius: var(--raio-padrao);
+  background: transparent;
+  color: var(--rede-yellow);
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background: rgba(244, 198, 23, 0.12);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--rede-yellow);
+    outline-offset: 2px;
+  }
+
+  &--perigo {
+    color: var(--status-cancel);
+
+    &:hover {
+      background: rgba(217, 87, 59, 0.14);
+    }
+  }
+}
+
+.admin-tela__confirmar {
+  display: flex;
+  gap: var(--espaco-3);
+  align-items: flex-start;
+}
+
+.admin-tela__confirmar-icone {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--raio-pilula);
+  background: rgba(217, 87, 59, 0.14);
+  color: var(--status-cancel);
+}
+
+.admin-tela__confirmar-texto {
+  margin: 0;
+  color: var(--rede-paper);
+  line-height: 1.5;
+
+  strong {
+    font-weight: 700;
+  }
+}
+
+.admin-tela__confirmar-acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espaco-3);
+  margin-top: var(--espaco-4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-tela__acao {
+    transition: none;
+  }
+}

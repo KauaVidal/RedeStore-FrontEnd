@@ -1,0 +1,25 @@
+<div class="admin-shell">
+  <aside class="admin-shell__barra">
+    <div class="admin-shell__marca">
+      <span class="admin-shell__marca-nome">REDE</span>
+      <span class="admin-shell__marca-tag">Admin</span>
+    </div>
+    <nav class="admin-shell__nav" aria-label="Navegação administrativa">
+      <a class="admin-shell__link" routerLink="/admin/produtos" routerLinkActive="admin-shell__link--ativo">Produtos</a>
+      <a class="admin-shell__link" routerLink="/admin/pedidos" routerLinkActive="admin-shell__link--ativo">Pedidos</a>
+      <a class="admin-shell__link" routerLink="/admin/eventos" routerLinkActive="admin-shell__link--ativo">Eventos</a>
+    </nav>
+    <div class="admin-shell__rodape">
+      @if (usuario(); as usuarioLogado) {
+        <div class="admin-shell__conta">
+          <span class="admin-shell__usuario">{{ usuarioLogado.nome }}</span>
+          <span class="admin-shell__papel">Administrador</span>
+        </div>
+      }
+      <button type="button" class="admin-shell__sair" data-testid="botao-sair" (click)="sair()">Sair</button>
+    </div>
+  </aside>
+  <main class="admin-shell__conteudo">
+    <router-outlet />
+  </main>
+</div>

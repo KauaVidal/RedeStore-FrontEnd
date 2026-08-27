@@ -16,4 +16,5 @@ export class Header {
 
   protected readonly estaAutenticado = this.auth.estaAutenticado;
   protected readonly quantidadeCarrinho = this.carrinho.quantidadeTotal;
+  protected readonly isAdmin = this.auth.isAdmin;
 }
