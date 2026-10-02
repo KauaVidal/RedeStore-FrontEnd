@@ -9,7 +9,7 @@
     <app-table [cabecalhos]="['Pedido', 'Cliente', 'Itens', 'Total', 'Status', 'Data', 'Ações']">
       @for (pedido of lista(); track pedido.id) {
         <tr>
-          <td class="admin-tela__pedido-id">#{{ pedido.id }}</td>
+          <td class="admin-tela__pedido-id">#{{ pedido.id | codigoPedido }}</td>
           <td>{{ nomeCliente(pedido.usuarioId) }}</td>
           <td class="admin-tela__itens">{{ resumoItens(pedido) }}</td>
           <td>R$ {{ pedido.valorTotal | precoBr }}</td>

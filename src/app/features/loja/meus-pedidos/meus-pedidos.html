@@ -7,7 +7,7 @@
     <ul class="meus-pedidos__lista">
       @for (pedido of lista(); track pedido.id) {
         <li class="meus-pedidos__item">
-          <span class="titulo-2">Pedido #{{ pedido.id }}</span>
+          <span class="titulo-2">Pedido #{{ pedido.id | codigoPedido }}</span>
           <span class="meus-pedidos__status" [class]="'meus-pedidos__status--' + pedido.status">
             {{ rotuloStatus[pedido.status] }}
           </span>

@@ -7,6 +7,7 @@ import { Table } from '../../../shared/ui/table/table';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { PrecoBrPipe } from '../../../shared/pipes/preco-br.pipe';
 import { DataBrPipe } from '../../../shared/pipes/data-br.pipe';
+import { CodigoPedidoPipe } from '../../../shared/pipes/codigo-pedido.pipe';
 
 const ROTULO_STATUS: Record<StatusPedido, string> = {
   pago: 'Pago',
@@ -17,7 +18,7 @@ const ROTULO_STATUS: Record<StatusPedido, string> = {
 
 @Component({
   selector: 'app-pedidos',
-  imports: [Table, EmptyState, PrecoBrPipe, DataBrPipe],
+  imports: [Table, EmptyState, PrecoBrPipe, DataBrPipe, CodigoPedidoPipe],
   templateUrl: './pedidos.html',
   styleUrl: './pedidos.scss',
 })

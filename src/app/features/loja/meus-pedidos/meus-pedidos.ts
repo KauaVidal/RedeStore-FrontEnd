@@ -3,6 +3,7 @@ import { OrderService } from '../../../core/orders/order.service';
 import { Pedido, StatusPedido } from '../../../core/orders/pedido.model';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { PrecoBrPipe } from '../../../shared/pipes/preco-br.pipe';
+import { CodigoPedidoPipe } from '../../../shared/pipes/codigo-pedido.pipe';
 
 const ROTULO_STATUS: Record<StatusPedido, string> = {
   pago: 'Pago',
@@ -13,7 +14,7 @@ const ROTULO_STATUS: Record<StatusPedido, string> = {
 
 @Component({
   selector: 'app-meus-pedidos',
-  imports: [EmptyState, PrecoBrPipe],
+  imports: [EmptyState, PrecoBrPipe, CodigoPedidoPipe],
   templateUrl: './meus-pedidos.html',
   styleUrl: './meus-pedidos.scss',
 })
