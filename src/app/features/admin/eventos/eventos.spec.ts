@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Eventos } from './eventos';
 import { EventService } from '../../../core/events/event.service';
-import { RegistrationService } from '../../../core/registrations/registration.service';
 import { Evento } from '../../../core/events/evento.model';
 
 const EVENTO: Evento = {
@@ -20,20 +19,16 @@ const EVENTO: Evento = {
 describe('Eventos', () => {
   let fixture: ComponentFixture<Eventos>;
   let eventosServicoFalso: jasmine.SpyObj<Pick<EventService, 'listar' | 'criar' | 'atualizar' | 'remover'>>;
-  let inscricoesServicoFalso: jasmine.SpyObj<Pick<RegistrationService, 'vagasRestantes'>>;
 
   async function montar(eventos: Evento[]): Promise<void> {
     eventosServicoFalso = jasmine.createSpyObj('EventService', ['listar', 'criar', 'atualizar', 'remover']);
     eventosServicoFalso.listar.and.resolveTo(eventos);
-    inscricoesServicoFalso = jasmine.createSpyObj('RegistrationService', ['vagasRestantes']);
-    inscricoesServicoFalso.vagasRestantes.and.resolveTo(4);
 
     await TestBed.configureTestingModule({
       imports: [Eventos],
       providers: [
         provideRouter([]),
         { provide: EventService, useValue: eventosServicoFalso },
-        { provide: RegistrationService, useValue: inscricoesServicoFalso },
       ],
     }).compileComponents();
 
@@ -54,6 +49,11 @@ describe('Eventos', () => {
     expect(texto).toContain('Retiro de Verão REDE');
     expect(texto).toContain('Sítio Vida Nova, Ibiúna');
     expect(texto).toContain('4');
+  });
+
+  it('mostra a ocupação calculada a partir de vagasRestantes', async () => {
+    await montar([{ ...EVENTO, vagasTotais: 4, vagasRestantes: 1 }]);
+    expect(fixture.nativeElement.textContent).toContain('3/4');
   });
 
   it('chama EventService.criar ao salvar o formulário em modo criação', async () => {

@@ -25,14 +25,10 @@ describe('EventoDetalhes', () => {
 
   async function montar(opcoes: { vagasRestantes: number; inscricoes: Inscricao[] }): Promise<void> {
     const eventServiceFalso = jasmine.createSpyObj('EventService', ['buscarPorId']);
-    eventServiceFalso.buscarPorId.and.resolveTo(EVENTO);
+    eventServiceFalso.buscarPorId.and.resolveTo({ ...EVENTO, vagasRestantes: opcoes.vagasRestantes });
 
-    const registrationServiceFalso = jasmine.createSpyObj('RegistrationService', [
-      'vagasRestantes',
-      'listarPorUsuario',
-    ]);
-    registrationServiceFalso.vagasRestantes.and.resolveTo(opcoes.vagasRestantes);
-    registrationServiceFalso.listarPorUsuario.and.resolveTo(opcoes.inscricoes);
+    const registrationServiceFalso = jasmine.createSpyObj('RegistrationService', ['listarMinhas']);
+    registrationServiceFalso.listarMinhas.and.resolveTo(opcoes.inscricoes);
 
     await TestBed.configureTestingModule({
       imports: [EventoDetalhes],
@@ -89,19 +85,13 @@ describe('EventoDetalhes', () => {
   });
 
   it('não mostra nenhum estado de CTA (nem "Esgotado" nem "Inscrever-se") antes de vagas e inscrição carregarem', async () => {
-    let resolverVagas!: (vagas: number) => void;
     let resolverInscricoes!: (inscricoes: Inscricao[]) => void;
-    const vagasPromise = new Promise<number>((resolve) => (resolverVagas = resolve));
     const inscricoesPromise = new Promise<Inscricao[]>((resolve) => (resolverInscricoes = resolve));
 
     const eventServiceFalso = jasmine.createSpyObj('EventService', ['buscarPorId']);
-    eventServiceFalso.buscarPorId.and.resolveTo(EVENTO);
-    const registrationServiceFalso = jasmine.createSpyObj('RegistrationService', [
-      'vagasRestantes',
-      'listarPorUsuario',
-    ]);
-    registrationServiceFalso.vagasRestantes.and.returnValue(vagasPromise);
-    registrationServiceFalso.listarPorUsuario.and.returnValue(inscricoesPromise);
+    eventServiceFalso.buscarPorId.and.resolveTo({ ...EVENTO, vagasRestantes: 0 });
+    const registrationServiceFalso = jasmine.createSpyObj('RegistrationService', ['listarMinhas']);
+    registrationServiceFalso.listarMinhas.and.returnValue(inscricoesPromise);
 
     await TestBed.configureTestingModule({
       imports: [EventoDetalhes],
@@ -120,7 +110,7 @@ describe('EventoDetalhes', () => {
     fixture = TestBed.createComponent(EventoDetalhes);
     fixture.detectChanges();
     // Deixa o microtask de buscarPorId resolver (evento carregado), sem resolver
-    // ainda vagasRestantes/listarPorUsuario — reproduz a janela descrita em I1.
+    // ainda listarMinhas — reproduz a janela descrita em I1.
     await Promise.resolve();
     await Promise.resolve();
     fixture.detectChanges();
@@ -130,7 +120,6 @@ describe('EventoDetalhes', () => {
     expect(textoAntes).not.toContain('Você já está inscrito');
     expect(fixture.nativeElement.querySelector('a.detalhes-evento__acao')).toBeNull();
 
-    resolverVagas(0);
     resolverInscricoes([]);
     await fixture.whenStable();
     fixture.detectChanges();

@@ -14,7 +14,7 @@ describe('Perfil', () => {
     usuarioAtual: ReturnType<typeof signal>;
   };
   let orderServiceFalso: jasmine.SpyObj<Pick<OrderService, 'listarPorUsuario'>>;
-  let registrationServiceFalso: jasmine.SpyObj<Pick<RegistrationService, 'listarPorUsuario'>>;
+  let registrationServiceFalso: jasmine.SpyObj<Pick<RegistrationService, 'listarMinhas'>>;
   let router: Router;
 
   async function montar(pedidos: Pedido[], inscricoes: Inscricao[]): Promise<void> {
@@ -25,8 +25,8 @@ describe('Perfil', () => {
     };
     orderServiceFalso = jasmine.createSpyObj('OrderService', ['listarPorUsuario']);
     orderServiceFalso.listarPorUsuario.and.resolveTo(pedidos);
-    registrationServiceFalso = jasmine.createSpyObj('RegistrationService', ['listarPorUsuario']);
-    registrationServiceFalso.listarPorUsuario.and.resolveTo(inscricoes);
+    registrationServiceFalso = jasmine.createSpyObj('RegistrationService', ['listarMinhas']);
+    registrationServiceFalso.listarMinhas.and.resolveTo(inscricoes);
 
     await TestBed.configureTestingModule({
       imports: [Perfil],

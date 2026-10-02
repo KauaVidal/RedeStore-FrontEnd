@@ -2,7 +2,6 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { EventService } from '../../../core/events/event.service';
 import { RegistrationService } from '../../../core/registrations/registration.service';
-import { AuthService } from '../../../core/auth/auth.service';
 import { Evento } from '../../../core/events/evento.model';
 import { Inscricao } from '../../../core/registrations/inscricao.model';
 import { PrecoBrPipe } from '../../../shared/pipes/preco-br.pipe';
@@ -19,7 +18,6 @@ type ResultadoTela = 'criada' | 'ja_inscrito' | 'esgotado';
 export class Confirmacao implements OnInit {
   private readonly eventService = inject(EventService);
   private readonly registrations = inject(RegistrationService);
-  private readonly auth = inject(AuthService);
   private readonly rota = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
@@ -36,13 +34,7 @@ export class Confirmacao implements OnInit {
     }
     this.evento.set(evento);
 
-    const usuario = this.auth.usuarioAtual()!;
-    const resposta = await this.registrations.inscrever({
-      eventoId: evento.id,
-      usuarioId: usuario.id,
-      valorPago: evento.preco,
-      vagasTotais: evento.vagasTotais,
-    });
+    const resposta = await this.registrations.inscrever(evento.id);
 
     this.resultado.set(resposta.resultado);
     if (resposta.resultado !== 'esgotado') {

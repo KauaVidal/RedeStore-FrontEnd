@@ -38,13 +38,9 @@ export class EventoDetalhes implements OnInit {
       return;
     }
 
-    const usuario = this.auth.usuarioAtual();
-    const [vagas, inscricoes] = await Promise.all([
-      this.registrations.vagasRestantes(id, evento.vagasTotais),
-      usuario ? this.registrations.listarPorUsuario(usuario.id) : Promise.resolve([]),
-    ]);
+    const inscricoes = this.auth.usuarioAtual() ? await this.registrations.listarMinhas() : [];
 
-    this.vagasRestantes.set(vagas);
+    this.vagasRestantes.set(evento.vagasRestantes);
     this.jaInscrito.set(inscricoes.some((i) => i.eventoId === id && i.status === 'confirmada'));
     this.carregado.set(true);
   }

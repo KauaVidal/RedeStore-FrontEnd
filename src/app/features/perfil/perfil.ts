@@ -42,7 +42,7 @@ export class Perfil implements OnInit {
     if (!usuario) return;
     const [pedidos, inscricoes] = await Promise.all([
       this.pedidosService.listarPorUsuario(usuario.id),
-      this.registrations.listarPorUsuario(usuario.id),
+      this.registrations.listarMinhas(),
     ]);
     this.pedidos.set(pedidos);
     this.inscricoesConfirmadas.set(inscricoes.filter((i) => i.status === 'confirmada'));

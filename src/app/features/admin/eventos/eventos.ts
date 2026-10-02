@@ -1,7 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { EventService } from '../../../core/events/event.service';
-import { RegistrationService } from '../../../core/registrations/registration.service';
 import { DadosEvento, Evento } from '../../../core/events/evento.model';
 import { Table } from '../../../shared/ui/table/table';
 import { Modal } from '../../../shared/ui/modal/modal';
@@ -18,10 +17,8 @@ import { EventoForm } from './evento-form/evento-form';
 })
 export class Eventos implements OnInit {
   private readonly eventosService = inject(EventService);
-  private readonly inscricoesService = inject(RegistrationService);
 
   protected readonly lista = signal<Evento[]>([]);
-  protected readonly vagasRestantes = signal<Record<string, number>>({});
   protected readonly modalAberto = signal(false);
   protected readonly eventoEditando = signal<Evento | null>(null);
   protected readonly eventoParaRemover = signal<Evento | null>(null);
@@ -31,18 +28,11 @@ export class Eventos implements OnInit {
   }
 
   private async carregar(): Promise<void> {
-    const eventos = await this.eventosService.listar();
-    this.lista.set(eventos);
-    const vagas = await Promise.all(
-      eventos.map((e) => this.inscricoesService.vagasRestantes(e.id, e.vagasTotais)),
-    );
-    const mapa: Record<string, number> = {};
-    eventos.forEach((e, indice) => (mapa[e.id] = vagas[indice]));
-    this.vagasRestantes.set(mapa);
+    this.lista.set(await this.eventosService.listar());
   }
 
   protected ocupadas(evento: Evento): number {
-    return evento.vagasTotais - (this.vagasRestantes()[evento.id] ?? evento.vagasTotais);
+    return evento.vagasTotais - evento.vagasRestantes;
   }
 
   protected abrirNovo(): void {
