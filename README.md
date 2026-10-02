@@ -36,14 +36,9 @@ checklist de fluxos: [`docs/backend/roteiro-integracao.md`](docs/backend/roteiro
 
 ### Login de teste
 
-Não existe backend ainda — a autenticação é mockada em memória (`src/app/core/auth/auth-mock-store.ts`). Use uma dessas contas pra testar o login:
+As contas vivem no backend. Crie `jovem@rede.com` e `admin@rede.com` pela tela de Cadastro (senha com 8+ caracteres) e rode o seed `docs/backend/seed-dev.sql`, que promove `admin@rede.com` a admin e cadastra produtos e eventos de exemplo — detalhes em [`docs/backend/roteiro-integracao.md`](docs/backend/roteiro-integracao.md).
 
-| Papel | E-mail | Senha |
-|---|---|---|
-| Jovem | `jovem@rede.com` | `jovem123` |
-| Admin | `admin@rede.com` | `admin123` |
-
-A sessão fica salva no `localStorage` do navegador — um F5 não desloga. Cadastros feitos pela tela de Cadastro também funcionam, mas somem quando o servidor reinicia (é tudo em memória).
+A sessão (usuário + token JWT, válido por 8 h) fica salva no `localStorage` do navegador — um F5 não desloga. Quando o token expira, o app volta para o login.
 
 ## Comandos do Angular CLI
 
@@ -78,7 +73,7 @@ npx ng version
 
 ```
 src/app/
-  core/           # AuthService mockado, guards de rota, modelos
+  core/           # serviços HTTP da API, sessão/JWT, guards de rota, modelos
   shared/
     ui/           # Componentes reutilizáveis: Logo, Button, TextField, SectionDivider, EmptyState
     validators/   # Validadores de formulário (senha forte, confirmação)
