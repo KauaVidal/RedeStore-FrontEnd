@@ -14,7 +14,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  const ehApi = req.url.startsWith(environment.apiUrl);
+  // Compara com a barra final para "https://api.x.com" não casar com "https://api.x.com.outro-dominio.com",
+  // e exige apiUrl preenchida: com '' toda URL "começaria" com ela e o token vazaria para qualquer domínio.
+  const ehApi = !!environment.apiUrl && req.url.startsWith(`${environment.apiUrl}/`);
   const requisicao = token && ehApi ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
 
   return next(requisicao).pipe(
