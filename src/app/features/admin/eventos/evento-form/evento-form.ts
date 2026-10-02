@@ -5,6 +5,16 @@ import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { Textarea } from '../../../../shared/ui/textarea/textarea';
 import { Button } from '../../../../shared/ui/button/button';
 
+/** Converte um ISO (UTC) para o formato do `<input type="datetime-local">`, no fuso do navegador. */
+function paraDataHoraLocal(iso: string): string {
+  const data = new Date(iso);
+  const doisDigitos = (n: number) => String(n).padStart(2, '0');
+  return (
+    `${data.getFullYear()}-${doisDigitos(data.getMonth() + 1)}-${doisDigitos(data.getDate())}` +
+    `T${doisDigitos(data.getHours())}:${doisDigitos(data.getMinutes())}`
+  );
+}
+
 @Component({
   selector: 'app-evento-form',
   imports: [ReactiveFormsModule, TextField, Textarea, Button],
@@ -37,7 +47,7 @@ export class EventoForm implements OnChanges {
       this.form.patchValue({
         titulo: evento.titulo,
         descricao: evento.descricao,
-        dataHora: evento.dataHora.slice(0, 16),
+        dataHora: paraDataHoraLocal(evento.dataHora),
         local: evento.local,
         preco: evento.preco,
         vagasTotais: evento.vagasTotais,

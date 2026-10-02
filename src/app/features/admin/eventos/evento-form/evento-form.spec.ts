@@ -69,4 +69,12 @@ describe('EventoForm', () => {
     cancelar?.click();
     expect(emitiu).toBeTrue();
   });
+
+  it('em modo edição, pré-preenche a data no fuso local (salvar sem mexer mantém o mesmo instante)', () => {
+    fixture.componentRef.setInput('evento', EVENTO);
+    fixture.detectChanges();
+    const valorCampo = fixture.componentInstance['form'].controls.dataHora.value;
+    // `datetime-local` é interpretado no fuso local: precisa voltar ao mesmo instante UTC.
+    expect(new Date(valorCampo).toISOString()).toBe(EVENTO.dataHora);
+  });
 });
