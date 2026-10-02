@@ -1,96 +1,76 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { mockLatency } from '../mock/mock-latency';
-import { USUARIOS_MOCK, UsuarioMock } from './auth-mock-store';
-import { Usuario } from './usuario.model';
+import { computed, inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { API, requisitar } from '../api/api';
 import { CartService } from '../cart/cart.service';
 import { OrderService } from '../orders/order.service';
-
-const CHAVE_SESSAO = 'rede_sessao_usuario';
+import { Sessao, SessaoStore } from './sessao.store';
+import { Usuario } from './usuario.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private readonly http = inject(HttpClient);
+  private readonly sessao = inject(SessaoStore);
   private readonly carrinho = inject(CartService);
   private readonly pedidos = inject(OrderService);
 
-  private readonly _usuarioAtual = signal<Usuario | null>(this.carregarSessao());
-
-  readonly usuarioAtual = this._usuarioAtual.asReadonly();
-  readonly estaAutenticado = computed(() => this._usuarioAtual() !== null);
-  readonly isAdmin = computed(() => this._usuarioAtual()?.papel === 'admin');
+  readonly usuarioAtual = this.sessao.usuario;
+  readonly estaAutenticado = computed(() => this.usuarioAtual() !== null);
+  readonly isAdmin = computed(() => this.usuarioAtual()?.papel === 'admin');
 
   async login(email: string, senha: string): Promise<Usuario> {
-    await mockLatency(undefined);
-    const encontrado = USUARIOS_MOCK.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase() && u.senha === senha,
-    );
-    if (!encontrado) throw new Error('CREDENCIAIS_INVALIDAS');
-    const usuario = this.paraUsuario(encontrado);
-    this.definirSessao(usuario);
-    return usuario;
+    const resposta = await requisitar(this.http.post<Sessao>(`${API}/auth/login`, { email, senha }));
+    this.sessao.definir(resposta);
+    return resposta.usuario;
   }
 
   async cadastrar(dados: { nome: string; email: string; senha: string }): Promise<Usuario> {
-    await mockLatency(undefined);
-    const jaExiste = USUARIOS_MOCK.some((u) => u.email.toLowerCase() === dados.email.toLowerCase());
-    if (jaExiste) throw new Error('EMAIL_EM_USO');
-    const novo: UsuarioMock = {
-      id: String(USUARIOS_MOCK.length + 1),
-      nome: dados.nome,
-      email: dados.email,
-      senha: dados.senha,
-      papel: 'jovem',
-    };
-    USUARIOS_MOCK.push(novo);
-    const usuario = this.paraUsuario(novo);
-    this.definirSessao(usuario);
-    return usuario;
+    const resposta = await requisitar(this.http.post<Sessao>(`${API}/auth/cadastro`, dados));
+    this.sessao.definir(resposta);
+    return resposta.usuario;
   }
 
   async buscarPorId(id: string): Promise<Usuario | undefined> {
-    await mockLatency(undefined);
-    const encontrado = USUARIOS_MOCK.find((u) => u.id === id);
-    return encontrado ? this.paraUsuario(encontrado) : undefined;
+    try {
+      return await requisitar(this.http.get<Usuario>(`${API}/usuarios/${id}`));
+    } catch (erro) {
+      if (erro instanceof Error && ['NAO_ENCONTRADO', 'ACESSO_NEGADO'].includes(erro.message)) return undefined;
+      throw erro;
+    }
   }
 
-  async recuperarSenha(_email: string): Promise<void> {
-    await mockLatency(undefined);
+  async recuperarSenha(email: string): Promise<void> {
+    await requisitar(this.http.post<void>(`${API}/auth/recuperar-senha`, { email }));
+  }
+
+  async redefinirSenha(token: string, novaSenha: string): Promise<void> {
+    await requisitar(this.http.post<void>(`${API}/auth/redefinir-senha`, { token, novaSenha }));
   }
 
   async atualizarPerfil(
     dados: Partial<Pick<Usuario, 'nome' | 'email' | 'telefone'>>,
   ): Promise<Usuario> {
-    await mockLatency(undefined);
-    const atual = this._usuarioAtual();
-    if (!atual) throw new Error('NAO_AUTENTICADO');
-    const atualizado: Usuario = { ...atual, ...dados };
-    this.definirSessao(atualizado);
+    const atualizado = await requisitar(this.http.patch<Usuario>(`${API}/auth/perfil`, dados));
+    this.sessao.atualizarUsuario(atualizado);
     return atualizado;
   }
 
+  /** Confere o token salvo com o servidor e atualiza os dados do usuário. 401 é tratado pelo interceptor. */
+  async validarSessao(): Promise<void> {
+    if (!this.sessao.token()) return;
+    try {
+      this.sessao.atualizarUsuario(await requisitar(this.http.get<Usuario>(`${API}/auth/me`)));
+    } catch {
+      // Servidor fora do ar: mantém a sessão local; a próxima requisição autenticada decide.
+    }
+  }
+
+  encerrarSessaoExpirada(): void {
+    this.logout();
+  }
+
   logout(): void {
-    this.definirSessao(null);
+    this.sessao.definir(null);
     this.carrinho.limpar();
     this.pedidos.limparUltimoPedido();
-  }
-
-  private paraUsuario(usuarioMock: UsuarioMock): Usuario {
-    const { senha: _senha, ...usuario } = usuarioMock;
-    return usuario;
-  }
-
-  private definirSessao(usuario: Usuario | null): void {
-    this._usuarioAtual.set(usuario);
-    if (usuario) localStorage.setItem(CHAVE_SESSAO, JSON.stringify(usuario));
-    else localStorage.removeItem(CHAVE_SESSAO);
-  }
-
-  private carregarSessao(): Usuario | null {
-    const bruto = localStorage.getItem(CHAVE_SESSAO);
-    if (!bruto) return null;
-    try {
-      return JSON.parse(bruto) as Usuario;
-    } catch {
-      return null;
-    }
   }
 }
