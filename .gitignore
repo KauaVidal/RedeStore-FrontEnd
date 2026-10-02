@@ -45,6 +45,8 @@ __screenshots__/
 
 # Environment files
 /.env
+# Gerado no build a partir de API_URL (scripts/gerar-environment-prod.mjs)
+/src/environments/environment.prod.ts
 
 # System files
 .DS_Store

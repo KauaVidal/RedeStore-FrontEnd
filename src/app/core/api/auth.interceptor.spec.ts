@@ -55,6 +55,14 @@ describe('authInterceptor', () => {
     req.flush([]);
   });
 
+  it('não envia o token para domínio que só começa com a URL da API', () => {
+    logar();
+    http.get(`${API}.dominio-malicioso.com/x`).subscribe();
+    const req = controle.expectOne(`${API}.dominio-malicioso.com/x`);
+    expect(req.request.headers.has('Authorization')).toBeFalse();
+    req.flush({});
+  });
+
   it('não envia o token para outros domínios', () => {
     logar();
     http.get('https://picsum.photos/x').subscribe();

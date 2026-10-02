@@ -40,6 +40,29 @@ As contas vivem no backend. Crie `jovem@rede.com` e `admin@rede.com` pela tela d
 
 A sessão (usuário + token JWT, válido por 8 h) fica salva no `localStorage` do navegador — um F5 não desloga. Quando o token expira, o app volta para o login.
 
+## Deploy na Vercel
+
+O front é um site estático (Angular) e vai num projeto Vercel próprio, separado da API. Tudo já está
+configurado em [`vercel.json`](vercel.json): build, pasta de saída, fallback de rotas da SPA para o
+`index.html` e cabeçalhos de segurança (CSP, `X-Frame-Options`, etc.).
+
+1. Importe este repositório na Vercel (o preset **Angular** é detectado; Node **24.x**, fixado em `engines`).
+2. Em *Settings → Environment Variables*, defina:
+
+   | Variável | Exemplo | Descrição |
+   |---|---|---|
+   | `API_URL` | `https://redestore-api.vercel.app` | URL pública da API, **com https** e sem barra no final. Lida no build: mudou, precisa de novo deploy. |
+
+3. Faça o deploy e, na API, coloque a URL final do site em `Cors__AllowedOrigin` e
+   `Frontend__ResetPasswordUrl` (`https://<site>/redefinir-senha`) — veja `docs/deploy.md` no `RedeStore-BackEnd`.
+
+`npm run build` roda antes `scripts/gerar-environment-prod.mjs`, que gera `src/environments/environment.prod.ts`
+(ignorado pelo git) a partir de `API_URL` e falha se ela estiver ausente ou sem https. Para buildar
+localmente: `API_URL=http://localhost:5052 npm run build`.
+
+> Deploys de *Preview* ganham URLs aleatórias que o CORS da API de produção não libera (de propósito).
+> Para testar previews, aponte o `API_URL` do ambiente *Preview* para uma API de homologação.
+
 ## Comandos do Angular CLI
 
 Os comandos abaixo já estão configurados no `package.json` (rode com `npm run <comando>`, exceto `start`/`test`/`build` que também funcionam sem o `run`):
@@ -48,7 +71,7 @@ Os comandos abaixo já estão configurados no `package.json` (rode com `npm run 
 |---|---|
 | `npm start` | Sobe o servidor de desenvolvimento (`ng serve`) em `localhost:4200` |
 | `npm test` | Roda a suíte de testes (Karma + Jasmine, abre um Chrome de verdade) |
-| `npm run build` | Gera o build de produção em `dist/rede-store/` |
+| `npm run build` | Gera o build de produção em `dist/rede-store/` (exige `API_URL`, veja [Deploy](#deploy-na-vercel)) |
 | `npm run watch` | Build em modo desenvolvimento, recompilando a cada mudança (sem servidor) |
 
 Outros comandos úteis do `ng` (CLI já instalado como dependência do projeto, use `npx ng ...`):
