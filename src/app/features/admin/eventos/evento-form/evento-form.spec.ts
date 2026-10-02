@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EventoForm } from './evento-form';
-import { Evento } from '../../../../core/events/evento.model';
+import { DadosEvento, Evento } from '../../../../core/events/evento.model';
 
 const EVENTO: Evento = {
   id: '1',
@@ -10,6 +10,7 @@ const EVENTO: Evento = {
   local: 'Sítio Vida Nova, Ibiúna',
   preco: 250,
   vagasTotais: 4,
+  vagasRestantes: 4,
   foto: 'https://picsum.photos/seed/retiro/480/480',
 };
 
@@ -51,7 +52,7 @@ describe('EventoForm', () => {
     });
     fixture.detectChanges();
 
-    let emitido: Omit<Evento, 'id'> | undefined;
+    let emitido: DadosEvento | undefined;
     fixture.componentInstance.salvar.subscribe((dados) => (emitido = dados));
     fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
 

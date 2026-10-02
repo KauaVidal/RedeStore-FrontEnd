@@ -27,6 +27,7 @@ const EVENTO_DISTANTE: Evento = {
   local: 'Templo sede, Vila Maria',
   preco: 0,
   vagasTotais: 150,
+  vagasRestantes: 150,
   foto: 'https://picsum.photos/seed/y/480/480',
 };
 
@@ -38,6 +39,7 @@ const EVENTO_PROXIMO: Evento = {
   local: 'Templo sede, Vila Maria',
   preco: 0,
   vagasTotais: 100,
+  vagasRestantes: 100,
   foto: 'https://picsum.photos/seed/z/480/480',
 };
 
@@ -49,6 +51,7 @@ const EVENTO_PASSADO: Evento = {
   local: 'Sítio Vida Nova, Ibiúna',
   preco: 250,
   vagasTotais: 4,
+  vagasRestantes: 4,
   foto: 'https://picsum.photos/seed/x/480/480',
 };
 

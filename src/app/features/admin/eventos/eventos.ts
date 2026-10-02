@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { EventService } from '../../../core/events/event.service';
 import { RegistrationService } from '../../../core/registrations/registration.service';
-import { Evento } from '../../../core/events/evento.model';
+import { DadosEvento, Evento } from '../../../core/events/evento.model';
 import { Table } from '../../../shared/ui/table/table';
 import { Modal } from '../../../shared/ui/modal/modal';
 import { Button } from '../../../shared/ui/button/button';
@@ -59,7 +59,7 @@ export class Eventos implements OnInit {
     this.modalAberto.set(false);
   }
 
-  protected async salvar(dados: Omit<Evento, 'id'>): Promise<void> {
+  protected async salvar(dados: DadosEvento): Promise<void> {
     const editando = this.eventoEditando();
     if (editando) {
       await this.eventosService.atualizar(editando.id, dados);

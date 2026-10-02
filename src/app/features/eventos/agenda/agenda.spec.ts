@@ -14,6 +14,7 @@ const EVENTO: Evento = {
   local: 'Sítio Vida Nova, Ibiúna',
   preco: 250,
   vagasTotais: 4,
+  vagasRestantes: 4,
   foto: 'https://picsum.photos/seed/x/480/480',
 };
 
@@ -25,6 +26,7 @@ const EVENTO_PASSADO: Evento = {
   local: 'Templo sede, Vila Maria',
   preco: 0,
   vagasTotais: 50,
+  vagasRestantes: 50,
   foto: 'https://picsum.photos/seed/antigo/480/480',
 };
 

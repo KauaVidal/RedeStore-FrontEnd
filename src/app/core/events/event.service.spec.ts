@@ -1,113 +1,79 @@
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { EventService } from './event.service';
-import { EVENTOS_MOCK } from './event-mock-store';
-import { Evento } from './evento.model';
+import { DadosEvento, Evento } from './evento.model';
+
+const API = 'http://localhost:5052';
+const EVENTO: Evento = {
+  id: 'e1',
+  titulo: 'Retiro',
+  descricao: 'Imersão',
+  dataHora: '2026-12-20T19:00:00Z',
+  local: 'Sítio',
+  preco: 150,
+  vagasTotais: 100,
+  vagasRestantes: 37,
+  foto: 'https://x/e.jpg',
+};
+const { id: _id, vagasRestantes: _v, ...DADOS } = EVENTO;
 
 describe('EventService', () => {
   let service: EventService;
-  let snapshot: Evento[];
+  let http: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
     service = TestBed.inject(EventService);
-    snapshot = EVENTOS_MOCK.map((e) => ({ ...e }));
+    http = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => {
-    EVENTOS_MOCK.length = 0;
-    EVENTOS_MOCK.push(...snapshot);
+  afterEach(() => http.verify());
+
+  it('listar faz GET /eventos e traz vagasRestantes', async () => {
+    const promessa = service.listar();
+    http.expectOne(`${API}/eventos`).flush([EVENTO]);
+    expect((await promessa)[0].vagasRestantes).toBe(37);
   });
 
-  it('listar() retorna todos os eventos', fakeAsync(() => {
-    let eventos: Evento[] = [];
-    service.listar().then((e) => (eventos = e));
-    tick(400);
-    expect(eventos.length).toBe(6);
-  }));
+  it('buscarPorId faz GET /eventos/{id}', async () => {
+    const promessa = service.buscarPorId('e1');
+    http.expectOne(`${API}/eventos/e1`).flush(EVENTO);
+    expect((await promessa)?.titulo).toBe('Retiro');
+  });
 
-  it('listar() não retorna a referência literal do mock store', fakeAsync(() => {
-    let eventos: Evento[] = [];
-    service.listar().then((e) => (eventos = e));
-    tick(400);
-    eventos.sort(() => 1);
-    let segundaChamada: Evento[] = [];
-    service.listar().then((e) => (segundaChamada = e));
-    tick(400);
-    expect(segundaChamada[0].id).toBe('1');
-  }));
+  it('buscarPorId devolve undefined em 404 (inclui id que não é GUID)', async () => {
+    const promessa = service.buscarPorId('1');
+    http.expectOne(`${API}/eventos/1`).flush(null, { status: 404, statusText: 'Not Found' });
+    expect(await promessa).toBeUndefined();
+  });
 
-  it('buscarPorId() retorna o evento correspondente', fakeAsync(() => {
-    let evento: Evento | undefined;
-    service.buscarPorId('1').then((e) => (evento = e));
-    tick(400);
-    expect(evento?.titulo).toBe('Retiro de Verão REDE');
-  }));
+  it('criar faz POST /eventos com os dados (sem id nem vagasRestantes)', async () => {
+    const promessa = service.criar(DADOS as DadosEvento);
+    const req = http.expectOne(`${API}/eventos`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(DADOS);
+    req.flush(EVENTO);
+    expect((await promessa).id).toBe('e1');
+  });
 
-  it('buscarPorId() retorna undefined para um id inexistente', fakeAsync(() => {
-    let evento: Evento | undefined;
-    let chamou = false;
-    service.buscarPorId('inexistente').then((e) => {
-      evento = e;
-      chamou = true;
-    });
-    tick(400);
-    expect(chamou).toBeTrue();
-    expect(evento).toBeUndefined();
-  }));
+  it('atualizar faz PATCH /eventos/{id} e propaga EVENTO_VAGAS_TOTAIS_INSUFICIENTES', async () => {
+    const promessa = service.atualizar('e1', { vagasTotais: 1 });
+    const req = http.expectOne(`${API}/eventos/e1`);
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toEqual({ vagasTotais: 1 });
+    req.flush(
+      { status: 409, title: 'EVENTO_VAGAS_TOTAIS_INSUFICIENTES' },
+      { status: 409, statusText: 'Conflict' },
+    );
+    await expectAsync(promessa).toBeRejectedWithError('EVENTO_VAGAS_TOTAIS_INSUFICIENTES');
+  });
 
-  it('criar() adiciona um novo evento com id sequencial', fakeAsync(() => {
-    let evento: Evento | undefined;
-    service
-      .criar({
-        titulo: 'Culto de Jovens',
-        descricao: 'Descrição',
-        dataHora: '2026-11-01T19:00:00.000Z',
-        local: 'Templo sede, Vila Maria',
-        preco: 0,
-        vagasTotais: 50,
-        foto: 'https://picsum.photos/seed/novo-evento/480/480',
-      })
-      .then((e) => (evento = e));
-    tick(400);
-    expect(evento?.id).toBe('7');
-
-    let todos: Evento[] = [];
-    service.listar().then((e) => (todos = e));
-    tick(400);
-    expect(todos.length).toBe(7);
-  }));
-
-  it('atualizar() altera os campos informados sem afetar os demais', fakeAsync(() => {
-    let evento: Evento | undefined;
-    service.atualizar('1', { vagasTotais: 10 }).then((e) => (evento = e));
-    tick(400);
-    expect(evento?.vagasTotais).toBe(10);
-    expect(evento?.titulo).toBe('Retiro de Verão REDE');
-  }));
-
-  it('atualizar() rejeita quando o id não existe', fakeAsync(() => {
-    let erro: Error | undefined;
-    service.atualizar('inexistente', { vagasTotais: 10 }).catch((e) => (erro = e));
-    tick(400);
-    expect(erro?.message).toBe('EVENTO_NAO_ENCONTRADO');
-  }));
-
-  it('remover() tira o evento da listagem', fakeAsync(() => {
-    service.remover('1');
-    tick(400);
-    let todos: Evento[] = [];
-    service.listar().then((e) => (todos = e));
-    tick(400);
-    expect(todos.find((e) => e.id === '1')).toBeUndefined();
-    expect(todos.length).toBe(5);
-  }));
-
-  it('remover() com id inexistente não lança erro nem altera a lista', fakeAsync(() => {
-    service.remover('inexistente');
-    tick(400);
-    let todos: Evento[] = [];
-    service.listar().then((e) => (todos = e));
-    tick(400);
-    expect(todos.length).toBe(6);
-  }));
+  it('remover faz DELETE /eventos/{id}', async () => {
+    const promessa = service.remover('e1');
+    const req = http.expectOne(`${API}/eventos/e1`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush(null, { status: 204, statusText: 'No Content' });
+    await promessa;
+  });
 });

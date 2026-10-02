@@ -1,6 +1,6 @@
 import { Component, OnChanges, SimpleChanges, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Evento } from '../../../../core/events/evento.model';
+import { DadosEvento, Evento } from '../../../../core/events/evento.model';
 import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { Textarea } from '../../../../shared/ui/textarea/textarea';
 import { Button } from '../../../../shared/ui/button/button';
@@ -15,7 +15,7 @@ export class EventoForm implements OnChanges {
   private readonly fb = inject(FormBuilder);
 
   readonly evento = input<Evento | null>(null);
-  readonly salvar = output<Omit<Evento, 'id'>>();
+  readonly salvar = output<DadosEvento>();
   readonly cancelar = output<void>();
 
   protected readonly tentouEnviar = signal(false);
