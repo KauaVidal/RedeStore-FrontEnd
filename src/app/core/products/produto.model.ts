@@ -1,6 +1,7 @@
 export type Categoria = 'camisetas' | 'moletons' | 'acessorios';
 
 export interface Variacao {
+  id?: string;
   tamanho: string;
   cor: string;
   estoque: number;
