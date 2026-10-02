@@ -1,33 +1,30 @@
-import { Injectable, signal } from '@angular/core';
-import { mockLatency } from '../mock/mock-latency';
+import { inject, Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { API, requisitar } from '../api/api';
 import { ItemCarrinho } from '../cart/item-carrinho.model';
-import { PEDIDOS_MOCK } from './order-mock-store';
-import { Endereco, FormaEntrega, Pedido, StatusPedido } from './pedido.model';
+import { Endereco, FormaEntrega, Pedido } from './pedido.model';
+
+export interface DadosPedido {
+  itens: ItemCarrinho[];
+  formaEntrega: FormaEntrega;
+  endereco?: Endereco;
+}
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
+  private readonly http = inject(HttpClient);
+
   private readonly _ultimoPedido = signal<Pedido | null>(null);
   readonly ultimoPedido = this._ultimoPedido.asReadonly();
 
-  async criar(dados: {
-    usuarioId: string;
-    itens: ItemCarrinho[];
-    formaEntrega: FormaEntrega;
-    endereco?: Endereco;
-  }): Promise<Pedido> {
-    await mockLatency(undefined);
-    const valorTotal = dados.itens.reduce((soma, item) => soma + item.precoUnitario * item.quantidade, 0);
-    const pedido: Pedido = {
-      id: String(PEDIDOS_MOCK.length + 1),
-      usuarioId: dados.usuarioId,
-      itens: dados.itens,
+  /** O preço é sempre o do servidor: o cliente só diz o quê e quanto. */
+  async criar(dados: DadosPedido): Promise<Pedido> {
+    const corpo = {
+      itens: dados.itens.map(({ produtoId, tamanho, cor, quantidade }) => ({ produtoId, tamanho, cor, quantidade })),
       formaEntrega: dados.formaEntrega,
-      endereco: dados.endereco,
-      valorTotal,
-      status: 'pago',
-      criadoEm: new Date().toISOString(),
+      ...(dados.formaEntrega === 'entrega' && dados.endereco ? { endereco: dados.endereco } : {}),
     };
-    PEDIDOS_MOCK.push(pedido);
+    const pedido = await requisitar(this.http.post<Pedido>(`${API}/pedidos`, corpo));
     this._ultimoPedido.set(pedido);
     return pedido;
   }
@@ -36,23 +33,16 @@ export class OrderService {
     this._ultimoPedido.set(null);
   }
 
-  async listarPorUsuario(usuarioId: string): Promise<Pedido[]> {
-    await mockLatency(undefined);
-    return PEDIDOS_MOCK.filter((p) => p.usuarioId === usuarioId).sort(
-      (a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime(),
-    );
+  async listarMeus(): Promise<Pedido[]> {
+    return requisitar(this.http.get<Pedido[]>(`${API}/usuarios/me/pedidos`));
   }
 
   async listarTodos(): Promise<Pedido[]> {
-    await mockLatency(undefined);
-    return [...PEDIDOS_MOCK].sort((a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime());
+    return requisitar(this.http.get<Pedido[]>(`${API}/pedidos`));
   }
 
-  async atualizarStatus(id: string, novoStatus: StatusPedido): Promise<Pedido> {
-    await mockLatency(undefined);
-    const indice = PEDIDOS_MOCK.findIndex((p) => p.id === id);
-    if (indice < 0) throw new Error('PEDIDO_NAO_ENCONTRADO');
-    PEDIDOS_MOCK[indice] = { ...PEDIDOS_MOCK[indice], status: novoStatus };
-    return PEDIDOS_MOCK[indice];
+  /** O próximo status é calculado pelo servidor (pago → em_preparo → retirado/entregue). */
+  async avancarStatus(id: string): Promise<Pedido> {
+    return requisitar(this.http.patch<Pedido>(`${API}/pedidos/${id}/avancar-status`, null));
   }
 }

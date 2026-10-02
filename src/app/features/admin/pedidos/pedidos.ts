@@ -59,9 +59,8 @@ export class Pedidos implements OnInit {
   }
 
   protected async avancar(pedido: Pedido): Promise<void> {
-    const proximo = proximoStatus(pedido);
-    if (!proximo) return;
-    await this.pedidosService.atualizarStatus(pedido.id, proximo);
+    if (!proximoStatus(pedido)) return;
+    await this.pedidosService.avancarStatus(pedido.id);
     await this.carregar();
   }
 }

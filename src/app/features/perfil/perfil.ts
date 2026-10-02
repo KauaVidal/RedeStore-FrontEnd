@@ -41,7 +41,7 @@ export class Perfil implements OnInit {
     const usuario = this.usuario();
     if (!usuario) return;
     const [pedidos, inscricoes] = await Promise.all([
-      this.pedidosService.listarPorUsuario(usuario.id),
+      this.pedidosService.listarMeus(),
       this.registrations.listarMinhas(),
     ]);
     this.pedidos.set(pedidos);

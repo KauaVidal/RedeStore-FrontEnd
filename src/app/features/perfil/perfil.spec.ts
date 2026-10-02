@@ -13,7 +13,7 @@ describe('Perfil', () => {
   let authServiceFalso: jasmine.SpyObj<Pick<AuthService, 'atualizarPerfil' | 'logout'>> & {
     usuarioAtual: ReturnType<typeof signal>;
   };
-  let orderServiceFalso: jasmine.SpyObj<Pick<OrderService, 'listarPorUsuario'>>;
+  let orderServiceFalso: jasmine.SpyObj<Pick<OrderService, 'listarMeus'>>;
   let registrationServiceFalso: jasmine.SpyObj<Pick<RegistrationService, 'listarMinhas'>>;
   let router: Router;
 
@@ -23,8 +23,8 @@ describe('Perfil', () => {
       atualizarPerfil: jasmine.createSpy('atualizarPerfil').and.resolveTo(),
       logout: jasmine.createSpy('logout'),
     };
-    orderServiceFalso = jasmine.createSpyObj('OrderService', ['listarPorUsuario']);
-    orderServiceFalso.listarPorUsuario.and.resolveTo(pedidos);
+    orderServiceFalso = jasmine.createSpyObj('OrderService', ['listarMeus']);
+    orderServiceFalso.listarMeus.and.resolveTo(pedidos);
     registrationServiceFalso = jasmine.createSpyObj('RegistrationService', ['listarMinhas']);
     registrationServiceFalso.listarMinhas.and.resolveTo(inscricoes);
 

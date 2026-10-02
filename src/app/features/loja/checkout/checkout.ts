@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CartService } from '../../../core/cart/cart.service';
 import { OrderService } from '../../../core/orders/order.service';
-import { AuthService } from '../../../core/auth/auth.service';
 import { TextField } from '../../../shared/ui/text-field/text-field';
 import { Button } from '../../../shared/ui/button/button';
 import { PrecoBrPipe } from '../../../shared/pipes/preco-br.pipe';
@@ -18,7 +17,6 @@ export class Checkout implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly carrinho = inject(CartService);
   private readonly pedidos = inject(OrderService);
-  private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
   protected readonly itens = this.carrinho.itens;
@@ -89,9 +87,7 @@ export class Checkout implements OnInit {
     this.erroGeral.set(null);
     try {
       const dados = this.form.getRawValue();
-      const usuario = this.auth.usuarioAtual();
       await this.pedidos.criar({
-        usuarioId: usuario!.id,
         itens: this.itens(),
         formaEntrega: dados.formaEntrega,
         endereco: this.ehEntrega

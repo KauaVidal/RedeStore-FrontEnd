@@ -29,11 +29,11 @@ const PEDIDO_RETIRADA: Pedido = {
 
 describe('Pedidos', () => {
   let fixture: ComponentFixture<Pedidos>;
-  let pedidosServicoFalso: jasmine.SpyObj<Pick<OrderService, 'listarTodos' | 'atualizarStatus'>>;
+  let pedidosServicoFalso: jasmine.SpyObj<Pick<OrderService, 'listarTodos' | 'avancarStatus'>>;
   let authServicoFalso: jasmine.SpyObj<Pick<AuthService, 'buscarPorId'>>;
 
   async function montar(pedidos: Pedido[]): Promise<void> {
-    pedidosServicoFalso = jasmine.createSpyObj('OrderService', ['listarTodos', 'atualizarStatus']);
+    pedidosServicoFalso = jasmine.createSpyObj('OrderService', ['listarTodos', 'avancarStatus']);
     pedidosServicoFalso.listarTodos.and.resolveTo(pedidos);
     authServicoFalso = jasmine.createSpyObj('AuthService', ['buscarPorId']);
     authServicoFalso.buscarPorId.and.resolveTo(CLIENTE);
@@ -75,9 +75,9 @@ describe('Pedidos', () => {
     expect(fixture.nativeElement.textContent).not.toContain('Avançar para');
   });
 
-  it('ao clicar em avançar, chama atualizarStatus com o próximo status correto', async () => {
+  it('ao clicar em avançar, chama avancarStatus com o id do pedido', async () => {
     await montar([PEDIDO_RETIRADA]);
-    pedidosServicoFalso.atualizarStatus.and.resolveTo({ ...PEDIDO_RETIRADA, status: 'em_preparo' });
+    pedidosServicoFalso.avancarStatus.and.resolveTo({ ...PEDIDO_RETIRADA, status: 'em_preparo' });
     pedidosServicoFalso.listarTodos.and.resolveTo([{ ...PEDIDO_RETIRADA, status: 'em_preparo' }]);
 
     const botoes: HTMLButtonElement[] = Array.from(fixture.nativeElement.querySelectorAll('button'));
@@ -85,6 +85,6 @@ describe('Pedidos', () => {
     botao.click();
     await fixture.whenStable();
 
-    expect(pedidosServicoFalso.atualizarStatus).toHaveBeenCalledWith('1', 'em_preparo');
+    expect(pedidosServicoFalso.avancarStatus).toHaveBeenCalledWith('1');
   });
 });
