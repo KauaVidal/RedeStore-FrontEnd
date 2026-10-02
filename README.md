@@ -2,7 +2,7 @@
 
 Site da REDE — ministério de jovens da Primeira Igreja Batista de Vila Maria. Une loja de produtos (camisetas, moletons, acessórios) e inscrição em eventos (retiros, encontros).
 
-Este repositório está no subprojeto **Fundação**: design system, autenticação (mockada), navegação e as telas base (login, cadastro, recuperar senha, perfil, sobre a REDE). Loja, Eventos e Admin vêm em subprojetos seguintes — veja [Documentação do projeto](#documentação-do-projeto).
+Os subprojetos Fundação, Loja, Eventos e Admin estão concluídos, e o front está integrado à API real (`RedeStore-BackEnd`) — veja [Documentação do projeto](#documentação-do-projeto).
 
 ## Pré-requisitos
 
@@ -27,6 +27,12 @@ npm start
 ```
 
 Acesse `http://localhost:4200/` — a página recarrega sozinha a cada alteração salva.
+
+## Rodando com o backend
+
+O front consome a API do repositório `RedeStore-BackEnd` (padrão `http://localhost:5052`, configurado em
+`src/environments/environment.ts`). Passo a passo para subir os dois, popular dados de teste e o
+checklist de fluxos: [`docs/backend/roteiro-integracao.md`](docs/backend/roteiro-integracao.md).
 
 ### Login de teste
 
