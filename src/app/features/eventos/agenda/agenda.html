@@ -16,9 +16,7 @@
               } @else {
                 <span class="agenda__preco texto-utilitario">R$ {{ evento.preco | precoBr }}</span>
               }
-              @if (vagasPorEvento()[evento.id] !== undefined) {
-                <span class="texto-utilitario agenda__vagas">{{ rotuloVagas(vagasPorEvento()[evento.id]) }}</span>
-              }
+              <span class="texto-utilitario agenda__vagas">{{ rotuloVagas(evento.vagasRestantes) }}</span>
             </div>
           </a>
         </li>

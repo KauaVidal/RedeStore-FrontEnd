@@ -7,6 +7,7 @@ import { Button } from '../../../shared/ui/button/button';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { PrecoBrPipe } from '../../../shared/pipes/preco-br.pipe';
 import { ProdutoForm } from './produto-form/produto-form';
+import { mensagemDeErro } from '../../../core/api/mensagem-erro';
 
 const ROTULO_CATEGORIA: Record<Produto['categoria'], string> = {
   camisetas: 'Camisetas',
@@ -27,6 +28,7 @@ export class Produtos implements OnInit {
   protected readonly modalAberto = signal(false);
   protected readonly produtoEditando = signal<Produto | null>(null);
   protected readonly produtoParaRemover = signal<Produto | null>(null);
+  protected readonly erro = signal<string | null>(null);
   protected readonly rotuloCategoria = ROTULO_CATEGORIA;
 
   async ngOnInit(): Promise<void> {
@@ -52,11 +54,18 @@ export class Produtos implements OnInit {
   }
 
   protected async salvar(dados: Omit<Produto, 'id'>): Promise<void> {
+    this.erro.set(null);
     const editando = this.produtoEditando();
-    if (editando) {
-      await this.produtosService.atualizar(editando.id, dados);
-    } else {
-      await this.produtosService.criar(dados);
+    try {
+      if (editando) {
+        await this.produtosService.atualizar(editando.id, dados);
+      } else {
+        await this.produtosService.criar(dados);
+      }
+    } catch (erro) {
+      this.erro.set(mensagemDeErro(erro, {}, 'Não deu pra salvar o produto agora. Tenta de novo em instantes.'));
+      this.modalAberto.set(false);
+      return;
     }
     this.modalAberto.set(false);
     await this.carregar();
@@ -73,7 +82,12 @@ export class Produtos implements OnInit {
   protected async confirmarRemocao(): Promise<void> {
     const produto = this.produtoParaRemover();
     if (!produto) return;
-    await this.produtosService.remover(produto.id);
+    this.erro.set(null);
+    try {
+      await this.produtosService.remover(produto.id);
+    } catch (erro) {
+      this.erro.set(mensagemDeErro(erro, {}, 'Não deu pra remover o produto agora. Tenta de novo em instantes.'));
+    }
     this.produtoParaRemover.set(null);
     await this.carregar();
   }

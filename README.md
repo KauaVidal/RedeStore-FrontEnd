@@ -2,7 +2,7 @@
 
 Site da REDE — ministério de jovens da Primeira Igreja Batista de Vila Maria. Une loja de produtos (camisetas, moletons, acessórios) e inscrição em eventos (retiros, encontros).
 
-Este repositório está no subprojeto **Fundação**: design system, autenticação (mockada), navegação e as telas base (login, cadastro, recuperar senha, perfil, sobre a REDE). Loja, Eventos e Admin vêm em subprojetos seguintes — veja [Documentação do projeto](#documentação-do-projeto).
+Os subprojetos Fundação, Loja, Eventos e Admin estão concluídos, e o front está integrado à API real (`RedeStore-BackEnd`) — veja [Documentação do projeto](#documentação-do-projeto).
 
 ## Pré-requisitos
 
@@ -28,16 +28,17 @@ npm start
 
 Acesse `http://localhost:4200/` — a página recarrega sozinha a cada alteração salva.
 
+## Rodando com o backend
+
+O front consome a API do repositório `RedeStore-BackEnd` (padrão `http://localhost:5052`, configurado em
+`src/environments/environment.ts`). Passo a passo para subir os dois, popular dados de teste e o
+checklist de fluxos: [`docs/backend/roteiro-integracao.md`](docs/backend/roteiro-integracao.md).
+
 ### Login de teste
 
-Não existe backend ainda — a autenticação é mockada em memória (`src/app/core/auth/auth-mock-store.ts`). Use uma dessas contas pra testar o login:
+As contas vivem no backend. Crie `jovem@rede.com` e `admin@rede.com` pela tela de Cadastro (senha com 8+ caracteres) e rode o seed do backend (`./scripts/seed-dev.ps1` no repositório `RedeStore-BackEnd`), que promove `admin@rede.com` a admin e cadastra produtos e eventos de exemplo — detalhes em [`docs/backend/roteiro-integracao.md`](docs/backend/roteiro-integracao.md).
 
-| Papel | E-mail | Senha |
-|---|---|---|
-| Jovem | `jovem@rede.com` | `jovem123` |
-| Admin | `admin@rede.com` | `admin123` |
-
-A sessão fica salva no `localStorage` do navegador — um F5 não desloga. Cadastros feitos pela tela de Cadastro também funcionam, mas somem quando o servidor reinicia (é tudo em memória).
+A sessão (usuário + token JWT, válido por 8 h) fica salva no `localStorage` do navegador — um F5 não desloga. Quando o token expira, o app volta para o login.
 
 ## Comandos do Angular CLI
 
@@ -72,7 +73,7 @@ npx ng version
 
 ```
 src/app/
-  core/           # AuthService mockado, guards de rota, modelos
+  core/           # serviços HTTP da API, sessão/JWT, guards de rota, modelos
   shared/
     ui/           # Componentes reutilizáveis: Logo, Button, TextField, SectionDivider, EmptyState
     validators/   # Validadores de formulário (senha forte, confirmação)

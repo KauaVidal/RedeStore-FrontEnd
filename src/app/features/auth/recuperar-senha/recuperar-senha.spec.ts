@@ -43,5 +43,6 @@ describe('RecuperarSenha', () => {
 
     expect(fixture.componentInstance['enviando']()).toBeFalse();
     expect(fixture.componentInstance['enviado']()).toBeFalse();
+    expect(fixture.nativeElement.textContent).toContain('Não deu pra enviar o link');
   });
 });

@@ -17,7 +17,7 @@ export interface Pedido {
   usuarioId: string;
   itens: ItemCarrinho[];
   formaEntrega: FormaEntrega;
-  endereco?: Endereco;
+  endereco?: Endereco | null;
   valorTotal: number;
   status: StatusPedido;
   criadoEm: string;

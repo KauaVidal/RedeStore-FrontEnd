@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Eventos } from './eventos';
 import { EventService } from '../../../core/events/event.service';
-import { RegistrationService } from '../../../core/registrations/registration.service';
 import { Evento } from '../../../core/events/evento.model';
 
 const EVENTO: Evento = {
@@ -13,26 +12,23 @@ const EVENTO: Evento = {
   local: 'Sítio Vida Nova, Ibiúna',
   preco: 250,
   vagasTotais: 4,
+  vagasRestantes: 4,
   foto: 'https://picsum.photos/seed/retiro/480/480',
 };
 
 describe('Eventos', () => {
   let fixture: ComponentFixture<Eventos>;
   let eventosServicoFalso: jasmine.SpyObj<Pick<EventService, 'listar' | 'criar' | 'atualizar' | 'remover'>>;
-  let inscricoesServicoFalso: jasmine.SpyObj<Pick<RegistrationService, 'vagasRestantes'>>;
 
   async function montar(eventos: Evento[]): Promise<void> {
     eventosServicoFalso = jasmine.createSpyObj('EventService', ['listar', 'criar', 'atualizar', 'remover']);
     eventosServicoFalso.listar.and.resolveTo(eventos);
-    inscricoesServicoFalso = jasmine.createSpyObj('RegistrationService', ['vagasRestantes']);
-    inscricoesServicoFalso.vagasRestantes.and.resolveTo(4);
 
     await TestBed.configureTestingModule({
       imports: [Eventos],
       providers: [
         provideRouter([]),
         { provide: EventService, useValue: eventosServicoFalso },
-        { provide: RegistrationService, useValue: inscricoesServicoFalso },
       ],
     }).compileComponents();
 
@@ -53,6 +49,11 @@ describe('Eventos', () => {
     expect(texto).toContain('Retiro de Verão REDE');
     expect(texto).toContain('Sítio Vida Nova, Ibiúna');
     expect(texto).toContain('4');
+  });
+
+  it('mostra a ocupação calculada a partir de vagasRestantes', async () => {
+    await montar([{ ...EVENTO, vagasTotais: 4, vagasRestantes: 1 }]);
+    expect(fixture.nativeElement.textContent).toContain('3/4');
   });
 
   it('chama EventService.criar ao salvar o formulário em modo criação', async () => {
@@ -83,5 +84,28 @@ describe('Eventos', () => {
     await fixture.componentInstance['confirmarRemocao']();
 
     expect(eventosServicoFalso.remover).toHaveBeenCalledWith('1');
+  });
+
+  it('mostra mensagem quando o evento tem inscrições confirmadas e não pode ser removido', async () => {
+    await montar([EVENTO]);
+    eventosServicoFalso.remover.and.rejectWith(new Error('EVENTO_COM_INSCRICOES_CONFIRMADAS'));
+
+    fixture.componentInstance['pedirRemocao'](EVENTO);
+    await fixture.componentInstance['confirmarRemocao']();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Cancele-as antes de remover');
+  });
+
+  it('mostra mensagem quando as vagas ficariam abaixo das inscrições confirmadas', async () => {
+    await montar([EVENTO]);
+    eventosServicoFalso.atualizar.and.rejectWith(new Error('EVENTO_VAGAS_TOTAIS_INSUFICIENTES'));
+
+    fixture.componentInstance['abrirEdicao'](EVENTO);
+    const { id: _id, vagasRestantes: _v, ...dados } = EVENTO;
+    await fixture.componentInstance['salvar'](dados);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('não pode ficar abaixo');
   });
 });

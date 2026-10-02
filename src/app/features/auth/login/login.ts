@@ -5,6 +5,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { TextField } from '../../../shared/ui/text-field/text-field';
 import { Button } from '../../../shared/ui/button/button';
 import { Logo } from '../../../shared/ui/logo/logo';
+import { mensagemDeErro } from '../../../core/api/mensagem-erro';
 
 @Component({
   selector: 'app-login',
@@ -49,8 +50,8 @@ export class Login {
     try {
       await this.auth.login(email, senha);
       this.router.navigateByUrl('/');
-    } catch {
-      this.erroGeral.set('E-mail ou senha incorretos. Confira e tente de novo.');
+    } catch (erro) {
+      this.erroGeral.set(mensagemDeErro(erro, {}, 'E-mail ou senha incorretos. Confira e tente de novo.'));
     } finally {
       this.enviando.set(false);
     }

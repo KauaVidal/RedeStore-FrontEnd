@@ -4,7 +4,6 @@ import { signal } from '@angular/core';
 import { Checkout } from './checkout';
 import { CartService } from '../../../core/cart/cart.service';
 import { OrderService } from '../../../core/orders/order.service';
-import { AuthService } from '../../../core/auth/auth.service';
 import { ItemCarrinho } from '../../../core/cart/item-carrinho.model';
 
 const ITEM: ItemCarrinho = {
@@ -46,10 +45,6 @@ describe('Checkout', () => {
         provideRouter([]),
         { provide: CartService, useValue: cartServiceFalso },
         { provide: OrderService, useValue: orderServiceFalso },
-        {
-          provide: AuthService,
-          useValue: { usuarioAtual: signal({ id: 'u1', nome: 'Jovem', email: 'jovem@rede.com', papel: 'jovem' }) },
-        },
       ],
     }).compileComponents();
 
@@ -77,7 +72,6 @@ describe('Checkout', () => {
     await fixture.whenStable();
 
     expect(orderServiceFalso.criar).toHaveBeenCalledWith({
-      usuarioId: 'u1',
       itens: [ITEM],
       formaEntrega: 'retirada',
       endereco: undefined,
@@ -117,5 +111,16 @@ describe('Checkout', () => {
 
     expect(router.navigateByUrl).toHaveBeenCalledWith('/loja/carrinho');
     expect(orderServiceFalso.criar).not.toHaveBeenCalled();
+  });
+
+  it('mostra mensagem específica quando falta estoque', async () => {
+    orderServiceFalso.criar.and.rejectWith(new Error('ESTOQUE_INSUFICIENTE'));
+
+    fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('acabou de esgotar');
+    expect(cartServiceFalso.limpar).not.toHaveBeenCalled();
   });
 });

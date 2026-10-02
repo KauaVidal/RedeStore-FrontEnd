@@ -1,129 +1,110 @@
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ProductService } from './product.service';
-import { PRODUTOS_MOCK } from './product-mock-store';
 import { Produto } from './produto.model';
+
+const API = 'http://localhost:5052';
+const PRODUTO: Produto = {
+  id: 'p1',
+  nome: 'Camiseta REDE',
+  categoria: 'camisetas',
+  preco: 79.9,
+  descricao: 'Algodão',
+  fotos: ['https://x/1.jpg'],
+  tamanhos: ['P'],
+  cores: ['Preto'],
+  destaque: true,
+  variacoes: [{ id: 'v1', tamanho: 'P', cor: 'Preto', estoque: 3 }],
+};
 
 describe('ProductService', () => {
   let service: ProductService;
-  let snapshot: Produto[];
+  let http: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
     service = TestBed.inject(ProductService);
-    snapshot = PRODUTOS_MOCK.map((p) => ({ ...p, variacoes: p.variacoes.map((v) => ({ ...v })) }));
+    http = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => {
-    PRODUTOS_MOCK.length = 0;
-    PRODUTOS_MOCK.push(...snapshot);
+  afterEach(() => http.verify());
+
+  it('listar sem filtro faz GET /produtos sem parâmetros', async () => {
+    const promessa = service.listar();
+    const req = http.expectOne(`${API}/produtos`);
+    expect(req.request.params.keys()).toEqual([]);
+    req.flush([PRODUTO]);
+    expect(await promessa).toEqual([PRODUTO]);
   });
 
-  it('listar() sem filtro retorna todos os produtos', fakeAsync(() => {
-    let produtos: Produto[] = [];
-    service.listar().then((p) => (produtos = p));
-    tick(400);
-    expect(produtos.length).toBe(7);
-  }));
+  it('listar envia categoria e busca (aparada) como query params', async () => {
+    const promessa = service.listar({ categoria: 'moletons', busca: '  rede ' });
+    const req = http.expectOne((r) => r.url === `${API}/produtos`);
+    expect(req.request.params.get('categoria')).toBe('moletons');
+    expect(req.request.params.get('busca')).toBe('rede');
+    req.flush([]);
+    await promessa;
+  });
 
-  it('listar({ categoria }) filtra por categoria', fakeAsync(() => {
-    let produtos: Produto[] = [];
-    service.listar({ categoria: 'acessorios' }).then((p) => (produtos = p));
-    tick(400);
-    expect(produtos.length).toBe(2);
-    expect(produtos.every((p) => p.categoria === 'acessorios')).toBeTrue();
-  }));
+  it('listar ignora busca vazia', async () => {
+    const promessa = service.listar({ busca: '   ' });
+    const req = http.expectOne((r) => r.url === `${API}/produtos`);
+    expect(req.request.params.has('busca')).toBeFalse();
+    req.flush([]);
+    await promessa;
+  });
 
-  it('listar({ busca }) filtra por nome, sem diferenciar maiúsculas/minúsculas', fakeAsync(() => {
-    let produtos: Produto[] = [];
-    service.listar({ busca: 'MOLETOM' }).then((p) => (produtos = p));
-    tick(400);
-    expect(produtos.length).toBe(2);
-    expect(produtos.every((p) => p.nome.toLowerCase().includes('moletom'))).toBeTrue();
-  }));
+  it('listarDestaques faz GET /produtos/destaques', async () => {
+    const promessa = service.listarDestaques();
+    http.expectOne(`${API}/produtos/destaques`).flush([PRODUTO]);
+    expect((await promessa).length).toBe(1);
+  });
 
-  it('listarDestaques() retorna só os produtos em destaque', fakeAsync(() => {
-    let produtos: Produto[] = [];
-    service.listarDestaques().then((p) => (produtos = p));
-    tick(400);
-    expect(produtos.length).toBe(3);
-    expect(produtos.every((p) => p.destaque)).toBeTrue();
-  }));
+  it('buscarPorId faz GET /produtos/{id}', async () => {
+    const promessa = service.buscarPorId('p1');
+    http.expectOne(`${API}/produtos/p1`).flush(PRODUTO);
+    expect((await promessa)?.nome).toBe('Camiseta REDE');
+  });
 
-  it('buscarPorId() retorna o produto correspondente', fakeAsync(() => {
-    let produto: Produto | undefined;
-    service.buscarPorId('1').then((p) => (produto = p));
-    tick(400);
-    expect(produto?.nome).toBe('Camiseta REDE Clássica');
-  }));
+  it('buscarPorId devolve undefined para id inexistente ou que não é GUID (404)', async () => {
+    const promessa = service.buscarPorId('abc');
+    http.expectOne(`${API}/produtos/abc`).flush(null, { status: 404, statusText: 'Not Found' });
+    expect(await promessa).toBeUndefined();
+  });
 
-  it('buscarPorId() retorna undefined para um id inexistente', fakeAsync(() => {
-    let produto: Produto | undefined;
-    let chamou = false;
-    service.buscarPorId('inexistente').then((p) => {
-      produto = p;
-      chamou = true;
+  it('criar faz POST /produtos sem tamanhos/cores e sem ids de variação', async () => {
+    const { id: _id, ...dados } = PRODUTO;
+    const promessa = service.criar(dados);
+    const req = http.expectOne(`${API}/produtos`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({
+      nome: 'Camiseta REDE',
+      categoria: 'camisetas',
+      preco: 79.9,
+      descricao: 'Algodão',
+      fotos: ['https://x/1.jpg'],
+      destaque: true,
+      variacoes: [{ tamanho: 'P', cor: 'Preto', estoque: 3 }],
     });
-    tick(400);
-    expect(chamou).toBeTrue();
-    expect(produto).toBeUndefined();
-  }));
+    req.flush(PRODUTO);
+    expect((await promessa).id).toBe('p1');
+  });
 
-  it('criar() adiciona um novo produto com id sequencial', fakeAsync(() => {
-    let produto: Produto | undefined;
-    service
-      .criar({
-        nome: 'Camiseta Nova',
-        categoria: 'camisetas',
-        preco: 99.9,
-        descricao: 'Descrição',
-        fotos: ['https://picsum.photos/seed/nova/480/480'],
-        tamanhos: ['M'],
-        cores: ['Preto'],
-        destaque: false,
-        variacoes: [{ tamanho: 'M', cor: 'Preto', estoque: 5 }],
-      })
-      .then((p) => (produto = p));
-    tick(400);
-    expect(produto?.id).toBe('8');
-    expect(produto?.nome).toBe('Camiseta Nova');
+  it('atualizar faz PATCH /produtos/{id} só com os campos enviados', async () => {
+    const promessa = service.atualizar('p1', { preco: 69.9, tamanhos: ['P'] });
+    const req = http.expectOne(`${API}/produtos/p1`);
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toEqual({ preco: 69.9 });
+    req.flush({ ...PRODUTO, preco: 69.9 });
+    expect((await promessa).preco).toBe(69.9);
+  });
 
-    let todos: Produto[] = [];
-    service.listar().then((p) => (todos = p));
-    tick(400);
-    expect(todos.length).toBe(8);
-  }));
-
-  it('atualizar() altera os campos informados sem afetar os demais', fakeAsync(() => {
-    let produto: Produto | undefined;
-    service.atualizar('1', { preco: 89.9 }).then((p) => (produto = p));
-    tick(400);
-    expect(produto?.preco).toBe(89.9);
-    expect(produto?.nome).toBe('Camiseta REDE Clássica');
-  }));
-
-  it('atualizar() rejeita quando o id não existe', fakeAsync(() => {
-    let erro: Error | undefined;
-    service.atualizar('inexistente', { preco: 10 }).catch((e) => (erro = e));
-    tick(400);
-    expect(erro?.message).toBe('PRODUTO_NAO_ENCONTRADO');
-  }));
-
-  it('remover() tira o produto da listagem', fakeAsync(() => {
-    service.remover('1');
-    tick(400);
-    let todos: Produto[] = [];
-    service.listar().then((p) => (todos = p));
-    tick(400);
-    expect(todos.find((p) => p.id === '1')).toBeUndefined();
-    expect(todos.length).toBe(6);
-  }));
-
-  it('remover() com id inexistente não lança erro nem altera a lista', fakeAsync(() => {
-    service.remover('inexistente');
-    tick(400);
-    let todos: Produto[] = [];
-    service.listar().then((p) => (todos = p));
-    tick(400);
-    expect(todos.length).toBe(7);
-  }));
+  it('remover faz DELETE /produtos/{id}', async () => {
+    const promessa = service.remover('p1');
+    const req = http.expectOne(`${API}/produtos/p1`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush(null, { status: 204, statusText: 'No Content' });
+    await promessa;
+  });
 });

@@ -13,8 +13,8 @@ describe('Perfil', () => {
   let authServiceFalso: jasmine.SpyObj<Pick<AuthService, 'atualizarPerfil' | 'logout'>> & {
     usuarioAtual: ReturnType<typeof signal>;
   };
-  let orderServiceFalso: jasmine.SpyObj<Pick<OrderService, 'listarPorUsuario'>>;
-  let registrationServiceFalso: jasmine.SpyObj<Pick<RegistrationService, 'listarPorUsuario'>>;
+  let orderServiceFalso: jasmine.SpyObj<Pick<OrderService, 'listarMeus'>>;
+  let registrationServiceFalso: jasmine.SpyObj<Pick<RegistrationService, 'listarMinhas'>>;
   let router: Router;
 
   async function montar(pedidos: Pedido[], inscricoes: Inscricao[]): Promise<void> {
@@ -23,10 +23,10 @@ describe('Perfil', () => {
       atualizarPerfil: jasmine.createSpy('atualizarPerfil').and.resolveTo(),
       logout: jasmine.createSpy('logout'),
     };
-    orderServiceFalso = jasmine.createSpyObj('OrderService', ['listarPorUsuario']);
-    orderServiceFalso.listarPorUsuario.and.resolveTo(pedidos);
-    registrationServiceFalso = jasmine.createSpyObj('RegistrationService', ['listarPorUsuario']);
-    registrationServiceFalso.listarPorUsuario.and.resolveTo(inscricoes);
+    orderServiceFalso = jasmine.createSpyObj('OrderService', ['listarMeus']);
+    orderServiceFalso.listarMeus.and.resolveTo(pedidos);
+    registrationServiceFalso = jasmine.createSpyObj('RegistrationService', ['listarMinhas']);
+    registrationServiceFalso.listarMinhas.and.resolveTo(inscricoes);
 
     await TestBed.configureTestingModule({
       imports: [Perfil],
@@ -128,5 +128,14 @@ describe('Perfil', () => {
     expect(fixture.componentInstance['salvando']()).toBeFalse();
     expect(fixture.componentInstance['erroGeral']()).toContain('Não deu pra salvar');
     expect(fixture.componentInstance['salvo']()).toBeFalse();
+  });
+
+  it('mostra mensagem específica quando o e-mail já está em uso', async () => {
+    await montar([], []);
+    authServiceFalso.atualizarPerfil.and.rejectWith(new Error('EMAIL_EM_USO'));
+    fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('já está em uso');
   });
 });

@@ -1,10 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
-import { signal } from '@angular/core';
 import { Confirmacao } from './confirmacao';
 import { EventService } from '../../../core/events/event.service';
 import { RegistrationService, ResultadoInscricao } from '../../../core/registrations/registration.service';
-import { AuthService } from '../../../core/auth/auth.service';
 import { Evento } from '../../../core/events/evento.model';
 import { Inscricao } from '../../../core/registrations/inscricao.model';
 
@@ -16,6 +14,7 @@ const EVENTO: Evento = {
   local: 'Sítio Vida Nova, Ibiúna',
   preco: 250,
   vagasTotais: 4,
+  vagasRestantes: 4,
   foto: 'https://picsum.photos/seed/x/480/480',
 };
 
@@ -46,10 +45,6 @@ describe('Confirmacao', () => {
         provideRouter([]),
         { provide: EventService, useValue: eventServiceFalso },
         { provide: RegistrationService, useValue: registrationServiceFalso },
-        {
-          provide: AuthService,
-          useValue: { usuarioAtual: signal({ id: 'u1', nome: 'Jovem', email: 'jovem@rede.com', papel: 'jovem' }) },
-        },
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: '1' }) } } },
       ],
     }).compileComponents();
@@ -62,14 +57,9 @@ describe('Confirmacao', () => {
     fixture.detectChanges();
   }
 
-  it('chama RegistrationService.inscrever com os dados certos', async () => {
+  it('chama RegistrationService.inscrever com o id do evento', async () => {
     await montar(EVENTO);
-    expect(registrationServiceFalso.inscrever).toHaveBeenCalledWith({
-      eventoId: '1',
-      usuarioId: 'u1',
-      valorPago: 250,
-      vagasTotais: 4,
-    });
+    expect(registrationServiceFalso.inscrever).toHaveBeenCalledWith('1');
   });
 
   it('mostra a confirmação com os dados do evento e o valor pago', async () => {

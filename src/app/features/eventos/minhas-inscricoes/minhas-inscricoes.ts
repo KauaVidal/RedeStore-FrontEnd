@@ -1,5 +1,4 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { AuthService } from '../../../core/auth/auth.service';
 import { RegistrationService } from '../../../core/registrations/registration.service';
 import { EventService } from '../../../core/events/event.service';
 import { Inscricao, StatusInscricao } from '../../../core/registrations/inscricao.model';
@@ -24,7 +23,6 @@ const ROTULO_STATUS: Record<StatusInscricao, string> = {
   styleUrl: './minhas-inscricoes.scss',
 })
 export class MinhasInscricoes implements OnInit {
-  private readonly auth = inject(AuthService);
   private readonly registrations = inject(RegistrationService);
   private readonly eventService = inject(EventService);
 
@@ -32,10 +30,7 @@ export class MinhasInscricoes implements OnInit {
   protected readonly rotuloStatus = ROTULO_STATUS;
 
   async ngOnInit(): Promise<void> {
-    const usuario = this.auth.usuarioAtual();
-    if (!usuario) return;
-
-    const inscricoes = await this.registrations.listarPorUsuario(usuario.id);
+    const inscricoes = await this.registrations.listarMinhas();
     const lista = await Promise.all(
       inscricoes.map(async (inscricao) => ({
         inscricao,

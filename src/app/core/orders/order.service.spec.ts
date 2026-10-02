@@ -1,109 +1,109 @@
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { OrderService } from './order.service';
-import { PEDIDOS_MOCK } from './order-mock-store';
-import { ItemCarrinho } from '../cart/item-carrinho.model';
 import { Pedido } from './pedido.model';
+import { ItemCarrinho } from '../cart/item-carrinho.model';
 
+const API = 'http://localhost:5052';
 const ITEM: ItemCarrinho = {
-  produtoId: '1',
-  nome: 'Camiseta REDE Clássica',
+  produtoId: 'p1',
+  nome: 'Camiseta',
   precoUnitario: 79.9,
-  fotoUrl: 'https://picsum.photos/seed/x/480/480',
+  fotoUrl: 'https://x/1.jpg',
   tamanho: 'M',
   cor: 'Preto',
   quantidade: 2,
+  estoqueDisponivel: 5,
+};
+const ENDERECO = { rua: 'Rua A', numero: '1', bairro: 'Centro', cidade: 'SP', cep: '01000-000' };
+const PEDIDO: Pedido = {
+  id: 'ped-1',
+  usuarioId: 'u1',
+  itens: [ITEM],
+  formaEntrega: 'retirada',
+  endereco: null,
+  valorTotal: 159.8,
+  status: 'pago',
+  criadoEm: '2026-10-01T14:40:00.000Z',
 };
 
 describe('OrderService', () => {
   let service: OrderService;
+  let http: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
     service = TestBed.inject(OrderService);
+    http = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => {
-    PEDIDOS_MOCK.length = 0;
+  afterEach(() => http.verify());
+
+  it('criar envia só produtoId/tamanho/cor/quantidade (sem preço) e guarda o último pedido', async () => {
+    const promessa = service.criar({ itens: [ITEM], formaEntrega: 'retirada' });
+    const req = http.expectOne(`${API}/pedidos`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({
+      itens: [{ produtoId: 'p1', tamanho: 'M', cor: 'Preto', quantidade: 2 }],
+      formaEntrega: 'retirada',
+    });
+    req.flush(PEDIDO);
+    expect((await promessa).id).toBe('ped-1');
+    expect(service.ultimoPedido()?.id).toBe('ped-1');
   });
 
-  it('criar() cria um pedido pago com o valor total calculado', fakeAsync(() => {
-    let pedido: Pedido | undefined;
-    service.criar({ usuarioId: 'u1', itens: [ITEM], formaEntrega: 'retirada' }).then((p) => (pedido = p));
-    tick(400);
-    expect(pedido?.status).toBe('pago');
-    expect(pedido?.valorTotal).toBeCloseTo(159.8, 2);
-  }));
+  it('criar com entrega envia o endereço', async () => {
+    const promessa = service.criar({ itens: [ITEM], formaEntrega: 'entrega', endereco: ENDERECO });
+    const req = http.expectOne(`${API}/pedidos`);
+    expect(req.request.body.endereco).toEqual(ENDERECO);
+    req.flush({ ...PEDIDO, formaEntrega: 'entrega', endereco: ENDERECO });
+    await promessa;
+  });
 
-  it('criar() define ultimoPedido() com o pedido recém-criado', fakeAsync(() => {
-    service.criar({ usuarioId: 'u1', itens: [ITEM], formaEntrega: 'retirada' });
-    tick(400);
-    expect(service.ultimoPedido()?.usuarioId).toBe('u1');
-  }));
+  it('criar com retirada não envia endereço mesmo se vier preenchido', async () => {
+    const promessa = service.criar({ itens: [ITEM], formaEntrega: 'retirada', endereco: ENDERECO });
+    const req = http.expectOne(`${API}/pedidos`);
+    expect('endereco' in req.request.body).toBeFalse();
+    req.flush(PEDIDO);
+    await promessa;
+  });
 
-  it('limparUltimoPedido() volta ultimoPedido() para null', fakeAsync(() => {
-    service.criar({ usuarioId: 'u1', itens: [ITEM], formaEntrega: 'retirada' });
-    tick(400);
-    expect(service.ultimoPedido()).not.toBeNull();
-
-    service.limparUltimoPedido();
-
+  it('criar propaga ESTOQUE_INSUFICIENTE e não altera o último pedido', async () => {
+    const promessa = service.criar({ itens: [ITEM], formaEntrega: 'retirada' });
+    http
+      .expectOne(`${API}/pedidos`)
+      .flush({ status: 409, title: 'ESTOQUE_INSUFICIENTE' }, { status: 409, statusText: 'Conflict' });
+    await expectAsync(promessa).toBeRejectedWithError('ESTOQUE_INSUFICIENTE');
     expect(service.ultimoPedido()).toBeNull();
-  }));
+  });
 
-  it('listarPorUsuario() retorna só os pedidos do usuário, mais recentes primeiro', fakeAsync(() => {
-    spyOn(Date.prototype, 'toISOString').and.returnValues(
-      '2024-01-01T00:00:00.000Z',
-      '2024-01-01T00:00:01.000Z',
-      '2024-01-01T00:00:02.000Z',
-    );
+  it('listarMeus faz GET /usuarios/me/pedidos', async () => {
+    const promessa = service.listarMeus();
+    http.expectOne(`${API}/usuarios/me/pedidos`).flush([PEDIDO]);
+    expect((await promessa).length).toBe(1);
+  });
 
-    service.criar({ usuarioId: 'u1', itens: [ITEM], formaEntrega: 'retirada' });
-    tick(400);
-    service.criar({ usuarioId: 'u2', itens: [ITEM], formaEntrega: 'retirada' });
-    tick(400);
-    service.criar({ usuarioId: 'u1', itens: [ITEM], formaEntrega: 'entrega' });
-    tick(400);
+  it('listarTodos faz GET /pedidos', async () => {
+    const promessa = service.listarTodos();
+    http.expectOne(`${API}/pedidos`).flush([PEDIDO]);
+    expect((await promessa)[0].id).toBe('ped-1');
+  });
 
-    let pedidosU1: Pedido[] = [];
-    service.listarPorUsuario('u1').then((p) => (pedidosU1 = p));
-    tick(400);
+  it('avancarStatus faz PATCH /pedidos/{id}/avancar-status sem corpo', async () => {
+    const promessa = service.avancarStatus('ped-1');
+    const req = http.expectOne(`${API}/pedidos/ped-1/avancar-status`);
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toBeNull();
+    req.flush({ ...PEDIDO, status: 'em_preparo' });
+    expect((await promessa).status).toBe('em_preparo');
+  });
 
-    expect(pedidosU1.length).toBe(2);
-    expect(pedidosU1[0].formaEntrega).toBe('entrega');
-  }));
-
-  it('listarTodos() retorna todos os pedidos, mais recentes primeiro', fakeAsync(() => {
-    spyOn(Date.prototype, 'toISOString').and.returnValues(
-      '2024-01-01T00:00:00.000Z',
-      '2024-01-01T00:00:01.000Z',
-    );
-    service.criar({ usuarioId: 'u1', itens: [ITEM], formaEntrega: 'retirada' });
-    tick(400);
-    service.criar({ usuarioId: 'u2', itens: [ITEM], formaEntrega: 'entrega' });
-    tick(400);
-
-    let todos: Pedido[] = [];
-    service.listarTodos().then((p) => (todos = p));
-    tick(400);
-    expect(todos.length).toBe(2);
-    expect(todos[0].usuarioId).toBe('u2');
-  }));
-
-  it('atualizarStatus() muda o status do pedido', fakeAsync(() => {
-    let pedido: Pedido | undefined;
-    service.criar({ usuarioId: 'u1', itens: [ITEM], formaEntrega: 'retirada' }).then((p) => (pedido = p));
-    tick(400);
-
-    let atualizado: Pedido | undefined;
-    service.atualizarStatus(pedido!.id, 'em_preparo').then((p) => (atualizado = p));
-    tick(400);
-    expect(atualizado?.status).toBe('em_preparo');
-  }));
-
-  it('atualizarStatus() rejeita quando o id não existe', fakeAsync(() => {
-    let erro: Error | undefined;
-    service.atualizarStatus('inexistente', 'em_preparo').catch((e) => (erro = e));
-    tick(400);
-    expect(erro?.message).toBe('PEDIDO_NAO_ENCONTRADO');
-  }));
+  it('limparUltimoPedido zera o sinal', async () => {
+    const promessa = service.criar({ itens: [ITEM], formaEntrega: 'retirada' });
+    http.expectOne(`${API}/pedidos`).flush(PEDIDO);
+    await promessa;
+    service.limparUltimoPedido();
+    expect(service.ultimoPedido()).toBeNull();
+  });
 });

@@ -1,14 +1,19 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { EventService } from '../../../core/events/event.service';
-import { RegistrationService } from '../../../core/registrations/registration.service';
-import { Evento } from '../../../core/events/evento.model';
+import { DadosEvento, Evento } from '../../../core/events/evento.model';
 import { Table } from '../../../shared/ui/table/table';
 import { Modal } from '../../../shared/ui/modal/modal';
 import { Button } from '../../../shared/ui/button/button';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { DataBrPipe } from '../../../shared/pipes/data-br.pipe';
 import { EventoForm } from './evento-form/evento-form';
+import { mensagemDeErro } from '../../../core/api/mensagem-erro';
+
+const ERROS_EVENTO: Record<string, string> = {
+  EVENTO_COM_INSCRICOES_CONFIRMADAS: 'Esse evento tem inscrições confirmadas. Cancele-as antes de remover.',
+  EVENTO_VAGAS_TOTAIS_INSUFICIENTES: 'O total de vagas não pode ficar abaixo das inscrições já confirmadas.',
+};
 
 @Component({
   selector: 'app-eventos',
@@ -18,31 +23,23 @@ import { EventoForm } from './evento-form/evento-form';
 })
 export class Eventos implements OnInit {
   private readonly eventosService = inject(EventService);
-  private readonly inscricoesService = inject(RegistrationService);
 
   protected readonly lista = signal<Evento[]>([]);
-  protected readonly vagasRestantes = signal<Record<string, number>>({});
   protected readonly modalAberto = signal(false);
   protected readonly eventoEditando = signal<Evento | null>(null);
   protected readonly eventoParaRemover = signal<Evento | null>(null);
+  protected readonly erro = signal<string | null>(null);
 
   async ngOnInit(): Promise<void> {
     await this.carregar();
   }
 
   private async carregar(): Promise<void> {
-    const eventos = await this.eventosService.listar();
-    this.lista.set(eventos);
-    const vagas = await Promise.all(
-      eventos.map((e) => this.inscricoesService.vagasRestantes(e.id, e.vagasTotais)),
-    );
-    const mapa: Record<string, number> = {};
-    eventos.forEach((e, indice) => (mapa[e.id] = vagas[indice]));
-    this.vagasRestantes.set(mapa);
+    this.lista.set(await this.eventosService.listar());
   }
 
   protected ocupadas(evento: Evento): number {
-    return evento.vagasTotais - (this.vagasRestantes()[evento.id] ?? evento.vagasTotais);
+    return evento.vagasTotais - evento.vagasRestantes;
   }
 
   protected abrirNovo(): void {
@@ -59,12 +56,19 @@ export class Eventos implements OnInit {
     this.modalAberto.set(false);
   }
 
-  protected async salvar(dados: Omit<Evento, 'id'>): Promise<void> {
+  protected async salvar(dados: DadosEvento): Promise<void> {
+    this.erro.set(null);
     const editando = this.eventoEditando();
-    if (editando) {
-      await this.eventosService.atualizar(editando.id, dados);
-    } else {
-      await this.eventosService.criar(dados);
+    try {
+      if (editando) {
+        await this.eventosService.atualizar(editando.id, dados);
+      } else {
+        await this.eventosService.criar(dados);
+      }
+    } catch (erro) {
+      this.erro.set(mensagemDeErro(erro, ERROS_EVENTO, 'Não deu pra salvar o evento agora. Tenta de novo em instantes.'));
+      this.modalAberto.set(false);
+      return;
     }
     this.modalAberto.set(false);
     await this.carregar();
@@ -81,7 +85,12 @@ export class Eventos implements OnInit {
   protected async confirmarRemocao(): Promise<void> {
     const evento = this.eventoParaRemover();
     if (!evento) return;
-    await this.eventosService.remover(evento.id);
+    this.erro.set(null);
+    try {
+      await this.eventosService.remover(evento.id);
+    } catch (erro) {
+      this.erro.set(mensagemDeErro(erro, ERROS_EVENTO, 'Não deu pra remover o evento agora. Tenta de novo em instantes.'));
+    }
     this.eventoParaRemover.set(null);
     await this.carregar();
   }

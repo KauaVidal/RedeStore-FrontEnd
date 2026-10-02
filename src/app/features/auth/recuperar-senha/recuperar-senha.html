@@ -7,6 +7,9 @@
         <h1 class="titulo-1">Recuperar senha</h1>
         <p class="texto-corpo">Informa seu e-mail e a gente te ajuda a voltar pra conta.</p>
         <app-text-field rotulo="E-mail" tipo="email" [controle]="form.controls.email" [erro]="erroEmail" />
+        @if (erroGeral()) {
+          <p class="cartao-auth__erro" role="alert">{{ erroGeral() }}</p>
+        }
         <app-button tipo="submit" [carregando]="enviando()">Enviar link</app-button>
       </form>
     } @else {

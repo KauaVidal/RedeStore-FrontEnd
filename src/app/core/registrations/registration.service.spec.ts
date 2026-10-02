@@ -1,158 +1,70 @@
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { RegistrationService } from './registration.service';
-import { INSCRICOES_MOCK } from './registration-mock-store';
 import { Inscricao } from './inscricao.model';
+
+const API = 'http://localhost:5052';
+const INSCRICAO: Inscricao = {
+  id: 'i1',
+  eventoId: 'e1',
+  usuarioId: 'u1',
+  status: 'confirmada',
+  valorPago: 150,
+  criadoEm: '2026-10-01T14:32:10.123Z',
+};
 
 describe('RegistrationService', () => {
   let service: RegistrationService;
+  let http: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting()] });
     service = TestBed.inject(RegistrationService);
+    http = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => {
-    INSCRICOES_MOCK.length = 0;
+  afterEach(() => http.verify());
+
+  it('inscrever faz POST /eventos/{id}/inscricoes sem corpo e devolve "criada"', async () => {
+    const promessa = service.inscrever('e1');
+    const req = http.expectOne(`${API}/eventos/e1/inscricoes`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toBeNull();
+    req.flush({ resultado: 'criada', inscricao: INSCRICAO });
+    expect(await promessa).toEqual({ resultado: 'criada', inscricao: INSCRICAO });
   });
 
-  it('inscrever() cria uma inscrição confirmada', fakeAsync(() => {
-    let resultado: Awaited<ReturnType<typeof service.inscrever>> | undefined;
-    service
-      .inscrever({ eventoId: '1', usuarioId: 'u1', valorPago: 250, vagasTotais: 4 })
-      .then((r) => (resultado = r));
-    tick(400);
-    expect(resultado?.resultado).toBe('criada');
-    const inscricao = resultado?.resultado === 'criada' ? resultado.inscricao : undefined;
-    expect(inscricao?.status).toBe('confirmada');
-    expect(inscricao?.eventoId).toBe('1');
-    expect(inscricao?.valorPago).toBe(250);
-  }));
+  it('inscrever devolve "ja_inscrito" com a inscrição existente', async () => {
+    const promessa = service.inscrever('e1');
+    http.expectOne(`${API}/eventos/e1/inscricoes`).flush({ resultado: 'ja_inscrito', inscricao: INSCRICAO });
+    expect(await promessa).toEqual({ resultado: 'ja_inscrito', inscricao: INSCRICAO });
+  });
 
-  it('inscrever() é idempotente: não cria uma segunda inscrição confirmada para o mesmo usuário e evento', fakeAsync(() => {
-    let primeiro: Awaited<ReturnType<typeof service.inscrever>> | undefined;
-    let segundo: Awaited<ReturnType<typeof service.inscrever>> | undefined;
+  it('inscrever devolve "esgotado" sem inscrição', async () => {
+    const promessa = service.inscrever('e1');
+    http.expectOne(`${API}/eventos/e1/inscricoes`).flush({ resultado: 'esgotado', inscricao: null });
+    expect(await promessa).toEqual({ resultado: 'esgotado' });
+  });
 
-    service
-      .inscrever({ eventoId: '1', usuarioId: 'u1', valorPago: 250, vagasTotais: 4 })
-      .then((r) => (primeiro = r));
-    tick(400);
-    service
-      .inscrever({ eventoId: '1', usuarioId: 'u1', valorPago: 250, vagasTotais: 4 })
-      .then((r) => (segundo = r));
-    tick(400);
+  it('listarMinhas faz GET /usuarios/me/inscricoes', async () => {
+    const promessa = service.listarMinhas();
+    http.expectOne(`${API}/usuarios/me/inscricoes`).flush([INSCRICAO]);
+    expect(await promessa).toEqual([INSCRICAO]);
+  });
 
-    expect(primeiro?.resultado).toBe('criada');
-    expect(segundo?.resultado).toBe('ja_inscrito');
-    if (primeiro?.resultado !== 'esgotado' && segundo?.resultado !== 'esgotado') {
-      expect(segundo?.inscricao.id).toBe(primeiro?.inscricao.id);
-    }
-    expect(INSCRICOES_MOCK.filter((i) => i.eventoId === '1' && i.usuarioId === 'u1').length).toBe(1);
-  }));
+  it('listarPorEvento faz GET /eventos/{id}/inscricoes', async () => {
+    const promessa = service.listarPorEvento('e1');
+    http.expectOne(`${API}/eventos/e1/inscricoes`).flush([INSCRICAO]);
+    expect((await promessa).length).toBe(1);
+  });
 
-  it('inscrever() rejeita quando o evento já está com todas as vagas ocupadas', fakeAsync(() => {
-    let a: Awaited<ReturnType<typeof service.inscrever>> | undefined;
-    let b: Awaited<ReturnType<typeof service.inscrever>> | undefined;
-    let c: Awaited<ReturnType<typeof service.inscrever>> | undefined;
-
-    service.inscrever({ eventoId: '4', usuarioId: 'u1', valorPago: 180, vagasTotais: 2 }).then((r) => (a = r));
-    tick(400);
-    service.inscrever({ eventoId: '4', usuarioId: 'u2', valorPago: 180, vagasTotais: 2 }).then((r) => (b = r));
-    tick(400);
-    service.inscrever({ eventoId: '4', usuarioId: 'u3', valorPago: 180, vagasTotais: 2 }).then((r) => (c = r));
-    tick(400);
-
-    expect(a?.resultado).toBe('criada');
-    expect(b?.resultado).toBe('criada');
-    expect(c?.resultado).toBe('esgotado');
-    expect(INSCRICOES_MOCK.filter((i) => i.eventoId === '4' && i.status === 'confirmada').length).toBe(2);
-  }));
-
-  it('cancelar() muda o status da inscrição para cancelada', fakeAsync(() => {
-    let resultado: Awaited<ReturnType<typeof service.inscrever>> | undefined;
-    service
-      .inscrever({ eventoId: '1', usuarioId: 'u1', valorPago: 250, vagasTotais: 4 })
-      .then((r) => (resultado = r));
-    tick(400);
-    const inscricao = resultado?.resultado !== 'esgotado' ? resultado?.inscricao : undefined;
-    service.cancelar(inscricao!.id);
-    tick(400);
-
-    let lista: Inscricao[] = [];
-    service.listarPorUsuario('u1').then((i) => (lista = i));
-    tick(400);
-    expect(lista[0].status).toBe('cancelada');
-  }));
-
-  it('listarPorUsuario() retorna só as inscrições do usuário, mais recentes primeiro', fakeAsync(() => {
-    // Timestamps forçados a serem estritamente crescentes: tick() só virtualiza
-    // setTimeout, não Date — sem isso, criadoEm poderia empatar entre chamadas
-    // próximas e o teste de ordenação ficaria dependente de timing real (mesma
-    // licao aprendida no OrderService da Loja).
-    spyOn(Date.prototype, 'toISOString').and.returnValues(
-      '2024-01-01T00:00:00.000Z',
-      '2024-01-01T00:00:01.000Z',
-      '2024-01-01T00:00:02.000Z',
-    );
-
-    service.inscrever({ eventoId: '1', usuarioId: 'u1', valorPago: 250, vagasTotais: 4 });
-    tick(400);
-    service.inscrever({ eventoId: '2', usuarioId: 'u2', valorPago: 0, vagasTotais: 4 });
-    tick(400);
-    service.inscrever({ eventoId: '3', usuarioId: 'u1', valorPago: 0, vagasTotais: 4 });
-    tick(400);
-
-    let lista: Inscricao[] = [];
-    service.listarPorUsuario('u1').then((i) => (lista = i));
-    tick(400);
-    expect(lista.length).toBe(2);
-    expect(lista[0].eventoId).toBe('3');
-  }));
-
-  it('listarPorEvento() retorna só as inscrições daquele evento, mais recentes primeiro', fakeAsync(() => {
-    spyOn(Date.prototype, 'toISOString').and.returnValues(
-      '2024-01-01T00:00:00.000Z',
-      '2024-01-01T00:00:01.000Z',
-      '2024-01-01T00:00:02.000Z',
-    );
-    service.inscrever({ eventoId: '1', usuarioId: 'u1', valorPago: 250, vagasTotais: 4 });
-    tick(400);
-    service.inscrever({ eventoId: '2', usuarioId: 'u2', valorPago: 0, vagasTotais: 4 });
-    tick(400);
-    service.inscrever({ eventoId: '1', usuarioId: 'u3', valorPago: 250, vagasTotais: 4 });
-    tick(400);
-
-    let lista: Inscricao[] = [];
-    service.listarPorEvento('1').then((i) => (lista = i));
-    tick(400);
-    expect(lista.length).toBe(2);
-    expect(lista[0].usuarioId).toBe('u3');
-  }));
-
-  it('vagasRestantes() desconta apenas inscrições confirmadas', fakeAsync(() => {
-    let b: Awaited<ReturnType<typeof service.inscrever>> | undefined;
-    service.inscrever({ eventoId: '1', usuarioId: 'u1', valorPago: 250, vagasTotais: 4 });
-    tick(400);
-    service.inscrever({ eventoId: '1', usuarioId: 'u2', valorPago: 250, vagasTotais: 4 }).then((r) => (b = r));
-    tick(400);
-    const inscricaoB = b?.resultado !== 'esgotado' ? b?.inscricao : undefined;
-    service.cancelar(inscricaoB!.id);
-    tick(400);
-
-    let vagas = -1;
-    service.vagasRestantes('1', 4).then((v) => (vagas = v));
-    tick(400);
-    expect(vagas).toBe(3);
-  }));
-
-  it('vagasRestantes() ignora inscrições de outros eventos', fakeAsync(() => {
-    service.inscrever({ eventoId: '1', usuarioId: 'u1', valorPago: 250, vagasTotais: 4 });
-    tick(400);
-    service.inscrever({ eventoId: '2', usuarioId: 'u1', valorPago: 0, vagasTotais: 100 });
-    tick(400);
-
-    let vagas = -1;
-    service.vagasRestantes('2', 100).then((v) => (vagas = v));
-    tick(400);
-    expect(vagas).toBe(99);
-  }));
+  it('cancelar faz PATCH /inscricoes/{id}/cancelar sem corpo', async () => {
+    const promessa = service.cancelar('i1');
+    const req = http.expectOne(`${API}/inscricoes/i1/cancelar`);
+    expect(req.request.method).toBe('PATCH');
+    expect(req.request.body).toBeNull();
+    req.flush({ ...INSCRICAO, status: 'cancelada' });
+    await promessa;
+  });
 });

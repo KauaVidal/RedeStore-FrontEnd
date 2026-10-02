@@ -44,4 +44,13 @@ describe('Login', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('E-mail ou senha incorretos');
   });
+
+  it('mostra aviso de conexão quando o servidor não responde', async () => {
+    authServiceFalso.login.and.rejectWith(new Error('SEM_CONEXAO'));
+    fixture.componentInstance['form'].setValue({ email: 'jovem@rede.com', senha: 'senha1234' });
+    fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Não conseguimos falar com o servidor');
+  });
 });

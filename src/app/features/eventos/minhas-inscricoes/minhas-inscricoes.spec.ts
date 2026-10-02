@@ -1,8 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { signal } from '@angular/core';
 import { MinhasInscricoes } from './minhas-inscricoes';
-import { AuthService } from '../../../core/auth/auth.service';
 import { RegistrationService } from '../../../core/registrations/registration.service';
 import { EventService } from '../../../core/events/event.service';
 import { Inscricao } from '../../../core/registrations/inscricao.model';
@@ -16,6 +14,7 @@ const EVENTO: Evento = {
   local: 'Sítio Vida Nova, Ibiúna',
   preco: 250,
   vagasTotais: 4,
+  vagasRestantes: 4,
   foto: 'https://picsum.photos/seed/x/480/480',
 };
 
@@ -30,11 +29,11 @@ const INSCRICAO: Inscricao = {
 
 describe('MinhasInscricoes', () => {
   let fixture: ComponentFixture<MinhasInscricoes>;
-  let registrationServiceFalso: jasmine.SpyObj<Pick<RegistrationService, 'listarPorUsuario' | 'cancelar'>>;
+  let registrationServiceFalso: jasmine.SpyObj<Pick<RegistrationService, 'listarMinhas' | 'cancelar'>>;
 
   async function montar(inscricoes: Inscricao[]): Promise<void> {
-    registrationServiceFalso = jasmine.createSpyObj('RegistrationService', ['listarPorUsuario', 'cancelar']);
-    registrationServiceFalso.listarPorUsuario.and.resolveTo(inscricoes);
+    registrationServiceFalso = jasmine.createSpyObj('RegistrationService', ['listarMinhas', 'cancelar']);
+    registrationServiceFalso.listarMinhas.and.resolveTo(inscricoes);
     registrationServiceFalso.cancelar.and.resolveTo();
 
     const eventServiceFalso = jasmine.createSpyObj('EventService', ['buscarPorId']);
@@ -44,10 +43,6 @@ describe('MinhasInscricoes', () => {
       imports: [MinhasInscricoes],
       providers: [
         provideRouter([]),
-        {
-          provide: AuthService,
-          useValue: { usuarioAtual: signal({ id: 'u1', nome: 'Jovem', email: 'jovem@rede.com', papel: 'jovem' }) },
-        },
         { provide: RegistrationService, useValue: registrationServiceFalso },
         { provide: EventService, useValue: eventServiceFalso },
       ],

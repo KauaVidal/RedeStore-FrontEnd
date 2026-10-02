@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EventoForm } from './evento-form';
-import { Evento } from '../../../../core/events/evento.model';
+import { DadosEvento, Evento } from '../../../../core/events/evento.model';
 
 const EVENTO: Evento = {
   id: '1',
@@ -10,6 +10,7 @@ const EVENTO: Evento = {
   local: 'Sítio Vida Nova, Ibiúna',
   preco: 250,
   vagasTotais: 4,
+  vagasRestantes: 4,
   foto: 'https://picsum.photos/seed/retiro/480/480',
 };
 
@@ -51,7 +52,7 @@ describe('EventoForm', () => {
     });
     fixture.detectChanges();
 
-    let emitido: Omit<Evento, 'id'> | undefined;
+    let emitido: DadosEvento | undefined;
     fixture.componentInstance.salvar.subscribe((dados) => (emitido = dados));
     fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
 
@@ -67,5 +68,13 @@ describe('EventoForm', () => {
     const cancelar = Array.from(botoes).find((b) => b.textContent?.includes('Cancelar'));
     cancelar?.click();
     expect(emitiu).toBeTrue();
+  });
+
+  it('em modo edição, pré-preenche a data no fuso local (salvar sem mexer mantém o mesmo instante)', () => {
+    fixture.componentRef.setInput('evento', EVENTO);
+    fixture.detectChanges();
+    const valorCampo = fixture.componentInstance['form'].controls.dataHora.value;
+    // `datetime-local` é interpretado no fuso local: precisa voltar ao mesmo instante UTC.
+    expect(new Date(valorCampo).toISOString()).toBe(EVENTO.dataHora);
   });
 });

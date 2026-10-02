@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Agenda } from './agenda';
 import { EventService } from '../../../core/events/event.service';
-import { RegistrationService } from '../../../core/registrations/registration.service';
 import { Evento } from '../../../core/events/evento.model';
 import { DataBrPipe } from '../../../shared/pipes/data-br.pipe';
 
@@ -10,10 +9,11 @@ const EVENTO: Evento = {
   id: '1',
   titulo: 'Retiro de Verão REDE',
   descricao: 'Um fim de semana de imersão.',
-  dataHora: '2026-09-16T08:00:00.000Z',
+  dataHora: '2099-09-16T08:00:00.000Z',
   local: 'Sítio Vida Nova, Ibiúna',
   preco: 250,
   vagasTotais: 4,
+  vagasRestantes: 4,
   foto: 'https://picsum.photos/seed/x/480/480',
 };
 
@@ -25,27 +25,23 @@ const EVENTO_PASSADO: Evento = {
   local: 'Templo sede, Vila Maria',
   preco: 0,
   vagasTotais: 50,
+  vagasRestantes: 50,
   foto: 'https://picsum.photos/seed/antigo/480/480',
 };
 
 describe('Agenda', () => {
   let fixture: ComponentFixture<Agenda>;
   let eventServiceFalso: jasmine.SpyObj<Pick<EventService, 'listar'>>;
-  let registrationServiceFalso: jasmine.SpyObj<Pick<RegistrationService, 'vagasRestantes'>>;
 
-  async function montar(eventos: Evento[], vagasRestantes = 2): Promise<void> {
+  async function montar(eventos: Evento[]): Promise<void> {
     eventServiceFalso = jasmine.createSpyObj('EventService', ['listar']);
     eventServiceFalso.listar.and.resolveTo(eventos);
-
-    registrationServiceFalso = jasmine.createSpyObj('RegistrationService', ['vagasRestantes']);
-    registrationServiceFalso.vagasRestantes.and.resolveTo(vagasRestantes);
 
     await TestBed.configureTestingModule({
       imports: [Agenda],
       providers: [
         provideRouter([]),
         { provide: EventService, useValue: eventServiceFalso },
-        { provide: RegistrationService, useValue: registrationServiceFalso },
       ],
     }).compileComponents();
 
@@ -65,7 +61,7 @@ describe('Agenda', () => {
   });
 
   it('mostra as vagas restantes de cada evento', async () => {
-    await montar([EVENTO], 3);
+    await montar([{ ...EVENTO, vagasRestantes: 3 }]);
     expect(fixture.nativeElement.textContent).toContain('3 vagas restantes');
   });
 

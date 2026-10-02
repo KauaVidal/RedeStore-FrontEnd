@@ -159,3 +159,9 @@
     transition: none;
   }
 }
+
+.admin-tela__erro {
+  color: var(--status-cancel);
+  font-size: 0.875rem;
+  margin: 0 0 var(--espaco-4);
+}

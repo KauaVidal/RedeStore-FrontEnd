@@ -1,85 +1,46 @@
-import { Injectable } from '@angular/core';
-import { mockLatency } from '../mock/mock-latency';
-import { INSCRICOES_MOCK } from './registration-mock-store';
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { API, requisitar } from '../api/api';
 import { Inscricao } from './inscricao.model';
 
 /**
  * Resultado de uma tentativa de inscrição:
  * - 'criada': uma nova inscrição confirmada foi criada.
- * - 'ja_inscrito': o usuário já tinha uma inscrição confirmada para o evento;
- *   nenhuma nova linha foi criada (idempotente) e a inscrição existente é retornada.
- * - 'esgotado': não havia vagas disponíveis; nenhuma inscrição foi criada.
+ * - 'ja_inscrito': o usuário já tinha inscrição confirmada (idempotente) — devolve a existente.
+ * - 'esgotado': não havia vagas; nenhuma inscrição foi criada.
  */
 export type ResultadoInscricao =
   | { resultado: 'criada'; inscricao: Inscricao }
   | { resultado: 'ja_inscrito'; inscricao: Inscricao }
   | { resultado: 'esgotado' };
 
+interface ResultadoInscricaoDto {
+  resultado: 'criada' | 'ja_inscrito' | 'esgotado';
+  inscricao: Inscricao | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class RegistrationService {
-  async inscrever(dados: {
-    eventoId: string;
-    usuarioId: string;
-    valorPago: number;
-    vagasTotais: number;
-  }): Promise<ResultadoInscricao> {
-    await mockLatency(undefined);
+  private readonly http = inject(HttpClient);
 
-    const existente = INSCRICOES_MOCK.find(
-      (i) => i.eventoId === dados.eventoId && i.usuarioId === dados.usuarioId && i.status === 'confirmada',
+  /** Inscreve o usuário logado (identificado pelo token). Seguro contra overbooking no backend. */
+  async inscrever(eventoId: string): Promise<ResultadoInscricao> {
+    const dto = await requisitar(
+      this.http.post<ResultadoInscricaoDto>(`${API}/eventos/${eventoId}/inscricoes`, null),
     );
-    if (existente) {
-      // Idempotente: remontar a tela de confirmação (voltar/avançar no navegador,
-      // ou navegar direto pra URL) não cria uma segunda inscrição.
-      return { resultado: 'ja_inscrito', inscricao: existente };
-    }
-
-    const confirmadas = INSCRICOES_MOCK.filter(
-      (i) => i.eventoId === dados.eventoId && i.status === 'confirmada',
-    ).length;
-    if (confirmadas >= dados.vagasTotais) {
-      return { resultado: 'esgotado' };
-    }
-
-    const inscricao: Inscricao = {
-      id: String(INSCRICOES_MOCK.length + 1),
-      eventoId: dados.eventoId,
-      usuarioId: dados.usuarioId,
-      status: 'confirmada',
-      valorPago: dados.valorPago,
-      criadoEm: new Date().toISOString(),
-    };
-    INSCRICOES_MOCK.push(inscricao);
-    return { resultado: 'criada', inscricao };
+    if (dto.resultado === 'esgotado' || !dto.inscricao) return { resultado: 'esgotado' };
+    return { resultado: dto.resultado, inscricao: dto.inscricao };
   }
 
   async cancelar(inscricaoId: string): Promise<void> {
-    await mockLatency(undefined);
-    const indice = INSCRICOES_MOCK.findIndex((i) => i.id === inscricaoId);
-    if (indice >= 0) {
-      INSCRICOES_MOCK[indice] = { ...INSCRICOES_MOCK[indice], status: 'cancelada' };
-    }
+    await requisitar(this.http.patch<Inscricao>(`${API}/inscricoes/${inscricaoId}/cancelar`, null));
   }
 
-  async listarPorUsuario(usuarioId: string): Promise<Inscricao[]> {
-    await mockLatency(undefined);
-    return INSCRICOES_MOCK.filter((i) => i.usuarioId === usuarioId).sort(
-      (a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime(),
-    );
+  async listarMinhas(): Promise<Inscricao[]> {
+    return requisitar(this.http.get<Inscricao[]>(`${API}/usuarios/me/inscricoes`));
   }
 
   async listarPorEvento(eventoId: string): Promise<Inscricao[]> {
-    await mockLatency(undefined);
-    return INSCRICOES_MOCK.filter((i) => i.eventoId === eventoId).sort(
-      (a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime(),
-    );
-  }
-
-  async vagasRestantes(eventoId: string, vagasTotais: number): Promise<number> {
-    await mockLatency(undefined);
-    const confirmadas = INSCRICOES_MOCK.filter(
-      (i) => i.eventoId === eventoId && i.status === 'confirmada',
-    ).length;
-    return vagasTotais - confirmadas;
+    return requisitar(this.http.get<Inscricao[]>(`${API}/eventos/${eventoId}/inscricoes`));
   }
 }

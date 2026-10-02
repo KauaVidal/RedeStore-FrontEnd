@@ -9,6 +9,7 @@ import { Inscricao } from '../../core/registrations/inscricao.model';
 import { TextField } from '../../shared/ui/text-field/text-field';
 import { Button } from '../../shared/ui/button/button';
 import { EmptyState } from '../../shared/ui/empty-state/empty-state';
+import { mensagemDeErro } from '../../core/api/mensagem-erro';
 
 @Component({
   selector: 'app-perfil',
@@ -41,8 +42,8 @@ export class Perfil implements OnInit {
     const usuario = this.usuario();
     if (!usuario) return;
     const [pedidos, inscricoes] = await Promise.all([
-      this.pedidosService.listarPorUsuario(usuario.id),
-      this.registrations.listarPorUsuario(usuario.id),
+      this.pedidosService.listarMeus(),
+      this.registrations.listarMinhas(),
     ]);
     this.pedidos.set(pedidos);
     this.inscricoesConfirmadas.set(inscricoes.filter((i) => i.status === 'confirmada'));
@@ -59,8 +60,14 @@ export class Perfil implements OnInit {
     try {
       await this.auth.atualizarPerfil(this.form.getRawValue());
       this.salvo.set(true);
-    } catch {
-      this.erroGeral.set('Não deu pra salvar suas alterações agora. Tenta de novo em instantes.');
+    } catch (erro) {
+      this.erroGeral.set(
+        mensagemDeErro(
+          erro,
+          { EMAIL_EM_USO: 'Esse e-mail já está em uso por outra conta.' },
+          'Não deu pra salvar suas alterações agora. Tenta de novo em instantes.',
+        ),
+      );
     } finally {
       this.salvando.set(false);
     }
