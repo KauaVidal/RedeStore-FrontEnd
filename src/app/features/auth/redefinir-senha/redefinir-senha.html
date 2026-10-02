@@ -1,0 +1,39 @@
+<div class="tela-auth">
+  <div class="cartao-auth">
+    <app-logo variante="amarelo-transparente" tamanho="56px" />
+
+    @if (!token() || estado() === 'token_invalido') {
+      <h1 class="titulo-1">Link inválido</h1>
+      <p class="texto-corpo">Esse link de redefinição expirou ou já foi usado. Pede um novo e tenta de novo.</p>
+      <div class="cartao-auth__links">
+        <a routerLink="/recuperar-senha">Pedir novo link</a>
+        <a routerLink="/login">Voltar pro login</a>
+      </div>
+    } @else if (estado() === 'sucesso') {
+      <h1 class="titulo-1">Senha alterada</h1>
+      <p class="texto-corpo">Pronto! Agora é só entrar com a sua nova senha.</p>
+      <div class="cartao-auth__links">
+        <a routerLink="/login">Ir para o login</a>
+      </div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="aoEnviar()" class="cartao-auth">
+        <h1 class="titulo-1">Nova senha</h1>
+        <p class="texto-corpo">Escolhe uma senha nova com pelo menos 8 caracteres.</p>
+        <app-text-field rotulo="Nova senha" tipo="password" [controle]="form.controls.novaSenha" [erro]="erroNovaSenha" />
+        <app-text-field
+          rotulo="Confirmar nova senha"
+          tipo="password"
+          [controle]="form.controls.confirmarSenha"
+          [erro]="erroConfirmarSenha"
+        />
+        @if (erroGeral()) {
+          <p class="cartao-auth__erro" role="alert">{{ erroGeral() }}</p>
+        }
+        <app-button tipo="submit" [carregando]="enviando()">Salvar nova senha</app-button>
+      </form>
+      <div class="cartao-auth__links">
+        <a routerLink="/login">Voltar pro login</a>
+      </div>
+    }
+  </div>
+</div>
