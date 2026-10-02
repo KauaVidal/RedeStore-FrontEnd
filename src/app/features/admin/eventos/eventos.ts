@@ -8,6 +8,12 @@ import { Button } from '../../../shared/ui/button/button';
 import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { DataBrPipe } from '../../../shared/pipes/data-br.pipe';
 import { EventoForm } from './evento-form/evento-form';
+import { mensagemDeErro } from '../../../core/api/mensagem-erro';
+
+const ERROS_EVENTO: Record<string, string> = {
+  EVENTO_COM_INSCRICOES_CONFIRMADAS: 'Esse evento tem inscrições confirmadas. Cancele-as antes de remover.',
+  EVENTO_VAGAS_TOTAIS_INSUFICIENTES: 'O total de vagas não pode ficar abaixo das inscrições já confirmadas.',
+};
 
 @Component({
   selector: 'app-eventos',
@@ -22,6 +28,7 @@ export class Eventos implements OnInit {
   protected readonly modalAberto = signal(false);
   protected readonly eventoEditando = signal<Evento | null>(null);
   protected readonly eventoParaRemover = signal<Evento | null>(null);
+  protected readonly erro = signal<string | null>(null);
 
   async ngOnInit(): Promise<void> {
     await this.carregar();
@@ -50,11 +57,18 @@ export class Eventos implements OnInit {
   }
 
   protected async salvar(dados: DadosEvento): Promise<void> {
+    this.erro.set(null);
     const editando = this.eventoEditando();
-    if (editando) {
-      await this.eventosService.atualizar(editando.id, dados);
-    } else {
-      await this.eventosService.criar(dados);
+    try {
+      if (editando) {
+        await this.eventosService.atualizar(editando.id, dados);
+      } else {
+        await this.eventosService.criar(dados);
+      }
+    } catch (erro) {
+      this.erro.set(mensagemDeErro(erro, ERROS_EVENTO, 'Não deu pra salvar o evento agora. Tenta de novo em instantes.'));
+      this.modalAberto.set(false);
+      return;
     }
     this.modalAberto.set(false);
     await this.carregar();
@@ -71,7 +85,12 @@ export class Eventos implements OnInit {
   protected async confirmarRemocao(): Promise<void> {
     const evento = this.eventoParaRemover();
     if (!evento) return;
-    await this.eventosService.remover(evento.id);
+    this.erro.set(null);
+    try {
+      await this.eventosService.remover(evento.id);
+    } catch (erro) {
+      this.erro.set(mensagemDeErro(erro, ERROS_EVENTO, 'Não deu pra remover o evento agora. Tenta de novo em instantes.'));
+    }
     this.eventoParaRemover.set(null);
     await this.carregar();
   }

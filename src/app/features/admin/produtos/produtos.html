@@ -7,6 +7,10 @@
     </app-button>
   </div>
 
+  @if (erro()) {
+    <p class="admin-tela__erro" role="alert">{{ erro() }}</p>
+  }
+
   @if (lista().length === 0) {
     <app-empty-state mensagem="Nenhum produto cadastrado ainda."></app-empty-state>
   } @else {

@@ -129,4 +129,13 @@ describe('Perfil', () => {
     expect(fixture.componentInstance['erroGeral']()).toContain('Não deu pra salvar');
     expect(fixture.componentInstance['salvo']()).toBeFalse();
   });
+
+  it('mostra mensagem específica quando o e-mail já está em uso', async () => {
+    await montar([], []);
+    authServiceFalso.atualizarPerfil.and.rejectWith(new Error('EMAIL_EM_USO'));
+    fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('já está em uso');
+  });
 });

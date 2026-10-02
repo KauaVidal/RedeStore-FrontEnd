@@ -87,4 +87,16 @@ describe('Pedidos', () => {
 
     expect(pedidosServicoFalso.avancarStatus).toHaveBeenCalledWith('1');
   });
+
+  it('mostra aviso quando o pedido já está em estado final e recarrega a lista', async () => {
+    await montar([PEDIDO_RETIRADA]);
+    pedidosServicoFalso.avancarStatus.and.rejectWith(new Error('PEDIDO_EM_ESTADO_FINAL'));
+    pedidosServicoFalso.listarTodos.calls.reset();
+
+    await fixture.componentInstance['avancar'](PEDIDO_RETIRADA);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('já foi finalizado');
+    expect(pedidosServicoFalso.listarTodos).toHaveBeenCalled();
+  });
 });

@@ -5,6 +5,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { TextField } from '../../../shared/ui/text-field/text-field';
 import { Button } from '../../../shared/ui/button/button';
 import { Logo } from '../../../shared/ui/logo/logo';
+import { mensagemDeErro } from '../../../core/api/mensagem-erro';
 
 @Component({
   selector: 'app-recuperar-senha',
@@ -22,6 +23,7 @@ export class RecuperarSenha {
 
   protected readonly enviando = signal(false);
   protected readonly enviado = signal(false);
+  protected readonly erroGeral = signal<string | null>(null);
 
   protected get erroEmail(): string {
     const c = this.form.controls.email;
@@ -36,13 +38,12 @@ export class RecuperarSenha {
       return;
     }
     this.enviando.set(true);
+    this.erroGeral.set(null);
     try {
       await this.auth.recuperarSenha(this.form.getRawValue().email);
       this.enviado.set(true);
-    } catch {
-      // O mock nunca rejeita hoje (recuperação de senha "sempre funciona" por design),
-      // mas isso protege contra falhas de um backend real no futuro. Sem UI de erro
-      // dedicada: o formulário simplesmente permanece visível para nova tentativa.
+    } catch (erro) {
+      this.erroGeral.set(mensagemDeErro(erro, {}, 'Não deu pra enviar o link agora. Tenta de novo em instantes.'));
     } finally {
       this.enviando.set(false);
     }

@@ -6,6 +6,7 @@ import { senhaForte, senhasIguais } from '../../../shared/validators/senha.valid
 import { TextField } from '../../../shared/ui/text-field/text-field';
 import { Button } from '../../../shared/ui/button/button';
 import { Logo } from '../../../shared/ui/logo/logo';
+import { mensagemDeErro } from '../../../core/api/mensagem-erro';
 
 @Component({
   selector: 'app-cadastro',
@@ -70,9 +71,11 @@ export class Cadastro {
       this.router.navigateByUrl('/');
     } catch (erro) {
       this.erroGeral.set(
-        erro instanceof Error && erro.message === 'EMAIL_EM_USO'
-          ? 'Esse e-mail já está cadastrado. Tenta entrar em vez de criar conta de novo.'
-          : 'Não deu pra criar sua conta agora. Tenta de novo em instantes.',
+        mensagemDeErro(
+          erro,
+          { EMAIL_EM_USO: 'Esse e-mail já está cadastrado. Tenta entrar em vez de criar conta de novo.' },
+          'Não deu pra criar sua conta agora. Tenta de novo em instantes.',
+        ),
       );
     } finally {
       this.enviando.set(false);

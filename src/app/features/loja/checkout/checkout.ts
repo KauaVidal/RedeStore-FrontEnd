@@ -6,6 +6,13 @@ import { OrderService } from '../../../core/orders/order.service';
 import { TextField } from '../../../shared/ui/text-field/text-field';
 import { Button } from '../../../shared/ui/button/button';
 import { PrecoBrPipe } from '../../../shared/pipes/preco-br.pipe';
+import { mensagemDeErro } from '../../../core/api/mensagem-erro';
+
+const ERROS_PEDIDO: Record<string, string> = {
+  ESTOQUE_INSUFICIENTE: 'Algum item do carrinho acabou de esgotar. Revisa as quantidades e tenta de novo.',
+  PRODUTO_NAO_ENCONTRADO: 'Um dos produtos do carrinho não está mais disponível.',
+  VARIACAO_NAO_ENCONTRADA: 'Um dos produtos do carrinho não está mais disponível.',
+};
 
 @Component({
   selector: 'app-checkout',
@@ -103,8 +110,10 @@ export class Checkout implements OnInit {
       });
       this.carrinho.limpar();
       this.router.navigateByUrl('/loja/checkout/confirmacao');
-    } catch {
-      this.erroGeral.set('Não deu pra finalizar o pedido agora. Tenta de novo em instantes.');
+    } catch (erro) {
+      this.erroGeral.set(
+        mensagemDeErro(erro, ERROS_PEDIDO, 'Não deu pra finalizar o pedido agora. Tenta de novo em instantes.'),
+      );
     } finally {
       this.enviando.set(false);
     }

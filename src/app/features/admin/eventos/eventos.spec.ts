@@ -85,4 +85,27 @@ describe('Eventos', () => {
 
     expect(eventosServicoFalso.remover).toHaveBeenCalledWith('1');
   });
+
+  it('mostra mensagem quando o evento tem inscrições confirmadas e não pode ser removido', async () => {
+    await montar([EVENTO]);
+    eventosServicoFalso.remover.and.rejectWith(new Error('EVENTO_COM_INSCRICOES_CONFIRMADAS'));
+
+    fixture.componentInstance['pedirRemocao'](EVENTO);
+    await fixture.componentInstance['confirmarRemocao']();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Cancele-as antes de remover');
+  });
+
+  it('mostra mensagem quando as vagas ficariam abaixo das inscrições confirmadas', async () => {
+    await montar([EVENTO]);
+    eventosServicoFalso.atualizar.and.rejectWith(new Error('EVENTO_VAGAS_TOTAIS_INSUFICIENTES'));
+
+    fixture.componentInstance['abrirEdicao'](EVENTO);
+    const { id: _id, vagasRestantes: _v, ...dados } = EVENTO;
+    await fixture.componentInstance['salvar'](dados);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('não pode ficar abaixo');
+  });
 });

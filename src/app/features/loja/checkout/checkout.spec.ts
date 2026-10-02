@@ -112,4 +112,15 @@ describe('Checkout', () => {
     expect(router.navigateByUrl).toHaveBeenCalledWith('/loja/carrinho');
     expect(orderServiceFalso.criar).not.toHaveBeenCalled();
   });
+
+  it('mostra mensagem específica quando falta estoque', async () => {
+    orderServiceFalso.criar.and.rejectWith(new Error('ESTOQUE_INSUFICIENTE'));
+
+    fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('acabou de esgotar');
+    expect(cartServiceFalso.limpar).not.toHaveBeenCalled();
+  });
 });

@@ -3,6 +3,10 @@
     <h1 class="titulo-1">Pedidos</h1>
   </div>
 
+  @if (erro()) {
+    <p class="admin-tela__erro" role="alert">{{ erro() }}</p>
+  }
+
   @if (lista().length === 0) {
     <app-empty-state mensagem="Nenhum pedido registrado ainda."></app-empty-state>
   } @else {

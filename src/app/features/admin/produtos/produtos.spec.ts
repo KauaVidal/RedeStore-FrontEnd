@@ -90,4 +90,14 @@ describe('Produtos', () => {
 
     expect(servicoFalso.remover).toHaveBeenCalledWith('1');
   });
+
+  it('mostra erro de validação do servidor ao salvar', async () => {
+    await montar([]);
+    servicoFalso.criar.and.rejectWith(new Error('VALIDACAO'));
+    fixture.componentInstance['abrirNovo']();
+    const { id: _id, ...dados } = PRODUTO;
+    await fixture.componentInstance['salvar'](dados);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('validação do servidor');
+  });
 });

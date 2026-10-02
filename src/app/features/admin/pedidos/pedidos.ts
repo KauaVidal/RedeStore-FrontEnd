@@ -8,6 +8,7 @@ import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { PrecoBrPipe } from '../../../shared/pipes/preco-br.pipe';
 import { DataBrPipe } from '../../../shared/pipes/data-br.pipe';
 import { CodigoPedidoPipe } from '../../../shared/pipes/codigo-pedido.pipe';
+import { mensagemDeErro } from '../../../core/api/mensagem-erro';
 
 const ROTULO_STATUS: Record<StatusPedido, string> = {
   pago: 'Pago',
@@ -29,6 +30,7 @@ export class Pedidos implements OnInit {
   protected readonly lista = signal<Pedido[]>([]);
   protected readonly clientes = signal<Record<string, Usuario | undefined>>({});
   protected readonly rotuloStatus = ROTULO_STATUS;
+  protected readonly erro = signal<string | null>(null);
 
   async ngOnInit(): Promise<void> {
     await this.carregar();
@@ -61,7 +63,18 @@ export class Pedidos implements OnInit {
 
   protected async avancar(pedido: Pedido): Promise<void> {
     if (!proximoStatus(pedido)) return;
-    await this.pedidosService.avancarStatus(pedido.id);
+    this.erro.set(null);
+    try {
+      await this.pedidosService.avancarStatus(pedido.id);
+    } catch (erro) {
+      this.erro.set(
+        mensagemDeErro(
+          erro,
+          { PEDIDO_EM_ESTADO_FINAL: 'Esse pedido já foi finalizado.' },
+          'Não deu pra atualizar o pedido agora. Tenta de novo em instantes.',
+        ),
+      );
+    }
     await this.carregar();
   }
 }
