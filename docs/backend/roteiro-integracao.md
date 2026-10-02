@@ -24,10 +24,11 @@ Abrir `http://localhost:4200`.
 ## 3. Criar contas e popular dados
 
 1. Em `/cadastro`, criar `admin@rede.com` e `jovem@rede.com` (senha com 8+ caracteres).
-2. Rodar o seed a partir da raiz do backend:
-   ```bash
-   docker compose exec -T db psql -U postgres -d redestore < "../RedeStore-FrontEnd/docs/backend/seed-dev.sql"
+2. Rodar o seed do backend (fica em `RedeStore-BackEnd/scripts/seed-dev.sql`), a partir da raiz do backend:
+   ```powershell
+   ./scripts/seed-dev.ps1
    ```
+   Detalhes na seção "Dados de exemplo (seed de desenvolvimento)" do README do backend.
 3. Se estiver logado como `admin@rede.com`, **sair e entrar de novo** — o papel fica gravado no token.
 
 ## 4. Checklist

@@ -36,7 +36,7 @@ checklist de fluxos: [`docs/backend/roteiro-integracao.md`](docs/backend/roteiro
 
 ### Login de teste
 
-As contas vivem no backend. Crie `jovem@rede.com` e `admin@rede.com` pela tela de Cadastro (senha com 8+ caracteres) e rode o seed `docs/backend/seed-dev.sql`, que promove `admin@rede.com` a admin e cadastra produtos e eventos de exemplo — detalhes em [`docs/backend/roteiro-integracao.md`](docs/backend/roteiro-integracao.md).
+As contas vivem no backend. Crie `jovem@rede.com` e `admin@rede.com` pela tela de Cadastro (senha com 8+ caracteres) e rode o seed do backend (`./scripts/seed-dev.ps1` no repositório `RedeStore-BackEnd`), que promove `admin@rede.com` a admin e cadastra produtos e eventos de exemplo — detalhes em [`docs/backend/roteiro-integracao.md`](docs/backend/roteiro-integracao.md).
 
 A sessão (usuário + token JWT, válido por 8 h) fica salva no `localStorage` do navegador — um F5 não desloga. Quando o token expira, o app volta para o login.
 
