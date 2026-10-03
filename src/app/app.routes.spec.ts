@@ -3,7 +3,7 @@ import { signal } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterTestingHarness } from '@angular/router/testing';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { Router, provideRouter, withComponentInputBinding } from '@angular/router';
 import { routes } from './app.routes';
 import { SessaoStore } from './core/auth/sessao.store';
 import { Usuario } from './core/auth/usuario.model';
@@ -63,9 +63,15 @@ describe('Rotas do app (integração)', () => {
     expect(harness.routeNativeElement?.textContent).toContain('Destaques');
   });
 
-  it('"/loja" renderiza as Categorias', async () => {
+  it('"/loja" renderiza direto o catálogo de produtos', async () => {
     const harness = await RouterTestingHarness.create('/loja');
-    expect(harness.routeNativeElement?.textContent).toContain('Camisetas');
+    expect(harness.fixture.nativeElement.querySelector('app-listagem')).not.toBeNull();
+  });
+
+  it('"/loja/produtos" redireciona para o catálogo em "/loja", mantendo os filtros', async () => {
+    const harness = await RouterTestingHarness.create('/loja/produtos?categoria=calcas');
+    expect(TestBed.inject(Router).url).toBe('/loja?categoria=calcas');
+    expect(harness.fixture.nativeElement.querySelector('app-listagem')).not.toBeNull();
   });
 
   it('"/loja/carrinho" sem login redireciona para "/login"', async () => {

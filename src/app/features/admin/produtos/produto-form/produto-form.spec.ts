@@ -88,4 +88,15 @@ describe('ProdutoForm', () => {
     cancelar?.click();
     expect(emitiu).toBeTrue();
   });
+
+  it('oferece todas as categorias do catálogo no select', () => {
+    const opcoes = [...fixture.nativeElement.querySelectorAll('select option')].map(
+      (o: HTMLOptionElement) => o.value,
+    );
+    expect(opcoes).toContain('camisetas');
+    expect(opcoes).toContain('calcas');
+    expect(opcoes).toContain('vestidos');
+    expect(opcoes).toContain('calcados');
+    expect(opcoes.length).toBe(12);
+  });
 });

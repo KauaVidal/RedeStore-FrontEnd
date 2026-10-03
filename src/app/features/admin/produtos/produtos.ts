@@ -8,12 +8,7 @@ import { EmptyState } from '../../../shared/ui/empty-state/empty-state';
 import { PrecoBrPipe } from '../../../shared/pipes/preco-br.pipe';
 import { ProdutoForm } from './produto-form/produto-form';
 import { mensagemDeErro } from '../../../core/api/mensagem-erro';
-
-const ROTULO_CATEGORIA: Record<Produto['categoria'], string> = {
-  camisetas: 'Camisetas',
-  moletons: 'Moletons',
-  acessorios: 'Acessórios',
-};
+import { categoriaPorValor } from '../../../core/products/categorias';
 
 @Component({
   selector: 'app-produtos',
@@ -29,7 +24,7 @@ export class Produtos implements OnInit {
   protected readonly produtoEditando = signal<Produto | null>(null);
   protected readonly produtoParaRemover = signal<Produto | null>(null);
   protected readonly erro = signal<string | null>(null);
-  protected readonly rotuloCategoria = ROTULO_CATEGORIA;
+  protected readonly rotuloCategoria = (valor: string) => categoriaPorValor(valor)?.rotulo ?? valor;
 
   async ngOnInit(): Promise<void> {
     await this.carregar();

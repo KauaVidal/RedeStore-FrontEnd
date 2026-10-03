@@ -2,9 +2,15 @@
   <header class="listagem__topo">
     <div class="listagem__cabeca">
       <nav class="listagem__trilha" aria-label="Você está em">
-        <a routerLink="/">Início</a> / <span aria-current="page">Produtos</span>
+        <a routerLink="/">Início</a> /
+        @if (categoria()) {
+          <a routerLink="/loja" (click)="selecionarCategoria(undefined)">Loja</a> /
+          <span aria-current="page">{{ titulo() }}</span>
+        } @else {
+          <span aria-current="page">Loja</span>
+        }
       </nav>
-      <h1 class="listagem__titulo titulo-2">Produtos</h1>
+      <h1 class="listagem__titulo titulo-2">{{ titulo() }}</h1>
     </div>
 
     <div class="listagem__barra">
@@ -56,7 +62,7 @@
             Destaques
           </button>
         </li>
-        @for (opcao of categorias; track opcao.valor) {
+        @for (opcao of atalhos; track opcao.valor) {
           <li>
             <button
               type="button"
@@ -98,6 +104,48 @@
         <button type="button" class="filtros__limpar" (click)="limparFiltros()">Limpar</button>
       }
     </div>
+
+    <section class="filtros__secao filtros__secao--primeira">
+      <button
+        type="button"
+        class="filtros__alternar"
+        [class.filtros__alternar--aberto]="secoesAbertas().includes('categoria')"
+        [attr.aria-expanded]="secoesAbertas().includes('categoria')"
+        (click)="alternarSecao('categoria')"
+      >
+        Categoria
+      </button>
+      @if (secoesAbertas().includes('categoria')) {
+        <div class="filtros__opcoes" role="radiogroup" aria-label="Categoria">
+          <label class="filtros__opcao">
+            <input
+              type="radio"
+              name="categoria"
+              class="filtros__caixa filtros__caixa--radio"
+              [checked]="!categoria()"
+              (change)="selecionarCategoria(undefined)"
+            />
+            Todas <span class="filtros__total">({{ resultado().length }})</span>
+          </label>
+          @for (opcao of categorias; track opcao.valor) {
+            <label
+              class="filtros__opcao"
+              [class.filtros__opcao--vazia]="!totalPorCategoria().get(opcao.valor)"
+            >
+              <input
+                type="radio"
+                name="categoria"
+                class="filtros__caixa filtros__caixa--radio"
+                [checked]="categoria() === opcao.valor"
+                (change)="selecionarCategoria(opcao.valor)"
+              />
+              {{ opcao.rotulo }}
+              <span class="filtros__total">({{ totalPorCategoria().get(opcao.valor) ?? 0 }})</span>
+            </label>
+          }
+        </div>
+      }
+    </section>
 
     @if (tamanhosDisponiveis().length > 0) {
       <section class="filtros__tamanhos">

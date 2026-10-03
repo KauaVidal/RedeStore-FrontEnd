@@ -24,7 +24,7 @@
             </div>
           </td>
           <td>{{ produto.nome }}</td>
-          <td><span class="admin-tela__categoria">{{ rotuloCategoria[produto.categoria] }}</span></td>
+          <td><span class="admin-tela__categoria">{{ rotuloCategoria(produto.categoria) }}</span></td>
           <td>R$ {{ produto.preco | precoBr }}</td>
           <td>
             <span

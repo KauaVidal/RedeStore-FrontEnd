@@ -257,7 +257,7 @@ $chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' widt
   display: flex;
   flex-direction: column;
   gap: var(--espaco-2);
-  padding-bottom: var(--espaco-4);
+  padding: var(--espaco-3) 0 var(--espaco-4);
   border-bottom: 1px solid rgba(246, 244, 236, 0.12);
 }
 
@@ -359,6 +359,28 @@ $chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' widt
         no-repeat center / 12px 10px,
       var(--rede-yellow);
   }
+}
+
+.filtros__caixa--radio {
+  border-radius: 50%;
+
+  &:checked {
+    background:
+      radial-gradient(circle, var(--rede-black) 0 4px, transparent 4.5px), var(--rede-yellow);
+  }
+}
+
+.filtros__opcao--vazia {
+  color: rgba(246, 244, 236, 0.5);
+
+  .filtros__total {
+    color: inherit;
+    font-weight: 500;
+  }
+}
+
+.filtros__secao--primeira {
+  border-top: 1px solid rgba(246, 244, 236, 0.12);
 }
 
 .filtros__total {

@@ -5,12 +5,9 @@ import { TextField } from '../../../../shared/ui/text-field/text-field';
 import { Select, OpcaoSelect } from '../../../../shared/ui/select/select';
 import { Textarea } from '../../../../shared/ui/textarea/textarea';
 import { Button } from '../../../../shared/ui/button/button';
+import { CATEGORIAS } from '../../../../core/products/categorias';
 
-const CATEGORIAS: OpcaoSelect[] = [
-  { valor: 'camisetas', rotulo: 'Camisetas' },
-  { valor: 'moletons', rotulo: 'Moletons' },
-  { valor: 'acessorios', rotulo: 'Acessórios' },
-];
+const OPCOES_CATEGORIA: OpcaoSelect[] = CATEGORIAS.map(({ valor, rotulo }) => ({ valor, rotulo }));
 
 @Component({
   selector: 'app-produto-form',
@@ -25,7 +22,7 @@ export class ProdutoForm implements OnChanges {
   readonly salvar = output<Omit<Produto, 'id'>>();
   readonly cancelar = output<void>();
 
-  protected readonly categorias = CATEGORIAS;
+  protected readonly categorias = OPCOES_CATEGORIA;
   protected readonly variacoes = signal<Variacao[]>([]);
   protected readonly tentouEnviar = signal(false);
 
