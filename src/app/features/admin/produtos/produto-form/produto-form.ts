@@ -6,6 +6,7 @@ import { Select, OpcaoSelect } from '../../../../shared/ui/select/select';
 import { Textarea } from '../../../../shared/ui/textarea/textarea';
 import { Button } from '../../../../shared/ui/button/button';
 import { CATEGORIAS } from '../../../../core/products/categorias';
+import { Icone } from '../../../../shared/ui/icone/icone';
 
 const OPCOES_CATEGORIA: OpcaoSelect[] = CATEGORIAS.map(({ valor, rotulo }) => ({ valor, rotulo }));
 
@@ -39,7 +40,7 @@ function problemasDasVariacoes(variacoes: Variacao[]): Map<number, ProblemaVaria
 
 @Component({
   selector: 'app-produto-form',
-  imports: [ReactiveFormsModule, TextField, Select, Textarea, Button],
+  imports: [ReactiveFormsModule, TextField, Select, Textarea, Button, Icone],
   templateUrl: './produto-form.html',
   styleUrl: './produto-form.scss',
 })

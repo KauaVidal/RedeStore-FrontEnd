@@ -9,10 +9,11 @@ import { Usuario } from '../../../../core/auth/usuario.model';
 import { Table } from '../../../../shared/ui/table/table';
 import { EmptyState } from '../../../../shared/ui/empty-state/empty-state';
 import { DataBrPipe } from '../../../../shared/pipes/data-br.pipe';
+import { Icone } from '../../../../shared/ui/icone/icone';
 
 @Component({
   selector: 'app-inscricoes',
-  imports: [RouterLink, Table, EmptyState, DataBrPipe],
+  imports: [RouterLink, Table, EmptyState, DataBrPipe, Icone],
   templateUrl: './inscricoes.html',
   styleUrl: './inscricoes.scss',
 })

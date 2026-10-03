@@ -15,7 +15,7 @@
 
   <div class="cabecalho__acoes">
     <a routerLink="/loja/carrinho" class="cabecalho__icone" aria-label="Carrinho">
-      🛒
+      <app-icone nome="carrinho" />
       @if (quantidadeCarrinho() > 0) {
         <span class="cabecalho__badge">{{ quantidadeCarrinho() }}</span>
       }
@@ -26,7 +26,7 @@
       class="cabecalho__icone"
       aria-label="Perfil"
     >
-      👤
+      <app-icone nome="usuario" />
     </a>
   </div>
 </header>
