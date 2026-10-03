@@ -48,6 +48,7 @@ describe('ProdutoForm', () => {
       preco: 99.9,
       descricao: 'Descrição nova',
       fotosTexto: 'https://picsum.photos/seed/a/480/480, https://picsum.photos/seed/b/480/480',
+      destaque: false,
     });
     fixture.componentInstance['adicionarVariacao']();
     fixture.componentInstance['atualizarVariacao'](0, 'tamanho', 'M');
@@ -71,6 +72,7 @@ describe('ProdutoForm', () => {
       preco: 99.9,
       descricao: 'Descrição nova',
       fotosTexto: 'https://picsum.photos/seed/a/480/480',
+      destaque: false,
     });
     fixture.detectChanges();
 
@@ -98,5 +100,73 @@ describe('ProdutoForm', () => {
     expect(opcoes).toContain('vestidos');
     expect(opcoes).toContain('calcados');
     expect(opcoes.length).toBe(12);
+  });
+
+  describe('validação das variações e destaque', () => {
+    function preencherBase(destaque = false): void {
+      fixture.componentInstance['form'].setValue({
+        nome: 'Calça Cargo',
+        categoria: 'calcas',
+        preco: 169.9,
+        descricao: 'Calça de sarja.',
+        fotosTexto: 'https://picsum.photos/seed/c/480/480',
+        destaque,
+      });
+    }
+
+    function variacao(tamanho: string, cor: string, estoque: string): void {
+      const i = fixture.componentInstance['variacoes']().length;
+      fixture.componentInstance['adicionarVariacao']();
+      fixture.componentInstance['atualizarVariacao'](i, 'tamanho', tamanho);
+      fixture.componentInstance['atualizarVariacao'](i, 'cor', cor);
+      fixture.componentInstance['atualizarVariacao'](i, 'estoque', estoque);
+    }
+
+    function enviar(): Omit<Produto, 'id'> | undefined {
+      let emitido: Omit<Produto, 'id'> | undefined;
+      fixture.componentInstance.salvar.subscribe((dados) => (emitido = dados));
+      fixture.nativeElement.querySelector('form').dispatchEvent(new Event('submit'));
+      fixture.detectChanges();
+      return emitido;
+    }
+
+    it('não emite e avisa quando uma variação está sem cor', () => {
+      preencherBase();
+      variacao('M', '  ', '3');
+      expect(enviar()).toBeUndefined();
+      expect(fixture.nativeElement.textContent).toContain('Preencha tamanho e cor');
+      expect(fixture.nativeElement.querySelectorAll('.produto-form__variacao-input--erro').length).toBe(1);
+    });
+
+    it('não emite com estoque negativo ou fracionado', () => {
+      preencherBase();
+      variacao('M', 'Preto', '-1');
+      expect(enviar()).toBeUndefined();
+      expect(fixture.nativeElement.textContent).toContain('número inteiro');
+    });
+
+    it('não emite com variações repetidas (ignorando maiúsculas e espaços)', () => {
+      preencherBase();
+      variacao('M', 'Preto', '1');
+      variacao(' m ', 'preto', '2');
+      expect(enviar()).toBeUndefined();
+      expect(fixture.nativeElement.textContent).toContain('variações repetidas');
+    });
+
+    it('emite tamanho e cor sem espaços extras e o destaque marcado', () => {
+      preencherBase(true);
+      variacao(' G ', ' Preto ', '4');
+      const emitido = enviar();
+      expect(emitido?.destaque).toBeTrue();
+      expect(emitido?.categoria).toBe('calcas');
+      expect(emitido?.variacoes).toEqual([{ tamanho: 'G', cor: 'Preto', estoque: 4 }]);
+    });
+
+    it('em modo edição, carrega o destaque do produto no checkbox', () => {
+      fixture.componentRef.setInput('produto', PRODUTO);
+      fixture.detectChanges();
+      const caixa: HTMLInputElement = fixture.nativeElement.querySelector('.produto-form__destaque-caixa');
+      expect(caixa.checked).toBeTrue();
+    });
   });
 });

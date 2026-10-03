@@ -19,6 +19,14 @@
     [erro]="erroFotos"
   ></app-text-field>
 
+  <label class="produto-form__destaque">
+    <input type="checkbox" class="produto-form__destaque-caixa" [formControl]="form.controls.destaque" />
+    <span>
+      Produto em destaque
+      <span class="produto-form__destaque-ajuda">Aparece na Home e no filtro “Destaques” da loja.</span>
+    </span>
+  </label>
+
   <div class="produto-form__variacoes">
     <div class="produto-form__variacoes-cabecalho">
       <span class="produto-form__variacoes-titulo">
@@ -34,13 +42,16 @@
             <span class="produto-form__variacao-indice">{{ $index + 1 }}</span>
             <input
               class="produto-form__variacao-input"
+              [class.produto-form__variacao-input--erro]="temProblema($index, 'tamanho')"
               aria-label="Tamanho"
               placeholder="Tamanho"
+              list="sugestoes-tamanho"
               [value]="variacao.tamanho"
               (input)="atualizarVariacao($index, 'tamanho', $any($event.target).value)"
             />
             <input
               class="produto-form__variacao-input"
+              [class.produto-form__variacao-input--erro]="temProblema($index, 'cor')"
               aria-label="Cor"
               placeholder="Cor"
               [value]="variacao.cor"
@@ -48,8 +59,11 @@
             />
             <input
               class="produto-form__variacao-input produto-form__variacao-input--estoque"
+              [class.produto-form__variacao-input--erro]="temProblema($index, 'estoque')"
               aria-label="Estoque"
               type="number"
+              min="0"
+              step="1"
               placeholder="Estoque"
               [value]="variacao.estoque"
               (input)="atualizarVariacao($index, 'estoque', $any($event.target).value)"
@@ -67,6 +81,12 @@
       </div>
     }
 
+    <datalist id="sugestoes-tamanho">
+      @for (tamanho of sugestoesTamanho; track tamanho) {
+        <option [value]="tamanho"></option>
+      }
+    </datalist>
+
     <button type="button" class="produto-form__variacao-adicionar" (click)="adicionarVariacao()">
       + Adicionar variação
     </button>
@@ -78,6 +98,6 @@
 
   <div class="produto-form__acoes">
     <app-button variante="secundario" (clicado)="cancelar.emit()">Cancelar</app-button>
-    <app-button tipo="submit">Salvar produto</app-button>
+    <app-button tipo="submit" [carregando]="salvando()">Salvar produto</app-button>
   </div>
 </form>

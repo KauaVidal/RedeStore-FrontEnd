@@ -51,7 +51,18 @@
   [aberto]="modalAberto()"
   (fechar)="fecharModal()"
 >
-  <app-produto-form [produto]="produtoEditando()" (salvar)="salvar($event)" (cancelar)="fecharModal()"></app-produto-form>
+  @if (erroFormulario()) {
+    <p class="admin-tela__erro" role="alert">{{ erroFormulario() }}</p>
+  }
+  <!-- Recriado a cada abertura: o formulário sempre começa do produto (ou vazio), sem restos da vez anterior. -->
+  @if (modalAberto()) {
+    <app-produto-form
+      [produto]="produtoEditando()"
+      [salvando]="salvando()"
+      (salvar)="salvar($event)"
+      (cancelar)="fecharModal()"
+    ></app-produto-form>
+  }
 </app-modal>
 
 <app-modal titulo="Remover produto" [aberto]="produtoParaRemover() !== null" (fechar)="cancelarRemocao()">

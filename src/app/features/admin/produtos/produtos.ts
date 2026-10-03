@@ -24,6 +24,9 @@ export class Produtos implements OnInit {
   protected readonly produtoEditando = signal<Produto | null>(null);
   protected readonly produtoParaRemover = signal<Produto | null>(null);
   protected readonly erro = signal<string | null>(null);
+  /** Erro ao salvar: fica dentro do modal, que continua aberto para o admin corrigir sem perder o que digitou. */
+  protected readonly erroFormulario = signal<string | null>(null);
+  protected readonly salvando = signal(false);
   protected readonly rotuloCategoria = (valor: string) => categoriaPorValor(valor)?.rotulo ?? valor;
 
   async ngOnInit(): Promise<void> {
@@ -36,11 +39,13 @@ export class Produtos implements OnInit {
 
   protected abrirNovo(): void {
     this.produtoEditando.set(null);
+    this.erroFormulario.set(null);
     this.modalAberto.set(true);
   }
 
   protected abrirEdicao(produto: Produto): void {
     this.produtoEditando.set(produto);
+    this.erroFormulario.set(null);
     this.modalAberto.set(true);
   }
 
@@ -49,7 +54,10 @@ export class Produtos implements OnInit {
   }
 
   protected async salvar(dados: Omit<Produto, 'id'>): Promise<void> {
+    if (this.salvando()) return;
     this.erro.set(null);
+    this.erroFormulario.set(null);
+    this.salvando.set(true);
     const editando = this.produtoEditando();
     try {
       if (editando) {
@@ -58,9 +66,12 @@ export class Produtos implements OnInit {
         await this.produtosService.criar(dados);
       }
     } catch (erro) {
-      this.erro.set(mensagemDeErro(erro, {}, 'Não deu pra salvar o produto agora. Tenta de novo em instantes.'));
-      this.modalAberto.set(false);
+      this.erroFormulario.set(
+        mensagemDeErro(erro, {}, 'Não deu pra salvar o produto agora. Tenta de novo em instantes.'),
+      );
       return;
+    } finally {
+      this.salvando.set(false);
     }
     this.modalAberto.set(false);
     await this.carregar();

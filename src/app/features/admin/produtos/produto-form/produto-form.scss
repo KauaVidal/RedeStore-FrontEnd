@@ -187,3 +187,44 @@
     transition: none;
   }
 }
+
+.produto-form__variacao-input--erro {
+  border-color: var(--status-cancel);
+}
+
+.produto-form__destaque {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espaco-3);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.produto-form__destaque-caixa {
+  appearance: none;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  border: 1px solid rgba(246, 244, 236, 0.4);
+  border-radius: var(--raio-padrao);
+  background: transparent;
+  cursor: pointer;
+
+  &:checked {
+    border-color: var(--rede-yellow);
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='10' viewBox='0 0 12 10' fill='none'%3E%3Cpath d='M1 5L4.5 8.5L11 1.5' stroke='%230D0D0D' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+        no-repeat center / 12px 10px,
+      var(--rede-yellow);
+  }
+}
+
+.produto-form__destaque-ajuda {
+  display: block;
+  margin-top: 2px;
+  font-weight: 400;
+  font-size: 0.8125rem;
+  color: rgba(246, 244, 236, 0.6);
+}

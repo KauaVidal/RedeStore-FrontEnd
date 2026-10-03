@@ -100,4 +100,48 @@ describe('Produtos', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('validação do servidor');
   });
+
+  it('mantém o modal aberto com o erro quando o servidor recusa o produto', async () => {
+    await montar([]);
+    servicoFalso.criar.and.rejectWith(new Error('VALIDACAO'));
+    fixture.componentInstance['abrirNovo']();
+    fixture.detectChanges();
+    const { id: _id, ...dados } = PRODUTO;
+    await fixture.componentInstance['salvar'](dados);
+    fixture.detectChanges();
+    const modal: HTMLElement = fixture.nativeElement.querySelector('.modal__caixa');
+    expect(modal).not.toBeNull();
+    expect(modal.textContent).toContain('validação do servidor');
+    expect(modal.querySelector('app-produto-form')).not.toBeNull();
+  });
+
+  it('reabrir "Novo produto" traz o formulário vazio, sem o que foi digitado antes', async () => {
+    await montar([]);
+    fixture.componentInstance['abrirNovo']();
+    fixture.detectChanges();
+    const nome: HTMLInputElement = fixture.nativeElement.querySelector('.modal__caixa input');
+    nome.value = 'Rascunho';
+    nome.dispatchEvent(new Event('input'));
+    fixture.componentInstance['fecharModal']();
+    fixture.detectChanges();
+
+    fixture.componentInstance['abrirNovo']();
+    fixture.detectChanges();
+    expect((fixture.nativeElement.querySelector('.modal__caixa input') as HTMLInputElement).value).toBe('');
+  });
+
+  it('reabrir a edição após cancelar descarta as alterações não salvas', async () => {
+    await montar([PRODUTO]);
+    fixture.componentInstance['abrirEdicao'](PRODUTO);
+    fixture.detectChanges();
+    const nome: HTMLInputElement = fixture.nativeElement.querySelector('.modal__caixa input');
+    nome.value = 'Alterado';
+    nome.dispatchEvent(new Event('input'));
+    fixture.componentInstance['fecharModal']();
+    fixture.detectChanges();
+
+    fixture.componentInstance['abrirEdicao'](PRODUTO);
+    fixture.detectChanges();
+    expect((fixture.nativeElement.querySelector('.modal__caixa input') as HTMLInputElement).value).toBe(PRODUTO.nome);
+  });
 });
