@@ -1,18 +1,238 @@
 <div class="listagem">
-  <h1 class="titulo-1">Produtos</h1>
+  <header class="listagem__topo">
+    <div class="listagem__cabeca">
+      <nav class="listagem__trilha" aria-label="Você está em">
+        <a routerLink="/">Início</a> / <span aria-current="page">Produtos</span>
+      </nav>
+      <h1 class="listagem__titulo titulo-2">Produtos</h1>
+    </div>
 
-  <form class="listagem__busca" [formGroup]="form" (ngSubmit)="pesquisar()">
-    <input class="listagem__campo-busca" type="text" formControlName="busca" placeholder="Buscar produto" />
-    <button type="submit" class="listagem__botao-busca">Buscar</button>
-  </form>
+    <div class="listagem__barra">
+      <form class="listagem__busca" [formGroup]="form" (ngSubmit)="pesquisar()" role="search">
+        <svg
+          class="listagem__icone-busca"
+          width="15"
+          height="15"
+          viewBox="0 0 15 15"
+          fill="none"
+          aria-hidden="true"
+        >
+          <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.5" />
+          <path
+            d="M10.5 10.5L14 14"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+        </svg>
+        <input
+          class="listagem__campo-busca"
+          type="search"
+          formControlName="busca"
+          placeholder="Buscar"
+          aria-label="Buscar produto"
+        />
+      </form>
 
-  @if (resultado().length > 0) {
-    <div class="listagem__grade">
-      @for (produto of resultado(); track produto.id) {
-        <app-product-card [produto]="produto" />
+      <ul class="listagem__etiquetas" aria-label="Categorias">
+        <li>
+          <button
+            type="button"
+            class="listagem__etiqueta"
+            [class.listagem__etiqueta--ativa]="!categoria() && !somenteDestaques()"
+            (click)="selecionarCategoria(undefined)"
+          >
+            Todos
+          </button>
+        </li>
+        <li>
+          <button
+            type="button"
+            class="listagem__etiqueta"
+            [class.listagem__etiqueta--ativa]="somenteDestaques()"
+            [attr.aria-pressed]="somenteDestaques()"
+            (click)="alternarDestaques()"
+          >
+            Destaques
+          </button>
+        </li>
+        @for (opcao of categorias; track opcao.valor) {
+          <li>
+            <button
+              type="button"
+              class="listagem__etiqueta"
+              [class.listagem__etiqueta--ativa]="opcao.valor === categoria()"
+              [attr.aria-pressed]="opcao.valor === categoria()"
+              (click)="selecionarCategoria(opcao.valor)"
+            >
+              {{ opcao.rotulo }}
+            </button>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <button
+      type="button"
+      class="listagem__abrir-filtros"
+      [attr.aria-expanded]="filtrosAbertos()"
+      aria-controls="filtros"
+      (click)="filtrosAbertos.set(!filtrosAbertos())"
+    >
+      Filtros
+      @if (quantidadeFiltros() > 0) {
+        <span class="listagem__contador">{{ quantidadeFiltros() }}</span>
+      }
+    </button>
+  </header>
+
+  <aside
+    id="filtros"
+    class="filtros"
+    [class.filtros--aberto]="filtrosAbertos()"
+    aria-label="Filtros"
+  >
+    <div class="filtros__cabecalho">
+      <h2 class="filtros__titulo">Filtros</h2>
+      @if (quantidadeFiltros() > 0) {
+        <button type="button" class="filtros__limpar" (click)="limparFiltros()">Limpar</button>
       }
     </div>
-  } @else {
-    <app-empty-state mensagem="Nenhum produto encontrado." />
-  }
+
+    @if (tamanhosDisponiveis().length > 0) {
+      <section class="filtros__tamanhos">
+        <h3 class="filtros__rotulo">Tamanho</h3>
+        <div class="filtros__grade-tamanhos">
+          @for (tamanho of tamanhosDisponiveis(); track tamanho) {
+            <button
+              type="button"
+              class="filtros__tamanho"
+              [class.filtros__tamanho--selecionado]="tamanhos().includes(tamanho)"
+              [attr.aria-pressed]="tamanhos().includes(tamanho)"
+              (click)="alternarTamanho(tamanho)"
+            >
+              {{ tamanho }}
+            </button>
+          }
+        </div>
+      </section>
+    }
+
+    <section class="filtros__secao">
+      <button
+        type="button"
+        class="filtros__alternar"
+        [class.filtros__alternar--aberto]="secoesAbertas().includes('disponibilidade')"
+        [attr.aria-expanded]="secoesAbertas().includes('disponibilidade')"
+        (click)="alternarSecao('disponibilidade')"
+      >
+        Disponibilidade
+      </button>
+      @if (secoesAbertas().includes('disponibilidade')) {
+        <div class="filtros__opcoes">
+          <label class="filtros__opcao">
+            <input
+              type="checkbox"
+              class="filtros__caixa"
+              [checked]="disponibilidade().includes('disponivel')"
+              (change)="alternarDisponibilidade('disponivel')"
+            />
+            Disponível <span class="filtros__total">({{ totalDisponiveis() }})</span>
+          </label>
+          <label class="filtros__opcao">
+            <input
+              type="checkbox"
+              class="filtros__caixa"
+              [checked]="disponibilidade().includes('esgotado')"
+              (change)="alternarDisponibilidade('esgotado')"
+            />
+            Esgotado <span class="filtros__total">({{ totalEsgotados() }})</span>
+          </label>
+        </div>
+      }
+    </section>
+
+    @if (coresDisponiveis().length > 0) {
+      <section class="filtros__secao">
+        <button
+          type="button"
+          class="filtros__alternar"
+          [class.filtros__alternar--aberto]="secoesAbertas().includes('cores')"
+          [attr.aria-expanded]="secoesAbertas().includes('cores')"
+          (click)="alternarSecao('cores')"
+        >
+          Cores
+        </button>
+        @if (secoesAbertas().includes('cores')) {
+          <div class="filtros__opcoes">
+            @for (cor of coresDisponiveis(); track cor) {
+              <label class="filtros__opcao">
+                <input
+                  type="checkbox"
+                  class="filtros__caixa"
+                  [checked]="cores().includes(cor)"
+                  (change)="alternarCor(cor)"
+                />
+                <span
+                  class="filtros__amostra"
+                  [style.background]="tomDaCor(cor)"
+                  aria-hidden="true"
+                ></span>
+                {{ cor }}
+              </label>
+            }
+          </div>
+        }
+      </section>
+    }
+
+    <section class="filtros__secao">
+      <button
+        type="button"
+        class="filtros__alternar"
+        [class.filtros__alternar--aberto]="secoesAbertas().includes('preco')"
+        [attr.aria-expanded]="secoesAbertas().includes('preco')"
+        (click)="alternarSecao('preco')"
+      >
+        Faixa de preço
+      </button>
+      @if (secoesAbertas().includes('preco')) {
+        <form class="filtros__preco" [formGroup]="faixaPreco" (ngSubmit)="aplicarPreco()">
+          <input
+            class="filtros__campo"
+            type="number"
+            min="0"
+            inputmode="decimal"
+            formControlName="minimo"
+            placeholder="Mín."
+            aria-label="Preço mínimo em reais"
+            (change)="aplicarPreco()"
+          />
+          <span aria-hidden="true">–</span>
+          <input
+            class="filtros__campo"
+            type="number"
+            min="0"
+            inputmode="decimal"
+            formControlName="maximo"
+            placeholder="Máx."
+            aria-label="Preço máximo em reais"
+            (change)="aplicarPreco()"
+          />
+        </form>
+      }
+    </section>
+  </aside>
+
+  <section class="listagem__conteudo" aria-live="polite">
+    @if (filtrados().length > 0) {
+      <div class="listagem__grade">
+        @for (produto of filtrados(); track produto.id) {
+          <app-product-card [produto]="produto" variante="catalogo" />
+        }
+      </div>
+    } @else if (!carregando()) {
+      <app-empty-state mensagem="Nenhum produto encontrado." />
+    }
+  </section>
 </div>

@@ -1,4 +1,5 @@
 @use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
 
 .cartao-produto {
   display: flex;
@@ -23,5 +24,87 @@
 }
 
 .cartao-produto__preco {
+  color: var(--rede-yellow);
+}
+
+.cartao-catalogo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  text-decoration: none;
+  color: var(--rede-paper);
+
+  &:hover .cartao-catalogo__moldura {
+    border-color: var(--rede-yellow);
+  }
+
+  &:hover .cartao-catalogo__foto {
+    transform: scale(1.03);
+  }
+}
+
+.cartao-catalogo__moldura {
+  display: block;
+  margin-bottom: var(--espaco-2);
+  aspect-ratio: 265 / 314;
+  overflow: hidden;
+  border: 1px solid rgba(246, 244, 236, 0.12);
+  border-radius: var(--raio-padrao);
+  background: var(--rede-graphite);
+  transition: border-color 0.15s ease;
+}
+
+.cartao-catalogo__foto {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.cartao-catalogo__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  font-size: 0.75rem;
+  color: rgba(246, 244, 236, 0.66);
+}
+
+.cartao-catalogo__amostra {
+  width: 12px;
+  height: 12px;
+  border: 0.5px solid rgba(246, 244, 236, 0.4);
+}
+
+.cartao-catalogo__extras {
+  margin-left: calc(var(--espaco-1) * -1);
+  font-size: 0.625rem;
+}
+
+.cartao-catalogo__linha {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+
+  @include desktop {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--espaco-3);
+  }
+}
+
+.cartao-catalogo__nome {
+  font-family: var(--fonte-corpo);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.cartao-catalogo__preco {
+  flex-shrink: 0;
   color: var(--rede-yellow);
 }
