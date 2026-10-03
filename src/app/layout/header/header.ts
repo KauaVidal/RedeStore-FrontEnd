@@ -3,10 +3,11 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { Logo } from '../../shared/ui/logo/logo';
 import { AuthService } from '../../core/auth/auth.service';
 import { CartService } from '../../core/cart/cart.service';
+import { Icone } from '../../shared/ui/icone/icone';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, RouterLinkActive, Logo],
+  imports: [RouterLink, RouterLinkActive, Logo, Icone],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })

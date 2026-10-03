@@ -1,7 +1,9 @@
 import { Component, input, output } from '@angular/core';
+import { Icone } from '../icone/icone';
 
 @Component({
   selector: 'app-modal',
+  imports: [Icone],
   templateUrl: './modal.html',
   styleUrl: './modal.scss',
 })

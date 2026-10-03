@@ -49,15 +49,34 @@
 }
 
 .cabecalho__icone {
-  font-size: 1.25rem;
-  text-decoration: none;
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(246, 244, 236, 0.16);
+  border-radius: var(--raio-pilula);
+  color: var(--rede-paper);
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    border-color: var(--rede-yellow);
+    color: var(--rede-yellow);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 }
 
 .cabecalho__badge {
   position: absolute;
-  top: -6px;
-  right: -8px;
+  top: -4px;
+  right: -4px;
   background: var(--rede-yellow);
   color: var(--rede-black);
   font-family: var(--fonte-corpo);

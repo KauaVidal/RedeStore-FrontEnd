@@ -1,6 +1,7 @@
 <button
   class="botao"
   [class.botao--secundario]="variante() === 'secundario'"
+  [class.botao--largura-total]="larguraTotal()"
   [type]="tipo()"
   [disabled]="desabilitado() || carregando()"
   (click)="aoClicar()"

@@ -3,7 +3,9 @@
     <div class="modal__caixa" (click)="$event.stopPropagation()">
       <header class="modal__cabecalho">
         <h2>{{ titulo() }}</h2>
-        <button type="button" class="modal__fechar" aria-label="Fechar" (click)="fechar.emit()">✕</button>
+        <button type="button" class="modal__fechar" aria-label="Fechar" (click)="fechar.emit()">
+          <app-icone nome="fechar" [tamanho]="18" />
+        </button>
       </header>
       <div class="modal__conteudo">
         <ng-content />

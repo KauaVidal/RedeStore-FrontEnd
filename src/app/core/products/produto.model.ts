@@ -1,4 +1,16 @@
-export type Categoria = 'camisetas' | 'moletons' | 'acessorios';
+export type Categoria =
+  | 'camisetas'
+  | 'camisas'
+  | 'polos'
+  | 'regatas'
+  | 'moletons'
+  | 'jaquetas'
+  | 'calcas'
+  | 'bermudas'
+  | 'saias'
+  | 'vestidos'
+  | 'calcados'
+  | 'acessorios';
 
 export interface Variacao {
   id?: string;

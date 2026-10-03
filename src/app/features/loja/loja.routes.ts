@@ -2,8 +2,9 @@ import { Routes } from '@angular/router';
 import { authGuard } from '../../core/auth/auth.guard';
 
 export const LOJA_ROUTES: Routes = [
-  { path: '', loadComponent: () => import('./categorias/categorias').then((m) => m.Categorias) },
-  { path: 'produtos', loadComponent: () => import('./listagem/listagem').then((m) => m.Listagem) },
+  { path: '', loadComponent: () => import('./listagem/listagem').then((m) => m.Listagem) },
+  // Endereço antigo do catálogo: mantém links e favoritos funcionando (query params são preservados).
+  { path: 'produtos', pathMatch: 'full', redirectTo: '' },
   {
     path: 'produtos/:id',
     loadComponent: () => import('./produto-detalhes/produto-detalhes').then((m) => m.ProdutoDetalhes),

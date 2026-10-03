@@ -1,7 +1,7 @@
 <div class="admin-tela">
   <div class="admin-tela__cabecalho admin-tela__cabecalho--empilhado">
     <a class="admin-tela__voltar" routerLink="/admin/eventos">
-      <span aria-hidden="true">←</span>
+      <app-icone nome="voltar" [tamanho]="16" />
       Voltar para Eventos
     </a>
     <h1 class="titulo-1">{{ evento()?.titulo }}</h1>

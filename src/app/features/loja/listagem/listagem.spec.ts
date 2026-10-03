@@ -42,12 +42,18 @@ describe('Listagem', () => {
     await fixture.whenStable();
   }
 
-  it('busca produtos pela categoria informada na URL', async () => {
-    await montar({ categoria: 'camisetas' });
-    expect(productServiceFalso.listar).toHaveBeenCalledWith({
-      categoria: 'camisetas',
-      busca: undefined,
-    });
+  it('carrega o catálogo inteiro e aplica a categoria informada na URL', async () => {
+    await montar({ categoria: 'camisetas', busca: 'rede' });
+    expect(productServiceFalso.listar).toHaveBeenCalledWith({ busca: 'rede' });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('h1').textContent).toContain('Camisetas');
+    expect(fixture.nativeElement.querySelectorAll('app-product-card').length).toBe(1);
+  });
+
+  it('ignora categoria desconhecida na URL', async () => {
+    await montar({ categoria: 'inexistente' });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('h1').textContent).toContain('Produtos');
   });
 
   it('mostra os produtos encontrados', async () => {
@@ -112,8 +118,10 @@ describe('Listagem', () => {
     it('conta e filtra por disponibilidade', () => {
       expect(fixture.nativeElement.textContent).toContain('Disponível (1)');
       expect(fixture.nativeElement.textContent).toContain('Esgotado (1)');
-      const caixa: HTMLInputElement = fixture.nativeElement.querySelector('.filtros__caixa');
-      caixa.click();
+      const rotulo = [...fixture.nativeElement.querySelectorAll('.filtros__opcao')].find(
+        (l: HTMLElement) => l.textContent!.includes('Disponível'),
+      ) as HTMLElement;
+      rotulo.querySelector('input')!.click();
       fixture.detectChanges();
       expect(nomesVisiveis()).toEqual(['camiseta']);
     });
@@ -131,13 +139,33 @@ describe('Listagem', () => {
       expect(nomesVisiveis()).toEqual(['moletom']);
     });
 
-    it('a etiqueta de categoria refaz a busca com a categoria', async () => {
+    it('a etiqueta de categoria filtra o catálogo sem nova busca', () => {
+      const chamadas = productServiceFalso.listar.calls.count();
       clicar('.listagem__etiqueta', 'Moletons');
-      await fixture.whenStable();
-      expect(productServiceFalso.listar).toHaveBeenCalledWith({
-        categoria: 'moletons',
-        busca: undefined,
-      });
+      expect(nomesVisiveis()).toEqual(['moletom']);
+      expect(productServiceFalso.listar.calls.count()).toBe(chamadas);
+    });
+
+    it('a seção Categoria lista todas as categorias com a contagem de produtos', () => {
+      const opcoes = [
+        ...fixture.nativeElement.querySelectorAll('[role="radiogroup"] .filtros__opcao'),
+      ].map((l: HTMLElement) => l.textContent!.replace(/\s+/g, ' ').trim());
+      expect(opcoes.length).toBe(13);
+      expect(opcoes).toContain('Todas (2)');
+      expect(opcoes).toContain('Camisetas (1)');
+      expect(opcoes).toContain('Moletons (1)');
+      expect(opcoes).toContain('Calças (0)');
+      expect(opcoes).toContain('Vestidos (0)');
+    });
+
+    it('escolher uma categoria nos filtros mostra só os produtos dela e atualiza o título', () => {
+      const rotulo = [
+        ...fixture.nativeElement.querySelectorAll('[role="radiogroup"] .filtros__opcao'),
+      ].find((l: HTMLElement) => l.textContent!.includes('Moletons')) as HTMLElement;
+      rotulo.querySelector('input')!.click();
+      fixture.detectChanges();
+      expect(nomesVisiveis()).toEqual(['moletom']);
+      expect(fixture.nativeElement.querySelector('h1').textContent).toContain('Moletons');
     });
 
     it('limpar remove todos os filtros', () => {
