@@ -1,5 +1,32 @@
-<a class="cartao-produto" [routerLink]="['/loja/produtos', produto().id]">
-  <img class="cartao-produto__foto" [src]="produto().fotos[0]" [alt]="produto().nome" />
-  <span class="cartao-produto__nome">{{ produto().nome }}</span>
-  <span class="cartao-produto__preco texto-utilitario">R$ {{ produto().preco | precoBr }}</span>
-</a>
+@if (variante() === 'catalogo') {
+  <a class="cartao-catalogo" [routerLink]="['/loja/produtos', produto().id]">
+    <span class="cartao-catalogo__moldura">
+      <img class="cartao-catalogo__foto" [src]="produto().fotos[0]" [alt]="produto().nome" />
+    </span>
+    <span class="cartao-catalogo__meta texto-utilitario">
+      {{ rotuloCategoria() }}
+      @if (tomPrincipal(); as tom) {
+        <span
+          class="cartao-catalogo__amostra"
+          [style.background]="tom"
+          [attr.title]="produto().cores[0]"
+        ></span>
+        @if (coresExtras() > 0) {
+          <span class="cartao-catalogo__extras">+{{ coresExtras() }}</span>
+        }
+      }
+    </span>
+    <span class="cartao-catalogo__linha">
+      <span class="cartao-catalogo__nome">{{ produto().nome }}</span>
+      <span class="cartao-catalogo__preco texto-utilitario"
+        >R$ {{ produto().preco | precoBr }}</span
+      >
+    </span>
+  </a>
+} @else {
+  <a class="cartao-produto" [routerLink]="['/loja/produtos', produto().id]">
+    <img class="cartao-produto__foto" [src]="produto().fotos[0]" [alt]="produto().nome" />
+    <span class="cartao-produto__nome">{{ produto().nome }}</span>
+    <span class="cartao-produto__preco texto-utilitario">R$ {{ produto().preco | precoBr }}</span>
+  </a>
+}

@@ -43,4 +43,16 @@ describe('ProductCard', () => {
     const img: HTMLImageElement = fixture.nativeElement.querySelector('img');
     expect(img.src).toContain('picsum.photos/seed/x/480/480');
   });
+
+  it('na variante catálogo mostra categoria, amostra de cor e cores extras', () => {
+    fixture.componentRef.setInput('produto', { ...PRODUTO, cores: ['Preto', 'Branco', 'Azul'] });
+    fixture.componentRef.setInput('variante', 'catalogo');
+    fixture.detectChanges();
+    const el: HTMLElement = fixture.nativeElement;
+    expect(el.querySelector('.cartao-catalogo')).not.toBeNull();
+    expect(el.textContent).toContain('Camiseta');
+    expect(el.querySelector('.cartao-catalogo__amostra')?.getAttribute('title')).toBe('Preto');
+    expect(el.textContent).toContain('+2');
+    expect(el.querySelector('a')?.getAttribute('href')).toBe('/loja/produtos/1');
+  });
 });
