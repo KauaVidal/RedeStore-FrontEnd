@@ -62,4 +62,18 @@ describe('Button', () => {
 
     expect(clicked).toBe(false);
   });
+
+  it('com larguraTotal ocupa a largura do container', async () => {
+    @Component({
+      imports: [Button],
+      standalone: true,
+      template: `<app-button larguraTotal>Comprar</app-button>`,
+    })
+    class HospedeLargura {}
+
+    const f = TestBed.createComponent(HospedeLargura);
+    f.detectChanges();
+    expect(f.nativeElement.querySelector('app-button').classList).toContain('largura-total');
+    expect(f.nativeElement.querySelector('button').classList).toContain('botao--largura-total');
+  });
 });

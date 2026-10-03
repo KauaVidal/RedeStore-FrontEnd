@@ -29,10 +29,10 @@ describe('ProdutoDetalhes', () => {
   let fixture: ComponentFixture<ProdutoDetalhes>;
   let cartServiceFalso: Pick<jasmine.SpyObj<CartService>, 'adicionar'> & Pick<CartService, 'itens'>;
 
-  async function montar(itensIniciais: ItemCarrinho[] = []): Promise<void> {
+  async function montar(itensIniciais: ItemCarrinho[] = [], produto: Produto = PRODUTO): Promise<void> {
     TestBed.resetTestingModule();
     const productServiceFalso = jasmine.createSpyObj('ProductService', ['buscarPorId']);
-    productServiceFalso.buscarPorId.and.resolveTo(PRODUTO);
+    productServiceFalso.buscarPorId.and.resolveTo(produto);
     cartServiceFalso = {
       adicionar: jasmine.createSpy('adicionar'),
       itens: signal(itensIniciais),
@@ -65,10 +65,10 @@ describe('ProdutoDetalhes', () => {
   });
 
   it('mostra "Sem estoque" para uma combinação sem estoque', async () => {
-    fixture.nativeElement.querySelectorAll('.detalhes__opcao')[0].click(); // P
+    fixture.nativeElement.querySelectorAll('.detalhes__tamanho')[0].click(); // P
     fixture.detectChanges();
     await fixture.whenStable();
-    fixture.nativeElement.querySelectorAll('.detalhes__opcao')[3].click(); // Amarelo
+    fixture.nativeElement.querySelectorAll('.detalhes__cor')[1].click(); // Amarelo
     fixture.detectChanges();
     await fixture.whenStable();
 
@@ -76,10 +76,10 @@ describe('ProdutoDetalhes', () => {
   });
 
   it('adiciona ao carrinho quando tamanho e cor com estoque são selecionados', async () => {
-    fixture.nativeElement.querySelectorAll('.detalhes__opcao')[0].click(); // P
+    fixture.nativeElement.querySelectorAll('.detalhes__tamanho')[0].click(); // P
     fixture.detectChanges();
     await fixture.whenStable();
-    fixture.nativeElement.querySelectorAll('.detalhes__opcao')[2].click(); // Preto
+    fixture.nativeElement.querySelectorAll('.detalhes__cor')[0].click(); // Preto
     fixture.detectChanges();
     await fixture.whenStable();
 
@@ -113,10 +113,10 @@ describe('ProdutoDetalhes', () => {
       },
     ]);
 
-    fixture.nativeElement.querySelectorAll('.detalhes__opcao')[0].click(); // P
+    fixture.nativeElement.querySelectorAll('.detalhes__tamanho')[0].click(); // P
     fixture.detectChanges();
     await fixture.whenStable();
-    fixture.nativeElement.querySelectorAll('.detalhes__opcao')[2].click(); // Preto
+    fixture.nativeElement.querySelectorAll('.detalhes__cor')[0].click(); // Preto
     fixture.detectChanges();
     await fixture.whenStable();
 
@@ -128,5 +128,58 @@ describe('ProdutoDetalhes', () => {
     expect(fixture.nativeElement.textContent).toContain(
       'Você já tem a quantidade máxima em estoque no carrinho.',
     );
+  });
+
+  it('mostra as cores como amostras com o nome acessível e a cor escolhida no rótulo', () => {
+    const cores: HTMLButtonElement[] = [...fixture.nativeElement.querySelectorAll('.detalhes__cor')];
+    expect(cores.map((c) => c.getAttribute('aria-label'))).toEqual(['Preto', 'Amarelo']);
+    cores[1].click();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.detalhes__valor-opcao').textContent).toContain('Amarelo');
+  });
+
+  it('esmaece a cor sem estoque no tamanho escolhido', () => {
+    fixture.nativeElement.querySelectorAll('.detalhes__tamanho')[0].click(); // P
+    fixture.detectChanges();
+    const cores: HTMLElement[] = [...fixture.nativeElement.querySelectorAll('.detalhes__cor')];
+    expect(cores[0].classList).not.toContain('detalhes__opcao--indisponivel'); // Preto P: 5
+    expect(cores[1].classList).toContain('detalhes__opcao--indisponivel'); // Amarelo P: 0
+  });
+
+  it('com várias fotos, as miniaturas trocam a foto principal', async () => {
+    await montar([], { ...PRODUTO, fotos: ['https://exemplo.com/a.jpg', 'https://exemplo.com/b.jpg'] });
+    const miniaturas: HTMLButtonElement[] = [...fixture.nativeElement.querySelectorAll('.detalhes__miniatura')];
+    expect(miniaturas.length).toBe(2);
+    miniaturas[1].click();
+    fixture.detectChanges();
+    expect((fixture.nativeElement.querySelector('.detalhes__foto') as HTMLImageElement).src).toContain('b.jpg');
+    expect(miniaturas[1].classList).toContain('detalhes__miniatura--ativa');
+  });
+
+  it('com uma foto só, não mostra miniaturas', () => {
+    expect(fixture.nativeElement.querySelector('.detalhes__miniatura')).toBeNull();
+  });
+
+  it('com tamanho e cor únicos, já vem selecionado e pronto para adicionar', async () => {
+    await montar([], {
+      ...PRODUTO,
+      tamanhos: ['U'],
+      cores: ['Preto'],
+      variacoes: [{ tamanho: 'U', cor: 'Preto', estoque: 4 }],
+    });
+    fixture.nativeElement.querySelector('app-button button').click();
+    fixture.detectChanges();
+    expect(cartServiceFalso.adicionar).toHaveBeenCalledWith(jasmine.objectContaining({ tamanho: 'U', cor: 'Preto' }));
+  });
+
+  it('avisa quando o produto está esgotado em todas as variações', async () => {
+    await montar([], { ...PRODUTO, variacoes: PRODUTO.variacoes.map((v) => ({ ...v, estoque: 0 })) });
+    expect(fixture.nativeElement.querySelector('.detalhes__nota').textContent).toContain('Esgotado');
+  });
+
+  it('mostra a trilha com a categoria do produto', () => {
+    const trilha: HTMLElement = fixture.nativeElement.querySelector('.detalhes__trilha');
+    expect(trilha.textContent).toContain('Camisetas');
+    expect(trilha.textContent).toContain('Camiseta REDE Clássica');
   });
 });

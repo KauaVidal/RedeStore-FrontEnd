@@ -1,5 +1,9 @@
 @use 'styles/tokens' as *;
 
+:host(.largura-total) {
+  display: block;
+}
+
 .botao {
   font-family: var(--fonte-corpo);
   font-weight: 700;
@@ -23,6 +27,10 @@
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  &--largura-total {
+    width: 100%;
   }
 
   &--secundario {

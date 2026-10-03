@@ -1,59 +1,116 @@
 @if (produto(); as p) {
   <div class="detalhes">
-    <img class="detalhes__foto" [src]="p.fotos[0]" [alt]="p.nome" />
+    <nav class="detalhes__trilha" aria-label="Você está em">
+      <a routerLink="/loja">Loja</a> /
+      @if (categoria(); as c) {
+        <a routerLink="/loja" [queryParams]="{ categoria: c.valor }">{{ c.rotulo }}</a> /
+      }
+      <span aria-current="page">{{ p.nome }}</span>
+    </nav>
 
-    <div class="detalhes__info">
-      <h1 class="titulo-1">{{ p.nome }}</h1>
-      <p class="detalhes__preco texto-utilitario">R$ {{ p.preco | precoBr }}</p>
-      <p class="texto-corpo">{{ p.descricao }}</p>
-
-      <div class="detalhes__opcoes">
-        <span class="detalhes__rotulo-opcao">Tamanho</span>
-        <div class="detalhes__lista-opcoes">
-          @for (tamanho of p.tamanhos; track tamanho) {
-            <button
-              type="button"
-              class="detalhes__opcao"
-              [class.detalhes__opcao--selecionada]="tamanhoSelecionado() === tamanho"
-              (click)="selecionarTamanho(tamanho)"
-            >
-              {{ tamanho }}
-            </button>
-          }
+    <div class="detalhes__corpo">
+      <div class="detalhes__galeria">
+        <div class="detalhes__moldura">
+          <img class="detalhes__foto" [src]="p.fotos[fotoAtiva()]" [alt]="p.nome" />
         </div>
+
+        @if (p.fotos.length > 1) {
+          <ul class="detalhes__miniaturas" aria-label="Fotos do produto">
+            @for (foto of p.fotos; track $index) {
+              <li>
+                <button
+                  type="button"
+                  class="detalhes__miniatura"
+                  [class.detalhes__miniatura--ativa]="fotoAtiva() === $index"
+                  [attr.aria-label]="'Ver foto ' + ($index + 1)"
+                  [attr.aria-pressed]="fotoAtiva() === $index"
+                  (click)="fotoAtiva.set($index)"
+                >
+                  <img [src]="foto" alt="" />
+                </button>
+              </li>
+            }
+          </ul>
+        }
       </div>
 
-      <div class="detalhes__opcoes">
-        <span class="detalhes__rotulo-opcao">Cor</span>
-        <div class="detalhes__lista-opcoes">
-          @for (cor of p.cores; track cor) {
-            <button
-              type="button"
-              class="detalhes__opcao"
-              [class.detalhes__opcao--selecionada]="corSelecionada() === cor"
-              (click)="selecionarCor(cor)"
-            >
-              {{ cor }}
-            </button>
+      <section class="detalhes__painel" aria-labelledby="detalhes-nome">
+        <h1 id="detalhes-nome" class="detalhes__nome">{{ p.nome }}</h1>
+        <p class="detalhes__preco texto-utilitario">R$ {{ p.preco | precoBr }}</p>
+        <p class="detalhes__nota" [class.detalhes__nota--esgotado]="esgotado()">
+          {{ esgotado() ? 'Esgotado no momento' : 'Em estoque · retirada ou entrega' }}
+        </p>
+
+        <p class="detalhes__descricao">{{ p.descricao }}</p>
+
+        <div class="detalhes__opcoes">
+          <span class="detalhes__rotulo-opcao">
+            Cor
+            @if (corSelecionada(); as cor) {
+              <span class="detalhes__valor-opcao">{{ cor }}</span>
+            }
+          </span>
+          <div class="detalhes__lista-opcoes">
+            @for (cor of p.cores; track cor) {
+              <button
+                type="button"
+                class="detalhes__cor"
+                [class.detalhes__cor--selecionada]="corSelecionada() === cor"
+                [class.detalhes__opcao--indisponivel]="!corDisponivel(cor)"
+                [style.background]="tomDaCor(cor)"
+                [attr.aria-label]="cor"
+                [attr.aria-pressed]="corSelecionada() === cor"
+                [title]="cor"
+                (click)="selecionarCor(cor)"
+              ></button>
+            }
+          </div>
+        </div>
+
+        <div class="detalhes__opcoes">
+          <span class="detalhes__rotulo-opcao">Tamanho</span>
+          <div class="detalhes__lista-opcoes">
+            @for (tamanho of p.tamanhos; track tamanho) {
+              <button
+                type="button"
+                class="detalhes__tamanho"
+                [class.detalhes__tamanho--selecionado]="tamanhoSelecionado() === tamanho"
+                [class.detalhes__opcao--indisponivel]="!tamanhoDisponivel(tamanho)"
+                [attr.aria-pressed]="tamanhoSelecionado() === tamanho"
+                (click)="selecionarTamanho(tamanho)"
+              >
+                {{ tamanho }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="detalhes__acao">
+          @if (semEstoque()) {
+            <p class="detalhes__sem-estoque" role="status">Sem estoque nessa combinação.</p>
+          }
+
+          <app-button
+            larguraTotal
+            [desabilitado]="!podeAdicionar()"
+            (clicado)="adicionarAoCarrinho()"
+          >
+            Adicionar ao carrinho
+          </app-button>
+
+          @if (adicionado()) {
+            <p class="detalhes__confirmacao" role="status">
+              Adicionado ao carrinho. <a routerLink="/loja/carrinho">Ver carrinho</a>
+            </p>
+          }
+
+          @if (estoqueMaximoAtingido()) {
+            <p class="detalhes__sem-estoque" role="status">
+              Você já tem a quantidade máxima em estoque no carrinho.
+            </p>
           }
         </div>
-      </div>
-
-      @if (semEstoque()) {
-        <p class="detalhes__sem-estoque">Sem estoque nessa combinação.</p>
-      }
-
-      <app-button [desabilitado]="!podeAdicionar()" (clicado)="adicionarAoCarrinho()">
-        Adicionar ao carrinho
-      </app-button>
-
-      @if (adicionado()) {
-        <p class="detalhes__confirmacao">Adicionado ao carrinho.</p>
-      }
-
-      @if (estoqueMaximoAtingido()) {
-        <p class="detalhes__sem-estoque">Você já tem a quantidade máxima em estoque no carrinho.</p>
-      }
+      </section>
     </div>
   </div>
 }
